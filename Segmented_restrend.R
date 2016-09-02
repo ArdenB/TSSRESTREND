@@ -87,7 +87,7 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, breakpoint=FALSE, print
     if (summary(VPR.fit)$coefficients[,4][2] > sig){
       print("VPR significance below critical threshold")
       return(structure(list(Method = FALSE, 
-                            VPR = VPR.fit, TSS.RESTREND = FALSE), class = "RESTREND Object"))
+                            VPR = VPR.fit, TSS.RESTREND = FALSE, total.change = FALSE), class = "RESTREND Object"))
     } 
     VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
     RES <- lm(VPR.resid ~ ti)
@@ -96,8 +96,11 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, breakpoint=FALSE, print
            ylab="Annual VI", col="orange",main="VI vs Precip")
       abline(RES, col = "red",lwd = 2, lty = "dashed")# need to add a trend line 
     }
+    init <- RES$fitted.values[1]
+    fin <- RES$fitted.values[end(RES$fitted.values)[1]]
+    change <- fin - init
     return(structure(list(Method = "RESTREND", 
-                          VPR = VPR.fit, TSS.RESTREND = RES), class = "RESTREND Object"))
+                          VPR = VPR.fit, TSS.RESTREND = RES, total.change = change), class = "RESTREND Object"))
     
   } else{
     print("segres")
