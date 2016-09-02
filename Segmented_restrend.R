@@ -8,8 +8,8 @@ setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo")
 
 #load the data
 
-load("demo_data/stdRESTREND.Rda")
-load("demo_data/stdRESTREND_CTSR.Rda")
+load("./demo_data/stdRESTREND.Rda")
+load("./demo_data/stdRESTREND_CTSR.Rda")
 
 
 
