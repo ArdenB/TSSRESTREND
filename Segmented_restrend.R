@@ -427,6 +427,7 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE
     R.Rval = summary(RES)$r.squared
     R.pval = glance(RES)$p.value
     
+    rp = vector('expression',3)
     rp[1] = substitute(expression(italic(R^2) == R.Rval), 
                        list(R.Rval = format(R.Rval,dig=3)))[2]
     rp[2] = substitute(expression(italic(F) == R.Fval), 
@@ -512,8 +513,9 @@ TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE
     breakpoint = as.integer(res.chow$bp.summary[2])
     result <- seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
-  browser()
   print(result$summary)
+  browser()
+  return(result) #add CTSR 
 }
 
 
@@ -570,11 +572,30 @@ demo.segVPRD <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="T
   }
 }
 
+demo.segVPRI <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="TSS.RESTREND"){
+  #set the environment variables 
+  CTSR.VI <- segVPRI.CTSR$cts.NDVI
+  CTSR.RF <- segVPRI.CTSR$cts.precip
+  anu.VI <- segVPRI$max.NDVI
+  acu.RF <- segVPRI$acc.precip
+  VI.index <- segVPRI$index
+  rf.b4 <- segVPRI$acp.b4
+  rf.af <- segVPRI$acp.af
+  
+  if (mode == "TSS.RESTREND"){
+    TSSR.result <-TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4, rf.af, sig=sig, print=print, plot=plot, details = details)
+  }else{
+    #drops into a browser so the user can call the functions individually 
+    print("loading segmented RESTREND environment variables")
+    browser()
+    #need to add the other modes 
+  }
+}
 
-#need to figure add a return 
-# res <- demo.stdRESTEND()
-# res <- demo.segRESTEND()
-res <- demo.segVPRD()
+#need to figure add a return res <- demo.stdRESTEND() res <- demo.segRESTEND() 
+# res <- demo.segVPRD()
+res <- demo.segVPRI()
+
 
 print("hello World")
 
