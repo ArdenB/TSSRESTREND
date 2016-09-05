@@ -510,6 +510,8 @@ TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE
     breakpoint = as.integer(res.chow$bp.summary[2])
     result <- seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint,  sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.VPR"){
+    
+    #TO BE ADDED test acu.rf and if FALSE call accumulator
     breakpoint = as.integer(res.chow$bp.summary[2])
     result <- seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
