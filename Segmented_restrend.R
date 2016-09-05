@@ -240,8 +240,8 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   segVPR.fit <-  lm(VI~sv.RF*breakpoint.var, segRES.df)
   if (plot){
     # df = data.frame(year=(t-1982), RF=adj.RF, NDVI,  breakpoint=z)
-    fit0 <- lm(NDVI[1:breakpoint] ~ sd.adjb4[1:breakpoint])
-    fit1 <- lm(NDVI[(breakpoint+1):len] ~ sd.adjaf[(breakpoint+1):len])
+    fit0 <- lm(anu.VI[1:breakpoint] ~ sd.adjb4[1:breakpoint])
+    fit1 <- lm(anu.VI[(breakpoint+1):len] ~ sd.adjaf[(breakpoint+1):len])
     fitRES <- lm(segRES.df$VI ~ segRES.df$sv.RF)
     # chow1 <- sctest(bpanalysis$residuals ~ t, type = "Chow", point = bkp)
     plt.ymin <- min(segRES.df$VI)
@@ -516,7 +516,7 @@ TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE
     result <- seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
   print(result$summary)
-  browser()
+  # browser()
   return(result) #add CTSR 
 }
 
@@ -569,7 +569,7 @@ demo.segVPRD <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="T
   }else{
     #drops into a browser so the user can call the functions individually 
     print("loading segmented RESTREND environment variables")
-    browser()
+    # browser()
     #need to add the other modes 
   }
 }
