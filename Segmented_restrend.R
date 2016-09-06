@@ -516,7 +516,7 @@ TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE
     result <- seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
   print(result$summary)
-  browser()
+  # browser()
   return(result) #add CTSR 
 }
 
@@ -594,12 +594,14 @@ demo.segVPRI <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="T
   }
 }
 
-#need to figure add a return res <- demo.stdRESTEND() res <- demo.segRESTEND() 
-# res <- demo.segVPRD()
+#need to figure add a return 
+res <- demo.stdRESTEND() 
+res <- demo.segRESTEND() 
+res <- demo.segVPRD()
 res <- demo.segVPRI()
 
 
-print("hello World")
+# print("hello World")
 
 
 
