@@ -4,7 +4,7 @@ library("RcppCNPy")
 library("strucchange")
 library("broom")
 
-setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
+#setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
 
 #load the data
 
@@ -240,8 +240,8 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   segVPR.fit <-  lm(VI~sv.RF*breakpoint.var, segRES.df)
   if (plot){
     # df = data.frame(year=(t-1982), RF=adj.RF, NDVI,  breakpoint=z)
-    fit0 <- lm(NDVI[1:breakpoint] ~ sd.adjb4[1:breakpoint])
-    fit1 <- lm(NDVI[(breakpoint+1):len] ~ sd.adjaf[(breakpoint+1):len])
+    fit0 <- lm(anu.VI[1:breakpoint] ~ sd.adjb4[1:breakpoint])
+    fit1 <- lm(anu.VI[(breakpoint+1):len] ~ sd.adjaf[(breakpoint+1):len])
     fitRES <- lm(segRES.df$VI ~ segRES.df$sv.RF)
     # chow1 <- sctest(bpanalysis$residuals ~ t, type = "Chow", point = bkp)
     plt.ymin <- min(segRES.df$VI)
@@ -260,7 +260,7 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
     abline(fit0, col = "orange", lwd = 2)
     abline(fit1, col = "purple", lwd = 2)
     abline(fitRES, col="red", lwd=2, lty="dashed")
-    abline(v=0,lty="dashed") #to be improved asap
+    # abline(v=0,lty="dashed") #to be improved asap
   }
   breakheight <- segVPR.fit$coefficients[[3]]
   bp.pval <- coef(summary(segVPR.fit))[15]
