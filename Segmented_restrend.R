@@ -596,9 +596,13 @@ demo.segVPRI <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="T
 
 #need to figure add a return 
 res <- demo.stdRESTEND() 
+browser()
 res <- demo.segRESTEND() 
+browser()
 res <- demo.segVPRD()
+browser()
 res <- demo.segVPRI()
+browser()
 
 
 # print("hello World")
