@@ -17,12 +17,30 @@ library("broom")#(0.4.1)
 
 All functions in this code use the same named data variables, 
 
-*CTSR.VI - Complete Time Series Vegetation Index*
-An object of class "ts". Monthly data set covering the entire timeseries being studied.  
+*CTSR.VI - Complete Time Series Vegetation Index*     
+An object of class "ts" that contains the monthly data set covering the entire timeseries being studied.  
 
-*CTSR.RF - Complete Time Series Accumulated Rainfall*
-An object of class "ts" that contains the optimially accumulated precipitation for every value in CTSR.VI
+*CTSR.RF - Complete Time Series Accumulated Rainfall*   
+An object of class "ts" that contains the optimially accumulated precipitation for every value in CTSR.VI. CTSR.RF must be the same lenght, cover the same time period and have the same temporal frequency as CTSR.VI.   
+Note. The CTSR.RF must be calculated by the user.  
 
+*anu.VI - Annual(Growing Season) Max Vegetation Index value*  
+An object of class "ts" that contains the Annual Max VI value from the CTSR.VI time series.  
+
+*acu.RF - Accumulated Rainfall* 
+An object of class "ts" that contains the accumulated precipitation for the anu.VI. This should be calculated seperatly from the CTSR.RF variable.  this can be calculated using the _______ function.  acu.RF must be the same lenght, cover the same time period and have the same temporal frequency as anu.VI.   
+
+*VI.index - the index in CTSR.VI where the anu.VI values occur*
+An object of class "ts". Note. Indexing in R starts from 1 rather than 0 like other languages.  
+
+*rf.b4 - Accumulated Rainfall that is optimised for the period before a significant VPR breakpoint* 
+An object of class "ts". rf.b4 must be the same lenght, cover the same time period and have the same temporal frequency as anu.VI.   
+
+*rf.af - Accumulated Rainfall that is optimised for the period after a significant VPR breakpoint* 
+An object of class "ts". rf.af must be the same lenght, cover the same time period and have the same temporal frequency as anu.VI.   
+
+*ACCUM.TABLE - In Progress* 
+to be added
 
 
 
