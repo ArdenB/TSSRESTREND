@@ -1,4 +1,4 @@
-# SegmentedRESTREND
+# Segmented RESTREND
 
 This script is a a demsonstration of the Segmented RESTREND method proposed in Burrell et. al., (2016?????). 
 
@@ -24,27 +24,35 @@ An object of class "ts" that contains the monthly data set covering the entire t
 An object of class "ts" that contains the optimially accumulated precipitation for every value in CTSR.VI. CTSR.RF must be the same lenght, cover the same time period and have the same temporal frequency as CTSR.VI.   
 Note. The CTSR.RF must be calculated by the user.  
 
-*anu.VI - Annual(Growing Season) Max Vegetation Index value*  
+*anu.VI - Annual(Growing Season) Max Vegetation Index value*    
 An object of class "ts" that contains the Annual Max VI value from the CTSR.VI time series.  
 
-*acu.RF - Accumulated Rainfall* 
+*acu.RF - Accumulated Rainfall*     
 An object of class "ts" that contains the accumulated precipitation for the anu.VI. This should be calculated seperatly from the CTSR.RF variable.  this can be calculated using the _______ function.  acu.RF must be the same lenght, cover the same time period and have the same temporal frequency as anu.VI.   
 
-*VI.index - the index in CTSR.VI where the anu.VI values occur*
+*VI.index - the index in CTSR.VI where the anu.VI values occur*   
 An object of class "ts". Note. Indexing in R starts from 1 rather than 0 like other languages.  
 
-*rf.b4 - Accumulated Rainfall that is optimised for the period before a significant VPR breakpoint* 
+*rf.b4 - Accumulated Rainfall that is optimised for the period before a significant VPR breakpoint*     
 An object of class "ts". rf.b4 must be the same lenght, cover the same time period and have the same temporal frequency as anu.VI.   
 
-*rf.af - Accumulated Rainfall that is optimised for the period after a significant VPR breakpoint* 
+*rf.af - Accumulated Rainfall that is optimised for the period after a significant VPR breakpoint*    
 An object of class "ts". rf.af must be the same lenght, cover the same time period and have the same temporal frequency as anu.VI.   
 
-*ACCUM.TABLE - In Progress* 
+*ACCUM.TABLE - In Progress*     
 to be added
 
 
-
 ## Functions
+
+The functions in the code can be broken up into three types, the main function, the step functions and the demonstration functions.
+
+####Main Function
+
+```R
+TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE, rf.af=FALSE, 
+             sig=0.05, print=FALSE, plot=FALSE, details=FALSE)
+```
 
 
 
