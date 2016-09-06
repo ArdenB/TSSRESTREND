@@ -47,13 +47,18 @@ to be added
 
 The functions in the code can be broken up into three types, the main function, the step functions and the demonstration functions.
 
-####Main Function
+###Main Function
 
+*TSS.RESTREND*
 ```R
 TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE, rf.af=FALSE, 
              sig=0.05, print=FALSE, plot=FALSE, details=FALSE)
 ```
+######Parameters: 
 
+######Returns:  
+
+######Notes 
 
 
 
