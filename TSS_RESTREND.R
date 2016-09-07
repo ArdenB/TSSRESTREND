@@ -3,6 +3,7 @@ library("bfast")
 #library("RcppCNPy")
 library("strucchange")
 library("broom")
+library("RcppRoll")
 
 setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
 
@@ -16,66 +17,13 @@ load("./demo_data/segVPRD.Rda")
 load("./demo_data/segVPRD_CTSR.Rda")
 load("./demo_data/segVPRI.Rda")
 load("./demo_data/segVPRI_CTSR.Rda")
-library("RcppRoll")
+
+source("RF_acum.R")
 source("max_pos.R")
 source("CTSR_acp.R")
+source("Annual_precipitation.R")
+source("VPR_BFAST.R")
 
-
-
-BFAST.RESID <- function(CTSR.VI, CTSR.RF, print=FALSE, plot=FALSE, details=FALSE) {
-  #functions takes the complete time series VI and rainfall (RF)
-  
-  #Check the objects are Time series
-  if (class(CTSR.VI) != "ts") 
-    stop("CTSR.VI Not a time series object")
-  if (class(CTSR.RF) != "ts") 
-    stop("CTSR.VI Not a time series object")
-  #get the time data out
-  ti <- time(CTSR.VI)
-  f <- frequency(CTSR.VI)
-  #check the two ts object cover the same time period
-  ti2 <- time(CTSR.RF)
-  f2 <- frequency(CTSR.RF)
-  if (!identical(ti, ti2))
-    stop("ts object do not have the same time")
-  if (!identical(f, f2))
-    stop("ts object do not have the same frequency")
-  
-  # Fit the two lines
-  CTS.fit <- lm(CTSR.VI ~ CTSR.RF)
-    #Convert to a ts object
-  resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f) 
-  
-  #Print and plot
-  if (print) { #Need better explination and a title but it will do for the moment
-    print(summary(CTS.fit))
-  } 
-  if (plot){ 
-    #This plot need serius work but will do for the moment
-    plot(resid.ts)
-  }
-  
-  #perform the BFAST
-  bf.fit <- bfast(resid.ts, h=0.15, season="none", max.iter=3, level = 0.05)
-
-  if (plot){
-    #if plot is requested
-    plot(bf.fit)
-    }
-  
-  if (bf.fit$nobp$Vt[[1]] == FALSE) {
-    numiter <- length(bf.fit$output)
-    tmp <- bf.fit$output[[numiter]]$bp.Vt[1]$breakpoints
-    if (details){
-      return(structure(list(bkps = tmp, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    }else{return(structure(list(bkps = tmp, BFAST.obj=FALSE), class = "BFAST.Object"))
-    }
-  }else {
-    if (details){
-      return(structure(list(bkps = FALSE, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    }else{return(structure(list(bkps = FALSE, BFAST.obj=FALSE), class = "BFAST.Object"))}
-  }
-}
 
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
   #test the data to make sure its valid
@@ -460,53 +408,66 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE
   #is a need to recalculate precip on either side of the breakpoint
   #Until it is functional  b4 and after need to be passed into this
   #function.  rf.b4=FALSE, rf.af=FALSE, will be removed as soon as 
-TSS.RESTREND <- function(CTSR.VI, ACP.table, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE, rf.b4=FALSE, rf.af=FALSE, 
+TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE, rf.b4=FALSE, rf.af=FALSE, 
                          sig=0.05, print=FALSE, plot=TRUE, details=FALSE){
 
   while (TRUE){ #Test the variables 
     if (class(CTSR.VI) != "ts") 
       stop("CTSR.VI Not a time series object")
-    # need to add a function that checks CTSR.RF
-
-    # if (class() != "ts") 
-      # stop("CTSR.VI Not a time series object")
-    #get the time data out
-    ti <- time(CTSR.VI)
-    f <- frequency(CTSR.VI)
-    #check the two ts object cover the same time period
-    ti2 <- time(CTSR.RF)
-    f2 <- frequency(CTSR.RF)
-    if (!identical(ti, ti2))
-      stop("ts object do not have the same time")
-    if (!identical(f, f2))
-      stop("ts object do not have the same frequency")
-
-    if (!anu.VI || VI.index)  {
-      VI.Var <- AnMax.VI(CTSR.VI)
-      anu.VI <- VI.Var$Max
-      VI.index <- VI.Var$index
-    }   
-
-    if (class(anu.VI) != "ts") 
-      stop("anu.VI Not a time series object")
-    if (class(acu.RF) != "ts") 
-      stop("acu.VI Not a time series object")
-    ti <- time(anu.VI)
-    f <- frequency(anu.VI)
-    #check the two ts object cover the same time period
-    ti2 <- time(acu.RF)
-    f2 <- frequency(acu.RF)
-    if (!identical(ti, ti2))
-      stop("ts object do not have the same time")
-    if (!identical(f, f2))
-      stop("ts object do not have the same frequency")
+    
+    if ((!ACP.table) && (!CTSR.RF || acu.RF))
+      stop("Rainfall data invalid. ACP.table or (CTSR.RF & acu.RF")
+    
+    if ((!anu.VI)||(!VI.index)){
+      max.df <- AnMax.VI(CTSR.VI)
+      anu.VI <- max.df$Max
+      VI.index <- max.df$index
+    }else{
+      if (class(anu.VI) != "ts") 
+        stop("anu.VI Not a time series object")
+    }
+    if (!CTSR.RF){
+      CTS.Str <- ACP_calculator(CTSR.VI, ACP.table)
+      CTSR.RF <- CTS.Str$CTSR.precip
+      details.CTS.VPR <- CTS.Str$summary
+    }else{
+      if (class(CTSR.RF) != "ts") 
+        stop("CTSR.RF Not a time series object")
+      #get the time data out
+      start.ti <- time(CTSR.VI)
+      freq <- frequency(CTSR.VI)
+      #check the two ts object cover the same time period
+      start.ti2 <- time(CTSR.RF)
+      freq2 <- frequency(CTSR.RF)
+      if (!identical(start.ti, startti2))
+        stop("ts objects do not have the same time, (CTSR.VI & CTSR.RF)")
+      if (!identical(f, f2))
+        stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")
+    }
+    if (!acu.RF){
+      AnnualRF.Cal(anu.VI, VI.index, ACP.table)
+    }else{
+      if (class(acu.RF) != "ts") 
+        stop("acu.VI Not a time series object")
+      st.ti <- time(anu.VI)
+      st.f <- frequency(anu.VI)
+      #check the two ts object cover the same time period
+      st.ti2 <- time(acu.RF)
+      st.f2 <- frequency(acu.RF)
+      if (!identical(st.ti, st.ti2))
+        stop("ts object do not have the same time, (acu.RF & anu.VI)")
+      if (!identical(st.f, st.f2))
+        stop("ts object do not have the same frequency, (acu.RF & anu.VI)")
+    }
     if (class(rf.b4) != "logical"){
       if (length(rf.b4) != (length(rf.af)))
           stop("rf.b4 and rf.af are different shapes. They must be the same size and be th same lenths as acu.VI")
     }
     break
   }
-  bkp = BFAST.RESID(CTSR.VI, CTSR.RF, print=print, plot=plot)
+  
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, print=print, plot=plot, details = details)
+  browser()
   bp<-as.numeric(bkp$bkps)
   if (!bp){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"

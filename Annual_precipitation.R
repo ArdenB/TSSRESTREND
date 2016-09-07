@@ -1,20 +1,20 @@
 
-AnnualRF.Cal <- function(anu.VI, VI.index, acum.table, Breakpoint = FALSE){
+AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE){
   if (class(anu.VI) != "ts") 
     stop("anu.VI Not a time series object")
   if (length(VI.index) != length(anu.VI)) 
     stop("acu.VI and VI.index are not of the same length")
   
-  anu.ACUP <- acum.table[, VI.index]
+  anu.ACUP <- ACP.table[, VI.index]
   lines <- dim(anu.ACUP)[1]
   len <- dim(anu.ACUP)[2]
   
   m<- matrix(nrow=(lines), ncol=4)
-  rownames(m)<- rownames(acum.table)
+  rownames(m)<- rownames(ACP.table)
   colnames(m)<- c("slope", "intercept", "p-value", "R^2.Value")
   if (!Breakpoint){
     p <- matrix(nrow=(lines), ncol=4)
-    rownames(p)<- rownames(acum.table)
+    rownames(p)<- rownames(ACP.table)
     colnames(p)<- c("slope", "intercept", "p-value", "R^2.Value")
   }
   # n <- 1

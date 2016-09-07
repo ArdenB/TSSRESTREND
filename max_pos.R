@@ -50,8 +50,8 @@ AnMax.VI <- function(CTSR.VI){
   df <- data.frame( Max=anmax.ts, Max.month=whmax.ts, index = index.ts)
   for (row in 1:(dim(df)[1]-1)){
     if ((df$Max.month[row] == 11 || df$Max.month[row] == 12) && (df$Max.month[row+1]==1 || df$Max.month[row+1]==2)){
-      print(df[row,])
-      print(row)
+      # print(df[row,])
+      # print(row)
       test <- c(m[row, 11:12], m[row+1, 1:2])
       # print(test)
       df$Max.month[row] = which.max(test)+10
@@ -70,4 +70,4 @@ AnMax.VI <- function(CTSR.VI){
   return(df)
 }
 # CTSR.VI <- segVPRD.CTSR$cts.NDVI
-t1 <-AnMax.VI(CTSR.VI)
+# t1 <-AnMax.VI(CTSR.VI)

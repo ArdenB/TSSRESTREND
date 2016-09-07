@@ -1,7 +1,7 @@
 
 
 
-RF.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
+rainfall.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
   
   if (class(CTSR.VI) != "ts") 
     stop("CTSR.VI Not a time series object")
