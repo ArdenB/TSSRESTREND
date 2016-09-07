@@ -70,4 +70,4 @@ AnMax.VI <- function(CTSR.VI){
   return(df)
 }
 # CTSR.VI <- segVPRD.CTSR$cts.NDVI
-# t1 <-AnMax.VI(CTSR.VI)
+t1 <-AnMax.VI(CTSR.VI)

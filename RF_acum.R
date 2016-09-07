@@ -49,9 +49,9 @@ RF.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
 
   #turn the suplied ts in a table
   for (osp in 0:(max.osp-1)){
-    
-    m3 <- matrix(m2[,(1+osp):(len+osp)])
-    m4 <- matrix(m3[, ncol(m3):1])
+    #defence against index 1 i missing
+    m3 <- (m2[,(1+osp):(len+osp)])
+    m4 <- (m3[, ncol(m3):1])
     # m4 <- apply(m3, 3, rev)
     ind <- 1 + (osp*max.acp)
     # print(ind)
@@ -71,5 +71,5 @@ rf.data <- CTSRrf.TS$precip
 max.acp <- 12
 max.osp <- 4
 acum.table <-RF.accumulator(CTSR.VI, rf.data, max.acp, max.osp )
-dim(res)
+dim(acum.table)
 # 
