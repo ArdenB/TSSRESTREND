@@ -1,3 +1,6 @@
+
+
+
 load("./demo_data/segVPRD_RF.Rda")
 load("./demo_data/segVPRD_CTSR.Rda")
 CTSR.VI <- segVPRD.CTSR$cts.NDVI
