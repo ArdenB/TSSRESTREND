@@ -1,10 +1,10 @@
 library("bfast")
 #library("forecast")
-library("RcppCNPy")
+#library("RcppCNPy")
 library("strucchange")
 library("broom")
 
-#setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
+setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
 
 #load the data
 
