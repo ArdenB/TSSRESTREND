@@ -150,6 +150,10 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
       stop("anu.VI Not a time series object")
     if (class(acu.RF) != "ts") 
       stop("acu.VI Not a time series object")
+    if (class(rf.b4) != "ts") 
+      stop("rf.b4 Not a time series object")
+    if (class(rf.af) != "ts") 
+      stop("rf.af Not a time series object")
     ti <- time(anu.VI)
     f <- frequency(anu.VI)
     #check the two ts object cover the same time period
@@ -445,7 +449,9 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
         stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")
     }
     if (!acu.RF){
-      AnnualRF.Cal(anu.VI, VI.index, ACP.table)
+      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table)
+      acu.RF <- precip.df$annual.precip
+      details.acu.RF <- precip.df$summary
     }else{
       if (class(acu.RF) != "ts") 
         stop("acu.VI Not a time series object")
@@ -467,26 +473,35 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   }
   
   bkp = VPR.BFAST(CTSR.VI, CTSR.RF, print=print, plot=plot, details = details)
-  browser()
-  bp<-as.numeric(bkp$bkps)
+  bp <- bkp$bkps
   if (!bp){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
   }else{
+    bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig, print=print)
+    brkp <- as.numeric(res.chow$bp.summary["yr.index"])
     test.Method = res.chow$n.Method
   }
   #add NDVI plot
-  
+  browser()
   if (test.Method == "RESTREND"){
     result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot) 
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint,  sig=sig, print=print, plot=plot)
+    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.VPR"){
+    if ((!rf.b4)||(!rf.af)){
+      VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = brkp)
+      rf.b4 <- VPRbp.df$rf.b4
+      rf.af <- VPRbp.df$rf.af
+      # add details figure
+      #!!!!!!!!!!!!!!!!!!!!!!!!!!#
+    }
+    
     
     #TO BE ADDED test acu.rf and if FALSE call accumulator
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=sig, print=print, plot=plot)
+    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
   print(result$summary)
   # browser()
