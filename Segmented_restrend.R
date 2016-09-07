@@ -16,6 +16,9 @@ load("./demo_data/segVPRD.Rda")
 load("./demo_data/segVPRD_CTSR.Rda")
 load("./demo_data/segVPRI.Rda")
 load("./demo_data/segVPRI_CTSR.Rda")
+library("RcppRoll")
+source("max_pos.R")
+source("CTSR_acp.R")
 
 
 
@@ -451,17 +454,20 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE
 
 
 #FUnctions to call functions
-TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE, rf.af=FALSE, 
-                         sig=0.05, print=FALSE, plot=FALSE, details=FALSE){
   #Function to call the other functions
   #Missing function to find optimal accumulation of the precipitation
   #which will be a sperate script. If the method is segVPR, there 
   #is a need to recalculate precip on either side of the breakpoint
   #Until it is functional  b4 and after need to be passed into this
   #function.  rf.b4=FALSE, rf.af=FALSE, will be removed as soon as 
+TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE, rf.b4=FALSE, rf.af=FALSE, 
+                         sig=0.05, print=FALSE, plot=FALSE, details=FALSE){
+
   while (TRUE){ #Test the variables 
     if (class(CTSR.VI) != "ts") 
       stop("CTSR.VI Not a time series object")
+    # need to add a function that checks CTSR.RF
+
     if (class(CTSR.RF) != "ts") 
       stop("CTSR.VI Not a time series object")
     #get the time data out
@@ -474,7 +480,13 @@ TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE
       stop("ts object do not have the same time")
     if (!identical(f, f2))
       stop("ts object do not have the same frequency")
-    
+
+    if (!anu.VI || VI.index)  {
+      VI.Var <- AnMax.VI(CTSR.VI)
+      anu.VI <- VI.Var$Max
+      VI.index <- VI.Var$index
+    }   
+
     if (class(anu.VI) != "ts") 
       stop("anu.VI Not a time series object")
     if (class(acu.RF) != "ts") 
@@ -595,14 +607,14 @@ demo.segVPRI <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="T
 }
 
 #need to figure add a return 
-res <- demo.stdRESTEND() 
-browser()
-res <- demo.segRESTEND() 
-browser()
-res <- demo.segVPRD()
-browser()
-res <- demo.segVPRI()
-browser()
+# res <- demo.stdRESTEND() 
+# browser()
+# res <- demo.segRESTEND() 
+# browser()
+# res <- demo.segVPRD()
+# browser()
+# res <- demo.segVPRI()
+# browser()
 
 
 # print("hello World")

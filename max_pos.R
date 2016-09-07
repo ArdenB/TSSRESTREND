@@ -18,6 +18,8 @@
 # load("./demo_data/segVPRI_CTSR.Rda")
 
 AnMax.VI <- function(CTSR.VI){
+  if (class(CTSR.VI) != "ts") 
+      stop("CTSR.VI Not a time series object")
   
   sty <- start(CTSR.VI)[1]
   stm <-  start(CTSR.VI)[2] 
@@ -67,5 +69,5 @@ AnMax.VI <- function(CTSR.VI){
   }
   return(df)
 }
-CTSR.VI <- segVPRD.CTSR$cts.NDVI
-t1 <-AnMax.VI(CTSR.VI)
+# CTSR.VI <- segVPRD.CTSR$cts.NDVI
+# t1 <-AnMax.VI(CTSR.VI)
