@@ -4,7 +4,7 @@ library("RcppCNPy")
 library("strucchange")
 library("broom")
 
-setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
+#setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
 
 #load the data
 
@@ -260,7 +260,7 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
     abline(fit0, col = "orange", lwd = 2)
     abline(fit1, col = "purple", lwd = 2)
     abline(fitRES, col="red", lwd=2, lty="dashed")
-    abline(v=0,lty="dashed") #to be improved asap
+    # abline(v=0,lty="dashed") #to be improved asap
   }
   breakheight <- segVPR.fit$coefficients[[3]]
   bp.pval <- coef(summary(segVPR.fit))[15]
@@ -594,12 +594,18 @@ demo.segVPRI <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="T
   }
 }
 
-#need to figure add a return res <- demo.stdRESTEND() res <- demo.segRESTEND() 
-# res <- demo.segVPRD()
+#need to figure add a return 
+res <- demo.stdRESTEND() 
+browser()
+res <- demo.segRESTEND() 
+browser()
+res <- demo.segVPRD()
+browser()
 res <- demo.segVPRI()
+browser()
 
 
-print("hello World")
+# print("hello World")
 
 
 
