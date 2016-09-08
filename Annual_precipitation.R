@@ -1,5 +1,5 @@
 
-AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE){
+AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.negative=FALSE){
   if (class(anu.VI) != "ts") 
     stop("anu.VI Not a time series object")
   if (length(VI.index) != length(anu.VI)) 
@@ -50,20 +50,73 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE){
     }
   }
   if (!Breakpoint){
-    max.line <- which.max(m[, "R^2.Value"])
-    suma <- m[max.line,]
-    anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
-    return(structure(list(summary=suma, annual.precip = anu.ARF)))
+    if (allow.negative){
+      
+      max.line <- which.max(m[, "R^2.Value"])
+      suma <- m[max.line,]
+      anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
+      return(structure(list(summary=suma, annual.precip = anu.ARF)))
+    }else{
+      
+      mx <- m[m[, "slope"] > 0,] 
+      if (dim(mx)[1] == 0){
+        warning("No positve slopes exist. Returing most significant negative slope")
+        max.line <- which.max(m[, "R^2.Value"])
+        suma <- m[max.line,]
+        anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
+        return(structure(list(summary=suma, annual.precip = anu.ARF)))
+      }else{
+        rfx <- anu.ACUP[m[, "slope"] > 0,] 
+        max.line <- which.max(mx[, "R^2.Value"])
+        suma <- mx[max.line,]
+        anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
+        return(structure(list(summary=suma, annual.precip = anu.ARF)))
+      }
+    }
   }else{
-    max.line <- which.max(m[, "R^2.Value"])
-    suma <- m[max.line,]
-    anu.ARF <- ts(anu.ACUP[max.line, ], start=yst, frequency = 1)
+    if (allow.negative){
+      max.line <- which.max(m[, "R^2.Value"])
+      suma <- m[max.line,]
+      anu.ARF <- ts(anu.ACUP[max.line, ], start=yst, frequency = 1)
+      
+      pmax.line <- which.max(p[, "R^2.Value"])
+      p.suma <- p[pmax.line,]
+      panu.ARF <- ts(anu.ACUP[pmax.line, ], start=yst, frequency = 1)
+      summ <- c(suma, p.suma)
+      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))  
+    }else{
+      mx <- m[m[, "slope"] >= 0,] 
+      if (dim(mx)[1] == 0){
+        warning("No positve slopes exist before the bp. Returing most significant negative slope")
+        max.line <- which.max(m[, "R^2.Value"])
+        suma <- m[max.line,]
+        anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
+      }else{
+        rfx <- anu.ACUP[m[, "slope"] > 0,] 
+        max.line <- which.max(mx[, "R^2.Value"])
+        suma <- mx[max.line,]
+        anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
+      }
+      px <- p[p[, "slope"] >= 0,] 
+      if (dim(px)[1] == 0){
+        warning("No positve slopes exist after the bp. Returing most significant negative slope")
+        pmax.line <- which.max(p[, "R^2.Value"])
+        p.suma <- p[pmax.line,]
+        panu.ARF <- ts(anu.ACUP[pmax.line, ], start=c(yst, mst), frequency = 1)
+      }else{
+        p.rfx <- anu.ACUP[p[, "slope"] > 0,] 
+        pmax.line <- which.max(px[, "R^2.Value"])
+        p.suma <- px[pmax.line,]
+        panu.ARF <- ts(p.rfx[pmax.line, ], start=c(yst, mst), frequency = 1)
+      }
+      summ <- c(suma, p.suma)
+      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))  
+      
+      
+      
+      
+    }
     
-    pmax.line <- which.max(p[, "R^2.Value"])
-    p.suma <- p[pmax.line,]
-    panu.ARF <- ts(anu.ACUP[pmax.line, ], start=yst, frequency = 1)
-    summ <- c(suma, p.suma)
-    return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))
   }
   
 }

@@ -5,24 +5,38 @@ library("strucchange")
 library("broom")
 library("RcppRoll")
 
-setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
+this.dir <- dirname(parent.frame(2)$ofile)
+former.dir <- getwd()
+setwd(this.dir)
 
-#load the data
+#load the test data
 
 load("./demo_data/stdRESTREND.Rda")
 load("./demo_data/stdRESTREND_CTSR.Rda")
+load("./demo_data/stdRESTREND_RF.Rda")
+
 load("./demo_data/segRESTREND.Rda")
 load("./demo_data/segRESTREND_CTSR.Rda")
+load("./demo_data/segRESTREND_RF.Rda")
+
 load("./demo_data/segVPRD.Rda")
 load("./demo_data/segVPRD_CTSR.Rda")
+load("./demo_data/segVPRD_RF.Rda")
+
 load("./demo_data/segVPRI.Rda")
 load("./demo_data/segVPRI_CTSR.Rda")
+load("./demo_data/segVPRI_RF.Rda")
+
+
 
 source("RF_acum.R")
 source("max_pos.R")
 source("CTSR_acp.R")
 source("Annual_precipitation.R")
 source("VPR_BFAST.R")
+
+#return to the past directory 
+setwd(former.dir)
 
 
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
@@ -479,11 +493,13 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   }else{
     bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig, print=print)
-    brkp <- as.numeric(res.chow$bp.summary["yr.index"])
+    brkp <- as.integer(res.chow$bp.summary["yr.index"])
     test.Method = res.chow$n.Method
   }
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   #add NDVI plot
-  browser()
+  # browser()
+  
   if (test.Method == "RESTREND"){
     result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot) 
   }else if (test.Method == "seg.RESTREND"){
@@ -491,19 +507,16 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
+      #Improve the figure
       VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = brkp)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
-      # add details figure
       #!!!!!!!!!!!!!!!!!!!!!!!!!!#
     }
-    
-    
-    #TO BE ADDED test acu.rf and if FALSE call accumulator
     breakpoint = as.integer(res.chow$bp.summary[2])
     result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
-  print(result$summary)
+  # print(result$summary)
   # browser()
   return(result) #add CTSR 
 }
