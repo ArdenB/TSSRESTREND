@@ -34,6 +34,7 @@ source("max_pos.R")
 source("CTSR_acp.R")
 source("Annual_precipitation.R")
 source("VPR_BFAST.R")
+source("viMAX_plot.R")
 
 #return to the past directory 
 setwd(former.dir)
@@ -490,11 +491,17 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   bp <- bkp$bkps
   if (!bp){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
+    if (plot){
+      VImax.plot(anu.VI)
+    }
   }else{
     bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig, print=print)
     brkp <- as.integer(res.chow$bp.summary["yr.index"])
     test.Method = res.chow$n.Method
+    if (plot){
+      VImax.plot(anu.VI, brkp=brkp)
+    }
   }
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   #add NDVI plot
