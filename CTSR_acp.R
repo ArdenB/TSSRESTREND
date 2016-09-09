@@ -27,9 +27,27 @@ ACP_calculator <- function(CTSR.VI, ACP.table){
     m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval)
     
   }
-  max.line <- which.max(m[, "R^2.Value"])
-  suma <- m[max.line,]
-  CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
+  mx <- m[m[, "slope"] > 0,] 
+  # 
+  if (dim(mx)[1] == 0){
+    # warning("No positve slopes exist. Returing most significant negative slope")
+    max.line <- which.max(m[, "R^2.Value"])
+    suma <- m[max.line,]
+    CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
+    # browser()
+    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
+  }else{
+    rfx <- ACP.table[m[, "slope"] > 0,] 
+    max.line <- which.max(mx[, "R^2.Value"])
+    suma <- mx[max.line,]
+    CTSR.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 12)
+    # browser()
+    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
+  }
   
-  return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
+#   max.line <- which.max(m[, "R^2.Value"])
+#   suma <- m[max.line,]
+#   CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
+#   
+#   return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
 }

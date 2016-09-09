@@ -7,7 +7,7 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, print=FALSE, plot=FALSE, details=FALSE) 
   if (class(CTSR.VI) != "ts") 
     stop("CTSR.VI Not a time series object")
   if (class(CTSR.RF) != "ts") 
-    stop("CTSR.VI Not a time series object")
+    stop("CTSR.RF Not a time series object")
   #get the time data out
   ti <- time(CTSR.VI)
   f <- frequency(CTSR.VI)
