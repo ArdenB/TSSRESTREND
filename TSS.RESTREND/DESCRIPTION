@@ -1,17 +1,23 @@
+
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.1.0
+Version: 0.1.01
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
+Description:
+    To perform the Time Series Segmented Residual Trend (TSS-RESTREND) method.
+    The full details are available in (Burrell et al. 2016).
 License:  GPL (>= 2)
 LazyData: TRUE
 Imports:
+    stats,
+    graphics,
+    utils,
     bfast (>= 1.5.7),
     broom,
     strucchange,
     ggplot2,
     RcppRoll
 Depends:
-    R (>= 3.2.5)
+    R (>= 3.2.0)
 RoxygenNote: 5.0.1

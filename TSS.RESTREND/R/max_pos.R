@@ -1,38 +1,33 @@
-# library("bfast")
-# #library("forecast")
-# library("RcppCNPy")
-# library("strucchange")
-# library("broom")
-# 
-# setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
-# 
-# #load the data
-# 
-# load("./demo_data/stdRESTREND.Rda")
-# load("./demo_data/stdRESTREND_CTSR.Rda")
-# load("./demo_data/segRESTREND.Rda")
-# load("./demo_data/segRESTREND_CTSR.Rda")
-# load("./demo_data/segVPRD.Rda")
-# load("./demo_data/segVPRD_CTSR.Rda")
-# load("./demo_data/segVPRI.Rda")
-# load("./demo_data/segVPRI_CTSR.Rda")
-
+#' @title Annual max VI Calculator
+#'
+#' @description
+#' Takes the montly time series of the VI and calculates the growing season max VI. In series where the peak occurs in November or December,
+#' an interannual growing season is assessed.
+#'@param CTSR.VI
+#' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
+#' @return Max(anu.VI)
+#' The annual (Growing season) max VI.
+#' @return Max.Month
+#' a Vector that has the month number where max values wew observed
+#' @return index(VI.index)
+#' the index of the CTSR.VI ts that the anu.VI values occur at.R indexs from 1 rather than 0.
+#' @export
 AnMax.VI <- function(CTSR.VI){
-  if (class(CTSR.VI) != "ts") 
+  if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object")
-  
+
   sty <- start(CTSR.VI)[1]
-  stm <-  start(CTSR.VI)[2] 
+  stm <-  start(CTSR.VI)[2]
   eny <- end(CTSR.VI)[1]
   enm <- end(CTSR.VI)[2]
-  
+
   m<- matrix(nrow=(eny-sty+1), ncol=12)
   rownames(m)<- c(sty:eny)
   colnames(m)<- c(month.abb[1:12])
   index <- 1
   for (yr in sty:eny){
     # m[toString(yr), 13:14] = 0
-    # print(yr)  
+    # print(yr)
     for (mon in 1:12){
       if (yr==sty & mon<stm){
         m[toString(yr), month.abb[mon]] = NaN
