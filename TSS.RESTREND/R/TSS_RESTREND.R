@@ -1,72 +1,78 @@
-library("bfast")
-#library("forecast")
-#library("RcppCNPy")
-library("strucchange")
-library("broom")
-library("RcppRoll")
-
-this.dir <- dirname(parent.frame(2)$ofile)
-former.dir <- getwd()
-setwd(this.dir)
-
-#load the test data
-
-load("./demo_data/stdRESTREND.Rda")
-load("./demo_data/stdRESTREND_CTSR.Rda")
-load("./demo_data/stdRESTREND_RF.Rda")
-
-load("./demo_data/segRESTREND.Rda")
-load("./demo_data/segRESTREND_CTSR.Rda")
-load("./demo_data/segRESTREND_RF.Rda")
-
-load("./demo_data/segVPRD.Rda")
-load("./demo_data/segVPRD_CTSR.Rda")
-load("./demo_data/segVPRD_RF.Rda")
-
-load("./demo_data/segVPRI.Rda")
-load("./demo_data/segVPRI_CTSR.Rda")
-load("./demo_data/segVPRI_RF.Rda")
-
-
-
-source("RF_acum.R")
-source("max_pos.R")
-source("CTSR_acp.R")
-source("Annual_precipitation.R")
-source("VPR_BFAST.R")
-source("CHOW_bptest.R")
-source("viMAX_plot.R")
-source("segVPR.R")
-source("segRESTREND.R")
-source("RESTREND.R")
-
-#return to the past directory 
-setwd(former.dir)
+# library("bfast")
+# #library("forecast")
+# #library("RcppCNPy")
+# library("strucchange")
+# library("broom")
+# library("RcppRoll")
+#
+# this.dir <- dirname(parent.frame(2)$ofile)
+# former.dir <- getwd()
+# setwd(this.dir)
+#
+# #load the test data
+#
+# load("./demo_data/stdRESTREND.Rda")
+# load("./demo_data/stdRESTREND_CTSR.Rda")
+# load("./demo_data/stdRESTREND_RF.Rda")
+#
+# load("./demo_data/segRESTREND.Rda")
+# load("./demo_data/segRESTREND_CTSR.Rda")
+# load("./demo_data/segRESTREND_RF.Rda")
+#
+# load("./demo_data/segVPRD.Rda")
+# load("./demo_data/segVPRD_CTSR.Rda")
+# load("./demo_data/segVPRD_RF.Rda")
+#
+# load("./demo_data/segVPRI.Rda")
+# load("./demo_data/segVPRI_CTSR.Rda")
+# load("./demo_data/segVPRI_RF.Rda")
+#
+#
+#
+# source("RF_acum.R")
+# source("max_pos.R")
+# source("CTSR_acp.R")
+# source("Annual_precipitation.R")
+# source("VPR_BFAST.R")
+# source("CHOW_bptest.R")
+# source("viMAX_plot.R")
+# source("segVPR.R")
+# source("segRESTREND.R")
+# source("RESTREND.R")
+#
+# #return to the past directory
+# setwd(former.dir)
 
 
 #FUnctions to call functions
   #Function to call the other functions
   #Missing function to find optimal accumulation of the precipitation
-  #which will be a sperate script. If the method is segVPR, there 
+  #which will be a sperate script. If the method is segVPR, there
   #is a need to recalculate precip on either side of the breakpoint
   #Until it is functional  b4 and after need to be passed into this
-  #function.  rf.b4=FALSE, rf.af=FALSE, will be removed as soon as 
-TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE, rf.b4=FALSE, rf.af=FALSE, 
+  #function.  rf.b4=FALSE, rf.af=FALSE, will be removed as soon as
+#' @title Time Series Segmentation of Residual Trends
+#'
+#' @description Takes in a complete monthly time series of a VI and its corrosponding precipitation
+#' @export
+#'
+#'
+TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE, rf.b4=FALSE, rf.af=FALSE,
                          sig=0.05, print=FALSE, plot=TRUE, details=FALSE){
 
-  while (TRUE){ #Test the variables 
-    if (class(CTSR.VI) != "ts") 
+  while (TRUE){ #Test the variables
+    if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object. Please check the data")
-    
+
     if ((!ACP.table) && (!CTSR.RF || acu.RF))
       stop("Rainfall data invalid. ACP.table or (CTSR.RF & acu.RF")
-    
+
     if ((!anu.VI)||(!VI.index)){
       max.df <- AnMax.VI(CTSR.VI)
       anu.VI <- max.df$Max
       VI.index <- max.df$index
     }else{
-      if (class(anu.VI) != "ts") 
+      if (class(anu.VI) != "ts")
         stop("anu.VI Not a time series object")
     }
     if (!CTSR.RF){
@@ -74,7 +80,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
       CTSR.RF <- CTS.Str$CTSR.precip
       details.CTS.VPR <- CTS.Str$summary
     }else{
-      if (class(CTSR.RF) != "ts") 
+      if (class(CTSR.RF) != "ts")
         stop("CTSR.RF Not a time series object")
       #get the time data out
       start.ti <- time(CTSR.VI)
@@ -93,7 +99,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
       acu.RF <- precip.df$annual.precip
       details.acu.RF <- precip.df$summary
     }else{
-      if (class(acu.RF) != "ts") 
+      if (class(acu.RF) != "ts")
         stop("acu.VI Not a time series object")
       st.ti <- time(anu.VI)
       st.f <- frequency(anu.VI)
@@ -111,7 +117,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     }
     break
   }
-  
+
   bkp = VPR.BFAST(CTSR.VI, CTSR.RF, print=print, plot=plot, details = details)
   bp <- bkp$bkps
   if (!bp){# no breakpoints detected by the BFAST
@@ -131,9 +137,9 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   #add NDVI plot
   # browser()
-  
+
   if (test.Method == "RESTREND"){
-    result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot) 
+    result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
     result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig, print=print, plot=plot)
@@ -150,6 +156,6 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   }
   # print(result$summary)
   # browser()
-  return(result) #add CTSR 
+  return(result) #add CTSR
 }
 

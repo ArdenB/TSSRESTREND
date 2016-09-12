@@ -1,8 +1,17 @@
 Package: TSS.RESTREND
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Time Series Segmentation of Residual Trends
 Version: 0.1.0
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+License: MIT
 LazyData: TRUE
+Imports:
+    bfast (>= 1.5.7),
+    broom,
+    strucchange,
+    ggplot2,
+    RcppRoll
+Depends:
+    R (>= 3.2.5)
+RoxygenNote: 5.0.1
