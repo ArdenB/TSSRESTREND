@@ -4,7 +4,7 @@ Title: Time Series Segmentation of Residual Trends
 Version: 0.1.0
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description: More about what it does (maybe more than one line)
-License: MIT
+License:  GPL (>= 2)
 LazyData: TRUE
 Imports:
     bfast (>= 1.5.7),
