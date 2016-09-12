@@ -1,10 +1,11 @@
 library("bfast")
 #library("forecast")
-library("RcppCNPy")
+#library("RcppCNPy")
 library("strucchange")
 library("broom")
+library("RcppRoll")
 
-#setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
+setwd("/mnt/FCBE3028BE2FD9C2/Users/user/Documents/segres_demo") #needs to be replaced witha variable function
 
 #load the data
 
@@ -17,62 +18,12 @@ load("./demo_data/segVPRD_CTSR.Rda")
 load("./demo_data/segVPRI.Rda")
 load("./demo_data/segVPRI_CTSR.Rda")
 
+source("RF_acum.R")
+source("max_pos.R")
+source("CTSR_acp.R")
+source("Annual_precipitation.R")
+source("VPR_BFAST.R")
 
-
-BFAST.RESID <- function(CTSR.VI, CTSR.RF, print=FALSE, plot=FALSE, details=FALSE) {
-  #functions takes the complete time series VI and rainfall (RF)
-  
-  #Check the objects are Time series
-  if (class(CTSR.VI) != "ts") 
-    stop("CTSR.VI Not a time series object")
-  if (class(CTSR.RF) != "ts") 
-    stop("CTSR.VI Not a time series object")
-  #get the time data out
-  ti <- time(CTSR.VI)
-  f <- frequency(CTSR.VI)
-  #check the two ts object cover the same time period
-  ti2 <- time(CTSR.RF)
-  f2 <- frequency(CTSR.RF)
-  if (!identical(ti, ti2))
-    stop("ts object do not have the same time")
-  if (!identical(f, f2))
-    stop("ts object do not have the same frequency")
-  
-  # Fit the two lines
-  CTS.fit <- lm(CTSR.VI ~ CTSR.RF)
-    #Convert to a ts object
-  resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f) 
-  
-  #Print and plot
-  if (print) { #Need better explination and a title but it will do for the moment
-    print(summary(CTS.fit))
-  } 
-  if (plot){ 
-    #This plot need serius work but will do for the moment
-    plot(resid.ts)
-  }
-  
-  #perform the BFAST
-  bf.fit <- bfast(resid.ts, h=0.15, season="none", max.iter=3, level = 0.05)
-
-  if (plot){
-    #if plot is requested
-    plot(bf.fit)
-    }
-  
-  if (bf.fit$nobp$Vt[[1]] == FALSE) {
-    numiter <- length(bf.fit$output)
-    tmp <- bf.fit$output[[numiter]]$bp.Vt[1]$breakpoints
-    if (details){
-      return(structure(list(bkps = tmp, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    }else{return(structure(list(bkps = tmp, BFAST.obj=FALSE), class = "BFAST.Object"))
-    }
-  }else {
-    if (details){
-      return(structure(list(bkps = FALSE, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    }else{return(structure(list(bkps = FALSE, BFAST.obj=FALSE), class = "BFAST.Object"))}
-  }
-}
 
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
   #test the data to make sure its valid
@@ -199,6 +150,10 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
       stop("anu.VI Not a time series object")
     if (class(acu.RF) != "ts") 
       stop("acu.VI Not a time series object")
+    if (class(rf.b4) != "ts") 
+      stop("rf.b4 Not a time series object")
+    if (class(rf.af) != "ts") 
+      stop("rf.af Not a time series object")
     ti <- time(anu.VI)
     f <- frequency(anu.VI)
     #check the two ts object cover the same time period
@@ -451,187 +406,105 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE
 
 
 #FUnctions to call functions
-TSS.RESTREND <- function(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE, rf.af=FALSE, 
-                         sig=0.05, print=FALSE, plot=FALSE, details=FALSE){
   #Function to call the other functions
   #Missing function to find optimal accumulation of the precipitation
   #which will be a sperate script. If the method is segVPR, there 
   #is a need to recalculate precip on either side of the breakpoint
   #Until it is functional  b4 and after need to be passed into this
   #function.  rf.b4=FALSE, rf.af=FALSE, will be removed as soon as 
+TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE, rf.b4=FALSE, rf.af=FALSE, 
+                         sig=0.05, print=FALSE, plot=TRUE, details=FALSE){
+
   while (TRUE){ #Test the variables 
     if (class(CTSR.VI) != "ts") 
       stop("CTSR.VI Not a time series object")
-    if (class(CTSR.RF) != "ts") 
-      stop("CTSR.VI Not a time series object")
-    #get the time data out
-    ti <- time(CTSR.VI)
-    f <- frequency(CTSR.VI)
-    #check the two ts object cover the same time period
-    ti2 <- time(CTSR.RF)
-    f2 <- frequency(CTSR.RF)
-    if (!identical(ti, ti2))
-      stop("ts object do not have the same time")
-    if (!identical(f, f2))
-      stop("ts object do not have the same frequency")
     
-    if (class(anu.VI) != "ts") 
-      stop("anu.VI Not a time series object")
-    if (class(acu.RF) != "ts") 
-      stop("acu.VI Not a time series object")
-    ti <- time(anu.VI)
-    f <- frequency(anu.VI)
-    #check the two ts object cover the same time period
-    ti2 <- time(acu.RF)
-    f2 <- frequency(acu.RF)
-    if (!identical(ti, ti2))
-      stop("ts object do not have the same time")
-    if (!identical(f, f2))
-      stop("ts object do not have the same frequency")
+    if ((!ACP.table) && (!CTSR.RF || acu.RF))
+      stop("Rainfall data invalid. ACP.table or (CTSR.RF & acu.RF")
+    
+    if ((!anu.VI)||(!VI.index)){
+      max.df <- AnMax.VI(CTSR.VI)
+      anu.VI <- max.df$Max
+      VI.index <- max.df$index
+    }else{
+      if (class(anu.VI) != "ts") 
+        stop("anu.VI Not a time series object")
+    }
+    if (!CTSR.RF){
+      CTS.Str <- ACP_calculator(CTSR.VI, ACP.table)
+      CTSR.RF <- CTS.Str$CTSR.precip
+      details.CTS.VPR <- CTS.Str$summary
+    }else{
+      if (class(CTSR.RF) != "ts") 
+        stop("CTSR.RF Not a time series object")
+      #get the time data out
+      start.ti <- time(CTSR.VI)
+      freq <- frequency(CTSR.VI)
+      #check the two ts object cover the same time period
+      start.ti2 <- time(CTSR.RF)
+      freq2 <- frequency(CTSR.RF)
+      if (!identical(start.ti, startti2))
+        stop("ts objects do not have the same time, (CTSR.VI & CTSR.RF)")
+      if (!identical(f, f2))
+        stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")
+    }
+    if (!acu.RF){
+      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table)
+      acu.RF <- precip.df$annual.precip
+      details.acu.RF <- precip.df$summary
+    }else{
+      if (class(acu.RF) != "ts") 
+        stop("acu.VI Not a time series object")
+      st.ti <- time(anu.VI)
+      st.f <- frequency(anu.VI)
+      #check the two ts object cover the same time period
+      st.ti2 <- time(acu.RF)
+      st.f2 <- frequency(acu.RF)
+      if (!identical(st.ti, st.ti2))
+        stop("ts object do not have the same time, (acu.RF & anu.VI)")
+      if (!identical(st.f, st.f2))
+        stop("ts object do not have the same frequency, (acu.RF & anu.VI)")
+    }
     if (class(rf.b4) != "logical"){
       if (length(rf.b4) != (length(rf.af)))
           stop("rf.b4 and rf.af are different shapes. They must be the same size and be th same lenths as acu.VI")
     }
     break
   }
-  bkp = BFAST.RESID(CTSR.VI, CTSR.RF, print=print, plot=plot)
-  bp<-as.numeric(bkp$bkps)
+  
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, print=print, plot=plot, details = details)
+  bp <- bkp$bkps
   if (!bp){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
   }else{
+    bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig, print=print)
+    brkp <- as.numeric(res.chow$bp.summary["yr.index"])
     test.Method = res.chow$n.Method
   }
   #add NDVI plot
-  
+  browser()
   if (test.Method == "RESTREND"){
     result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot) 
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint,  sig=sig, print=print, plot=plot)
+    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.VPR"){
+    if ((!rf.b4)||(!rf.af)){
+      VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = brkp)
+      rf.b4 <- VPRbp.df$rf.b4
+      rf.af <- VPRbp.df$rf.af
+      # add details figure
+      #!!!!!!!!!!!!!!!!!!!!!!!!!!#
+    }
+    
     
     #TO BE ADDED test acu.rf and if FALSE call accumulator
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=sig, print=print, plot=plot)
+    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
   print(result$summary)
   # browser()
   return(result) #add CTSR 
 }
 
-
-demo.stdRESTEND <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="TSS.RESTREND"){
-  #set the environment variables 
-  CTSR.VI <- stdRESTREND.CTSR$cts.NDVI
-  CTSR.RF <- stdRESTREND.CTSR$cts.precip
-  anu.VI <- stdRESTREND$max.NDVI
-  acu.RF <- stdRESTREND$acc.precip
-  VI.index <- stdRESTREND$index
-  if (mode == "TSS.RESTREND"){
-    TSSR.result <-TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot, details = details)
-  }else{
-    #drops into a browser so the user can call the functions individually 
-    print("loading standard RESTREND environment variables")
-    browser()
-  }
-}
-
-demo.segRESTEND <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="TSS.RESTREND"){
-  #set the environment variables 
-  CTSR.VI <- segRESTREND.CTSR$cts.NDVI
-  CTSR.RF <- segRESTREND.CTSR$cts.precip
-  anu.VI <- segRESTREND$max.NDVI
-  acu.RF <- segRESTREND$acc.precip
-  VI.index <- segRESTREND$index
-  if (mode == "TSS.RESTREND"){
-    TSSR.result <-TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot, details = details)
-  }else{
-    #drops into a browser so the user can call the functions individually 
-    print("loading segmented RESTREND environment variables")
-    browser()
-    #need to add the other modes 
-  }
-}
-
-demo.segVPRD <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="TSS.RESTREND"){
-  #set the environment variables 
-  CTSR.VI <- segVPRD.CTSR$cts.NDVI
-  CTSR.RF <- segVPRD.CTSR$cts.precip
-  anu.VI <- segVPRD$max.NDVI
-  acu.RF <- segVPRD$acc.precip
-  VI.index <- segVPRD$index
-  rf.b4 <- segVPRD$acp.b4
-  rf.af <- segVPRD$acp.af
-  
-  if (mode == "TSS.RESTREND"){
-    TSSR.result <-TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4, rf.af, sig=sig, print=print, plot=plot, details = details)
-  }else{
-    #drops into a browser so the user can call the functions individually 
-    print("loading segmented RESTREND environment variables")
-    # browser()
-    #need to add the other modes 
-  }
-}
-
-demo.segVPRI <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="TSS.RESTREND"){
-  #set the environment variables 
-  CTSR.VI <- segVPRI.CTSR$cts.NDVI
-  CTSR.RF <- segVPRI.CTSR$cts.precip
-  anu.VI <- segVPRI$max.NDVI
-  acu.RF <- segVPRI$acc.precip
-  VI.index <- segVPRI$index
-  rf.b4 <- segVPRI$acp.b4
-  rf.af <- segVPRI$acp.af
-  
-  if (mode == "TSS.RESTREND"){
-    TSSR.result <-TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4, rf.af, sig=sig, print=print, plot=plot, details = details)
-  }else{
-    #drops into a browser so the user can call the functions individually 
-    print("loading segmented RESTREND environment variables")
-    browser()
-    #need to add the other modes 
-  }
-}
-
-#need to figure add a return 
-res <- demo.stdRESTEND() 
-browser()
-res <- demo.segRESTEND() 
-browser()
-res <- demo.segVPRD()
-browser()
-res <- demo.segVPRI()
-browser()
-
-
-# print("hello World")
-
-
-
-# a<- BFAST.RESID(stdRESTREND.CTSR$cts.NDVI, stdRESTREND.CTSR$cts.precip, print=TRUE, plot=TRUE)
-# print(a)
-# 
-# 
-# #fin functions use class(a) to determine if its numeric or logical
-# 
-# se<- BFAST.RESID(segRESTREND.CTSR$cts.NDVI, segRESTREND.CTSR$cts.precip, print=TRUE, plot=TRUE)
-# print(se)
-# #CHOW <- function(anu.VI, acu.RF, VI.index, se, sig=0.05, print=FALSE)
-# 
-# #for testing the chow test
-# anu.VI <- segRESTREND$max.NDVI
-# acu.RF <- segRESTREND$acc.precip
-# VI.index <- segRESTREND$index
-# 
-# se.chow <- CHOW(anu.VI, acu.RF, VI.index, se, sig=0.05, print=TRUE)
-# breakpoint = as.integer(se.chow$bp.summary[2])
-# se.RES <- seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05, print=TRUE, plot=TRUE)
-# 
-# anu.VI <- stdRESTREND$max.NDVI
-# acu.RF <- stdRESTREND$acc.precip
-# VI.index <- stdRESTREND$index
-# res <- RESTREND(anu.VI, acu.RF, VI.index, sig=0.05, print=TRUE, plot=TRUE) 
-# 
-# res <- RESTREND(stdRESTREND$max.NDVI, stdRESTREND$acc.precip, stdRESTREND$index, sig=0.05, print=TRUE, plot=TRUE) 
-# 
