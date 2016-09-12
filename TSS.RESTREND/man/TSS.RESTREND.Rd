@@ -2,7 +2,7 @@
 % Please edit documentation in R/TSS_RESTREND.R
 \name{TSS.RESTREND}
 \alias{TSS.RESTREND}
-\title{Time Series Segmentation of Residual Trends}
+\title{Time Series Segmentation of Residual Trends (MAIN FUNCTION)}
 \usage{
 TSS.RESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
   acu.RF = FALSE, VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE,
