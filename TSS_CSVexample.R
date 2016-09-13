@@ -42,8 +42,6 @@ print(dim(ACP.table))
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 results <- TSS.RESTREND(CTSR.VI, ACP.table, print=TRUE, plot=TRUE)
 
-
-=======
 # Set the woking diroctory to the location
 this.dir <- dirname(parent.frame(2)$ofile)
 setwd(this.dir)
