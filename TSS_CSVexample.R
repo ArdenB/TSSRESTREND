@@ -11,7 +11,7 @@ setwd(this.dir)
 # install_github("ArdenB/SegmentedRESTREND_pub", subdir="TSS.RESTREND")
 # library(TSS.RESTREND)
 
-#Impor the .csv that contains the monthly Vegetation data
+#Import the .csv that contains the monthly Vegetation data
 in.VI = read.csv("./demo_data/rabitVI.csv")
 
 # turn that data into a time series object.
@@ -42,68 +42,3 @@ print(dim(ACP.table))
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 results <- TSS.RESTREND(CTSR.VI, ACP.table, print=TRUE, plot=TRUE)
 
-# Set the woking diroctory to the location
-this.dir <- dirname(parent.frame(2)$ofile)
-setwd(this.dir)
-
-# install the devtools package (contains the install_github)
-install.packages("devtools")
-
-library("devtools")
-
-install_github("ArdenB/SegmentedRESTREND_pub", subdir="TSS.RESTREND")
-library(TSS.RESTREND)
-
-
-# load("./demo_data/segVPRI.Rda")
-# load("./demo_data/segVPRI_CTSR.Rda")
-# load("./demo_data/segVPRI_RF.Rda")
-
-in.VI = read.csv("./demo_data/rabitVI.csv")
-CTSR.VI = ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
-
-in.RF = read.csv("./demo_data/rabitRF.csv")
-rf.data = ts(in.RF, end=c(2013,12), frequency = 12)
-
-
-# start.time <- Sys.time()
-#
-#
-# source("TSS_RESTREND.R")
-
-# Set the Complete VI time series
-
-
-# CTSR.VI <- stdRESTREND.CTSR$cts.NDVI
-# CTSR.VI <- segRESTREND.CTSR$cts.NDVI
-# CTSR.VI <- segVPRD.CTSR$cts.NDVI
-# CTSR.VI <- segVPRI.CTSR$cts.NDVI
-
-#Set the matching rainfall time series
-
-# rf.data <- stdRES.CTSRrf.TS$precip
-# rf.data <- segRES.CTSRrf.TS$precip
-# rf.data <- segVPRD.CTSRrf.TS$precip
-# rf.data <- segVPRI.CTSRrf.TS$precip
-
-# Define the max accumuulation period
-max.acp <- 12
-
-#Define the max offset period
-max.osp <- 4
-
-#Create a table of every possible precipitation value given the max.acp and max.osp
-ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
-
-# check the ACP.table is the right shape
-print(dim(ACP.table))
-
-#Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
-results <- TSS.RESTREND(CTSR.VI, ACP.table, print=TRUE, plot=TRUE)
-
-
-
-# end.time <- Sys.time()
-# time.taken <- end.time - start.time
-# print(time.taken)
->>>>>>> 5b20b98641ab74a5d1748ab396737342052873e7
