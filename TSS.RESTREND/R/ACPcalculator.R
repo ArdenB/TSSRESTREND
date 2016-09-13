@@ -1,5 +1,21 @@
-# antecedental Accumulation calculator
-
+#' @title Antecedental Accumulation calculator for the VI Complete Time Series
+#'
+#' @description
+#' Takes the Complete Time Series Vegetation Index and a table of every possible accumulation period and offset
+#' period.  A OLS is calculated \code{\link{lm}} for every combination of VI ~ rainfall.  This Function preferences those results where
+#' slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation that has the highest R-squared
+#' and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.
+#'
+#' @param CTSR.VI
+#' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
+#' @param ACP.table
+#' A table of every combination of offset period and accumulation period. if ACP.table = FALSE, CTSR.RF and acu.RF must be provided
+#' @return summary
+#' (To be filled in)
+#' @return CTSR.precip (CTSR.RF)
+#' Complete Time Series of the optimally accumulated rainfall.An object of class 'ts'.
+#' @export
+#'
 ACP.calculator <- function(CTSR.VI, ACP.table){
 
   if (class(CTSR.VI) != "ts")
@@ -44,10 +60,4 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
     # browser()
     return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
   }
-
-#   max.line <- which.max(m[, "R^2.Value"])
-#   suma <- m[max.line,]
-#   CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
-#
-#   return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
 }

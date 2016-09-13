@@ -1,3 +1,15 @@
+#' @title Annual VI Max ploter
+#'
+#' @description
+#' Plots the VI max time series
+#'
+#' @param anu.VI
+#' The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)
+#' @param brkp
+#' A detected significant breakpoint in the VPR or in the VPR-residuals.
+#' @return plot
+#' @export
+#'
 
 
 VImax.plot <- function(anu.VI, brkp=FALSE){
@@ -7,20 +19,20 @@ VImax.plot <- function(anu.VI, brkp=FALSE){
     yst <- start(anu.VI)[1]
     ynd <- end(anu.VI)[1]
     t = c(yst:ynd)
-    plot(t, anu.VI, pch=16, xlab="Year", ylab="Annual max VI", col="orange") 
+    plot(t, anu.VI, pch=16, xlab="Year", ylab="Annual max VI", col="orange")
 
   }else{
     yst <- start(anu.VI)[1]
     ynd <- end(anu.VI)[1]
     len <- length(anu.VI)
     t = c(yst:ynd)
-    plot(t[1:brkp], anu.VI[1:(brkp)], pch=16,xlab="Year", 
-         ylab="Annual max VI", col="orange", xlim=c(yst, ynd),  
+    plot(t[1:brkp], anu.VI[1:(brkp)], pch=16,xlab="Year",
+         ylab="Annual max VI", col="orange", xlim=c(yst, ynd),
          ylim=c(min(anu.VI), max(anu.VI)) )
-    par(new=T)    
-    plot(t[(brkp+1):len], anu.VI[(brkp+1):len], pch=16, 
-         xlab="", ylab="", col="purple",main="", xlim=c(yst, ynd), 
-         ylim=c(min(anu.VI), max(anu.VI)) 
+    par(new=T)
+    plot(t[(brkp+1):len], anu.VI[(brkp+1):len], pch=16,
+         xlab="", ylab="", col="purple",main="", xlim=c(yst, ynd),
+         ylim=c(min(anu.VI), max(anu.VI))
          )
     abline(v=(brkp-0.5+yst), col="red", lty = "dashed")
   }

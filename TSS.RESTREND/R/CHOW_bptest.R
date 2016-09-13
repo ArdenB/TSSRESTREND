@@ -1,9 +1,15 @@
-
+#' @title Loops over breakpoints to find the most significant one
+#'
+#' @description
+#' TO BE ADDED
+#' @importFrom strucchange sctest
+#' @export
+#'
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
   #test the data to make sure its valid
-  if (class(anu.VI) != "ts") 
+  if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
-  if (class(acu.RF) != "ts") 
+  if (class(acu.RF) != "ts")
     stop("acu.VI Not a time series object")
   ti <- time(anu.VI)
   f <- frequency(anu.VI)
@@ -15,17 +21,17 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
   if (!identical(f, f2))
     stop("ts object do not have the same frequency")
   # need to test the breakpoints to make sure they are numeric
-  if (class(breakpoints) != "numeric") 
+  if (class(breakpoints) != "numeric")
     stop("Breakpoints are not class numeric")
-  
+
   #count of all the breakpoints
   len <- length(breakpoints)
   # convert the breakpoints into year posistion
   #the breakpoint loc will be the last anaual max before the breakpoint
-  
+
   #empty variables to add to a datafram
   empty.1 <- NaN
-  empty.2 <- NaN 
+  empty.2 <- NaN
   empty.3 <- NaN
   ind.df <- data.frame(abs.index=breakpoints, yr.index = empty.1, reg.sig=empty.2, VPR.bpsig = empty.3)
   for (bp in 1:length(breakpoints)){
@@ -37,8 +43,8 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
       }
     }
   }
-  #create the lm for the VPR and test is significance, 
-  #split VPR sig from VPR insignificant 
+  #create the lm for the VPR and test is significance,
+  #split VPR sig from VPR insignificant
   VPR.fit <- lm(anu.VI ~ acu.RF)
   if (summary(VPR.fit)$coefficients[,4][2] > sig){
     if (print){print("VPR significance below critical threshold, Testing breakpoints in the VPR")}
@@ -49,7 +55,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
     ind <- ti
     dep <- VPR.fit$residuals
     Method = "seg.RESTREND"
-  } 
+  }
   #Iterate over each of the breakpoints
   while (TRUE){
     for (bp.num in nrow(ind.df)){ #the breakpoints number, first bp is 1,  etc
@@ -70,10 +76,10 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
       bkp = bp - (bp.start-1)
       print(bkp)
       chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end], type = "Chow", point = bkp)
-      
-      
+
+
       ind.df$reg.sig[bp.num] = chow$p.value
-      
+
     }
     if (nrow(ind.df)>1){ #*****This needs to be tested with mutiple breakpoints*****
       #delete breakpoint with the largest p values (lowest significance)
@@ -84,7 +90,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
       }
       VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
       ind.df$VPR.bpsig[1] = VPR.chow$p.value
-      
+
       if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig){ # cant chow non-sig residulas (bpRESID.chow = FALSE)
         ind.df$reg.sig[1] = NaN
         return(structure(list(n.Method = FALSE, bp.summary = ind.df,
