@@ -1,20 +1,8 @@
-#
+# Set the woking diroctory to the location
 this.dir <- dirname(parent.frame(2)$ofile)
 setwd(this.dir)
-#
-# # load("./demo_data/stdRESTREND.Rda")
-# # load("./demo_data/stdRESTREND_CTSR.Rda")
-# # load("./demo_data/stdRESTREND_RF.Rda")
-#
-# # load("./demo_data/segRESTREND.Rda")
-# # load("./demo_data/segRESTREND_CTSR.Rda")
-# # load("./demo_data/segRESTREND_RF.Rda")
-# # #
-# # load("./demo_data/segVPRD.Rda")
-# # load("./demo_data/segVPRD_CTSR.Rda")
-# # load("./demo_data/segVPRD_RF.Rda")
-#
 
+# install the devtools package (contains the install_github)
 install.packages("devtools")
 
 library("devtools")
