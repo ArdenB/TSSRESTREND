@@ -156,7 +156,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   }else{
     bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig, print=print)
-    brkp <- as.integer(res.chow$bp.summary["yr.index"])
+    brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
     test.Method = res.chow$n.Method
     if (plot){
       VImax.plot(anu.VI, brkp=brkp)
@@ -170,6 +170,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
+    print(brkp)
     result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig, print=print, plot=plot)
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
@@ -180,6 +181,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
       #!!!!!!!!!!!!!!!!!!!!!!!!!!#
     }
     breakpoint = as.integer(res.chow$bp.summary[2])
+    print(brkp)
     result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig, print=print, plot=plot)
   }
   # print(result$summary)
