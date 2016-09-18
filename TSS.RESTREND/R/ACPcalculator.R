@@ -29,10 +29,10 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
 
   len <- dim(ACP.table)[2]
   lines <- dim(ACP.table)[1]
-  m<- matrix(nrow=(lines), ncol=4)
+  m<- matrix(nrow=(lines), ncol=6)
 
   rownames(m)<- rownames(ACP.table)
-  colnames(m)<- c("slope", "intercept", "p-value", "R^2.Value")
+  colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
   for (n in 1:lines){
     fit <- lm(CTSR.VI ~ ACP.table[n, ])
@@ -40,7 +40,10 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
     R.Rval <- summary(fit)$r.square
     R.intr <- as.numeric(coef(fit)[1])
     R.slpe <- as.numeric(coef(fit)[2])
-    m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval)
+    R.BH <- NaN
+    R.SC <- NaN
+    m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+
 
   }
   mx <- m[m[, "slope"] > 0,]

@@ -12,9 +12,11 @@
 #' @return index(VI.index)
 #' the index of the CTSR.VI ts that the anu.VI values occur at.R indexs from 1 rather than 0.
 #' @export
-AnMax.VI <- function(CTSR.VI){
+#'
+
+AnMaxVI <- function(CTSR.VI){
   if (class(CTSR.VI) != "ts")
-      stop("CTSR.VI Not a time series object")
+    stop("CTSR.VI Not a time series object")
 
   sty <- start(CTSR.VI)[1]
   stm <-  start(CTSR.VI)[2]
@@ -64,5 +66,3 @@ AnMax.VI <- function(CTSR.VI){
   }
   return(df)
 }
-# CTSR.VI <- segVPRD.CTSR$cts.NDVI
-# t1 <-AnMax.VI(CTSR.VI)

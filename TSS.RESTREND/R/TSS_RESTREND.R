@@ -1,41 +1,3 @@
-# load("./demo_data/stdRESTREND.Rda")
-# load("./demo_data/stdRESTREND_CTSR.Rda")
-# load("./demo_data/stdRESTREND_RF.Rda")
-#
-# load("./demo_data/segRESTREND.Rda")
-# load("./demo_data/segRESTREND_CTSR.Rda")
-# load("./demo_data/segRESTREND_RF.Rda")
-#
-# load("./demo_data/segVPRD.Rda")
-# load("./demo_data/segVPRD_CTSR.Rda")
-# load("./demo_data/segVPRD_RF.Rda")
-#
-# load("./demo_data/segVPRI.Rda")
-# load("./demo_data/segVPRI_CTSR.Rda")
-# load("./demo_data/segVPRI_RF.Rda")
-#
-#
-#
-# source("RF_acum.R")
-# source("max_pos.R")
-# source("CTSR_acp.R")
-# source("Annual_precipitation.R")
-# source("VPR_BFAST.R")
-# source("CHOW_bptest.R")
-# source("viMAX_plot.R")
-# source("segVPR.R")
-# source("segRESTREND.R")
-# source("RESTREND.R")
-
-
-
-#FUnctions to call functions
-  #Function to call the other functions
-  #Missing function to find optimal accumulation of the precipitation
-  #which will be a sperate script. If the method is segVPR, there
-  #is a need to recalculate precip on either side of the breakpoint
-  #Until it is functional  b4 and after need to be passed into this
-  #function.  rf.b4=FALSE, rf.af=FALSE, will be removed as soon as
 #' @title Time Series Segmentation of Residual Trends (MAIN FUNCTION)
 #'
 #' @description
@@ -93,12 +55,13 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
       stop("CTSR.VI Not a time series object. Please check the data")
 
     if ((!ACP.table) && (!CTSR.RF || acu.RF))
-      stop("Rainfall data invalid. ACP.table or (CTSR.RF & acu.RF")
+      stop("Insufficent Rainfall data provided. Provide either a complete ACP.table or both the CTSR.RF & acu.RF")
 
     if ((!anu.VI)||(!VI.index)){
-      max.df <- AnMax.VI(CTSR.VI)
+      max.df <- AnMaxVI(CTSR.VI)
       anu.VI <- max.df$Max
       VI.index <- max.df$index
+      Max.Month <- max.df$Max.Month #DETAILS object
     }else{
       if (class(anu.VI) != "ts")
         stop("anu.VI Not a time series object")
@@ -106,7 +69,7 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     if (!CTSR.RF){
       CTS.Str <- ACP.calculator(CTSR.VI, ACP.table)
       CTSR.RF <- CTS.Str$CTSR.precip
-      details.CTS.VPR <- CTS.Str$summary
+      details.CTS.VPR <- CTS.Str$summary #DETAILS object
     }else{
       if (class(CTSR.RF) != "ts")
         stop("CTSR.RF Not a time series object")
@@ -146,21 +109,24 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     break
   }
 
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, print=print, plot=plot, details = details)
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF) #season=season
   bp <- bkp$bkps
+  BFAST.obj <- bkp$BFAST.obj #For the models Bin
+  CTS.lm <- bkp$CTS.lm #For the Models Bin
   if (!bp){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
-    if (plot){
-      VImax.plot(anu.VI)
-    }
+    # if (plot){
+    #   VImax.plot(anu.VI)
+    # }
   }else{
     bp<-as.numeric(bkp$bkps)
-    res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig, print=print)
+    res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig)
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
+
     test.Method = res.chow$n.Method
-    if (plot){
-      VImax.plot(anu.VI, brkp=brkp)
-    }
+    # if (plot){
+    #   VImax.plot(anu.VI, brkp=brkp)
+    # }
   }
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   #add NDVI plot
@@ -171,7 +137,13 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig, print=print, plot=plot)
+    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig)
+    result$TSSRmodels$CTS.fit <- CTS.lm
+    result$TSSRmodels$BFAST <- BFAST.obj
+    result$ts.data$CTSR.VI <- CTSR.VI
+    result$ts.data$CTSR.RF <- CTSR.RF
+
+    # browser()
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
       #Improve the figure

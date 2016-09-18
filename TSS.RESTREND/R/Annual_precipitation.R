@@ -36,13 +36,13 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
   lines <- dim(anu.ACUP)[1]
   len <- dim(anu.ACUP)[2]
 
-  m<- matrix(nrow=(lines), ncol=4)
+  m<- matrix(nrow=(lines), ncol=6)
   rownames(m)<- rownames(ACP.table)
-  colnames(m)<- c("slope", "intercept", "p-value", "R^2.Value")
+  colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
-  p <- matrix(nrow=(lines), ncol=4)
+  p <- matrix(nrow=(lines), ncol=6)
   rownames(p)<- rownames(ACP.table)
-  colnames(p)<- c("slope", "intercept", "p-value", "R^2.Value")
+  colnames(p)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
   # n <- 1
   for (n in 1:lines){
@@ -54,7 +54,9 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       R.Rval <- summary(fit)$r.square
       R.intr <- as.numeric(coef(fit)[1])
       R.slpe <- as.numeric(coef(fit)[2])
-      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval)
+      R.BH <- NaN
+      R.SC <- NaN
+      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
     }else{
       # print("Breakpoint")
       fit <- lm(anu.VI[1:Breakpoint] ~ anu.ACUP[n, 1:Breakpoint])
@@ -62,14 +64,18 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       R.Rval <- summary(fit)$r.square
       R.intr <- as.numeric(coef(fit)[1])
       R.slpe <- as.numeric(coef(fit)[2])
-      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval)
+      R.BH <- NaN
+      R.SC <- NaN
+      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
 
       fit2 <- lm(anu.VI[Breakpoint:len] ~ anu.ACUP[n, Breakpoint:len])
       R.pval2 <- glance(fit2)$p.value
       R.Rval2 <- summary(fit2)$r.square
       R.intr2 <- as.numeric(coef(fit2)[1])
       R.slpe2 <- as.numeric(coef(fit2)[2])
-      p[n, ] <- c(R.slpe2, R.intr2,R.pval2, R.Rval2)
+      R.BH <- NaN
+      R.SC <- NaN
+      p[n, ] <- c(R.slpe2, R.intr2,R.pval2, R.Rval2, R.BH, R.SC)
     }
   }
   if (!Breakpoint){

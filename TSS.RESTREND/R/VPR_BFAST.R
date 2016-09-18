@@ -25,7 +25,7 @@
 #' (To be filled in)
 #' @export
 
-VPR.BFAST <- function(CTSR.VI, CTSR.RF, print=FALSE, plot=TRUE, details=FALSE) {
+VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") { #plot=TRUE, details=FALSE
   #functions takes the complete time series VI and rainfall (RF)
 
   #Check the objects are Time series
@@ -49,33 +49,37 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, print=FALSE, plot=TRUE, details=FALSE) {
   #Convert to a ts object
   resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f)
 
-  #Print and plot
-  if (print) { #Need better explination and a title but it will do for the moment
-    print(summary(CTS.fit))
-  }
-  if (plot){
-    #This plot need serius work but will do for the moment
-    plot(resid.ts)
-  }
+  #To Be Removed
+  # #Print and plot
+  # if (print) { #Need better explination and a title but it will do for the moment
+  #   print(summary(CTS.fit))
+  # }
+  # if (plot){
+  #   #This plot need serius work but will do for the moment
+  #   plot(resid.ts)
+  # }
 
   #perform the BFAST
-  bf.fit <- bfast(resid.ts, h=0.15, season="none", max.iter=3, level = 0.05)
+  bf.fit <- bfast(resid.ts, h=0.15, season=season, max.iter=3, level = 0.05)
 
-  if (plot){
-    #if plot is requested
-    plot(bf.fit)
-  }
+  # if (plot){
+  #   #if plot is requested
+  #   plot(bf.fit)
+  # }
 
   if (bf.fit$nobp$Vt[[1]] == FALSE) {
     numiter <- length(bf.fit$output)
     tmp <- bf.fit$output[[numiter]]$bp.Vt[1]$breakpoints
-    if (details){
-      return(structure(list(bkps = tmp, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    }else{return(structure(list(bkps = tmp, BFAST.obj=FALSE), class = "BFAST.Object"))
-    }
-  }else {
-    if (details){
-      return(structure(list(bkps = FALSE, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    }else{return(structure(list(bkps = FALSE, BFAST.obj=FALSE), class = "BFAST.Object"))}
+    return(structure(list(bkps = tmp, BFAST.obj=bf.fit, CTS.lm = CTS.fit), class = "BFAST.Object"))
+    # if (details){
+    #   return(structure(list(bkps = tmp, BFAST.obj=bf.fit, CTS.lm = CTS.fit), class = "BFAST.Object"))
+    # }else{return(structure(list(bkps = tmp, BFAST.obj=FALSE), class = "BFAST.Object"))
+    }else {
+    return(structure(list(bkps = FALSE, BFAST.obj=bf.fit, CTS.lm = CTS.fit), class = "BFAST.Object"))
+    #
+    # if (details){
+    #   return(structure(list(bkps = FALSE, BFAST.obj=bf.fit), class = "BFAST.Object"))
+    # }else{return(structure(list(bkps = FALSE, BFAST.obj=FALSE), class = "BFAST.Object"))}
   }
 }
+

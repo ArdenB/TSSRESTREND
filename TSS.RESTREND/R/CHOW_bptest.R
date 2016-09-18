@@ -5,7 +5,7 @@
 #' @importFrom strucchange sctest
 #' @export
 #'
-CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
+CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   #test the data to make sure its valid
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
@@ -85,9 +85,9 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05, print=FALSE){
       #delete breakpoint with the largest p values (lowest significance)
       ind.df <- ind.df[!(1:nrow(ind.df) %in% (which.max(ind.df$reg.sig))),]
     }else if (nrow(ind.df)==1){
-      if (print){
-        print(chow)
-      }
+      # if (print){
+      #   print(chow)
+      # }
       VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
       ind.df$VPR.bpsig[1] = VPR.chow$p.value
 

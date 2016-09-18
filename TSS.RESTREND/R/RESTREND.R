@@ -97,6 +97,6 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE
   overview <- data.frame(Method = "RESTREND", Total.Change=change, model.p = glance(VPR.fit)$p.value,
                          residual.p = glance(RES)$p.value, VPRbreak.p = FALSE)
   return(structure(list(summary=overview,
-                        VPR = VPR.fit, TSS.RESTREND = RES), class = "RESTREND.Object"))
+                        VPR = VPR.fit, TSS.RESTREND = RES), class = "TSSRESTREND"))
 }
 
