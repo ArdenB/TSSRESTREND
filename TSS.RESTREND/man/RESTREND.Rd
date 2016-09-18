@@ -4,8 +4,7 @@
 \alias{RESTREND}
 \title{RESTREND (RESidual TREND)}
 \usage{
-RESTREND(anu.VI, acu.RF, VI.index, sig = 0.05, print = FALSE,
-  plot = FALSE)
+RESTREND(anu.VI, acu.RF, VI.index, sig = 0.05)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)}

@@ -4,8 +4,7 @@
 \alias{seg.VPR}
 \title{Segmented Vegetation Precipitation Relationship}
 \usage{
-seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig = 0.05,
-  print = FALSE, plot = FALSE)
+seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig = 0.05)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)}

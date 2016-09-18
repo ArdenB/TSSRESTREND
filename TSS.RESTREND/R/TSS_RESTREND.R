@@ -47,8 +47,8 @@
 #' print("Hello World")
 #' }
 #'
-TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
-                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, print=FALSE, plot=TRUE, details=FALSE){
+TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
+                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, plot=FALSE, season="none"){
 
   while (TRUE){ #Test the variables
     if (class(CTSR.VI) != "ts")
@@ -88,10 +88,10 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     if (!acu.RF){
       precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table)
       acu.RF <- precip.df$annual.precip
-      details.acu.RF <- precip.df$summary
+      details.VPR<- precip.df$summary
     }else{
       if (class(acu.RF) != "ts")
-        stop("acu.VI Not a time series object")
+        stop("acu.RF Not a time series object")
       st.ti <- time(anu.VI)
       st.f <- frequency(anu.VI)
       #check the two ts object cover the same time period
@@ -109,12 +109,13 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     break
   }
 
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF) #season=season
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, season=season)
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
   if (!bp){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
+    chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)
     # if (plot){
     #   VImax.plot(anu.VI)
     # }
@@ -122,18 +123,19 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig)
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
-
+    chow.sum <-res.chow$bp.summary
+    # browser()
     test.Method = res.chow$n.Method
-    # if (plot){
-    #   VImax.plot(anu.VI, brkp=brkp)
-    # }
   }
-  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  #add NDVI plot
-  # browser()
 
   if (test.Method == "RESTREND"){
-    result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig, print=print, plot=plot)
+    result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig)
+    result$TSSRmodels$CTS.fit <- CTS.lm
+    result$TSSRmodels$BFAST <- BFAST.obj
+    result$ts.data$CTSR.VI <- CTSR.VI
+    result$ts.data$CTSR.RF <- CTSR.RF
+    result$ols.summary$chow.sum <- chow.sum
+    result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
@@ -142,6 +144,8 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     result$TSSRmodels$BFAST <- BFAST.obj
     result$ts.data$CTSR.VI <- CTSR.VI
     result$ts.data$CTSR.RF <- CTSR.RF
+    result$ols.summary$chow.sum <- chow.sum
+    result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
 
     # browser()
   }else if (test.Method == "seg.VPR"){
@@ -154,10 +158,19 @@ TSS.RESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, 
     }
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig, print=print, plot=plot)
+    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig)
+    result$TSSRmodels$CTS.fit <- CTS.lm
+    result$TSSRmodels$BFAST <- BFAST.obj
+    result$ts.data$CTSR.VI <- CTSR.VI
+    result$ts.data$CTSR.RF <- CTSR.RF
+    result$ols.summary$chow.sum <- chow.sum
+    result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }
   # print(result$summary)
   # browser()
+  if (plot){
+    plot(results)
+  }
   return(result) #add CTSR
 }
 

@@ -10,7 +10,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
   if (class(acu.RF) != "ts")
-    stop("acu.VI Not a time series object")
+    stop("acu.RF Not a time series object")
   ti <- time(anu.VI)
   f <- frequency(anu.VI)
   #check the two ts object cover the same time period

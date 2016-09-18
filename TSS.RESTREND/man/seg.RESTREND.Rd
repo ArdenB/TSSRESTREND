@@ -4,8 +4,7 @@
 \alias{seg.RESTREND}
 \title{Segmented RESTREND (RESidual TREND)}
 \usage{
-seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint, sig = 0.05,
-  print = FALSE, plot = TRUE)
+seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint, sig = 0.05)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)}

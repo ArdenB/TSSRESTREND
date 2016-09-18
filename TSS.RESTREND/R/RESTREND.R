@@ -30,7 +30,7 @@
 #' @export
 #'
 
-RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE) {
+RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
   #check the data
   while (TRUE){
     if (class(anu.VI) != "ts")
@@ -52,51 +52,54 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05, print=FALSE, plot=FALSE
   #Get the VPR
   VPR.fit <- lm(anu.VI ~ acu.RF)
 
+  m<- matrix(nrow=(4), ncol=6)
+  m[]<-NaN
+  rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
+  colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+
+  R.pval <- glance(VPR.fit)$p.value
+  R.Rval <- summary(VPR.fit)$r.square
+  R.intr <- as.numeric(coef(VPR.fit)[1])
+  R.slpe <- as.numeric(coef(VPR.fit)[2])
+  R.BH <- NaN
+  R.SC <- NaN
+  m["VPR.fit", ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+
   #may wat to add a nonparametric trend test here
 
-  #Critical threshold test
-  if (summary(VPR.fit)$coefficients[,4][2] > sig){
-    if (print){ print("VPR significance below critical threshold")}
-    overview <- data.frame(Method = FALSE, Total.Change=FALSE, model.p = glance(VPR.fit)$p.value,
-                           residual.p = FALSE, VPRbreak.p = FALSE)
-    return(structure(list(summary=overview,
-                          VPR = VPR.fit, TSS.RESTREND = FALSE), class = "RESTREND.Object"))
-  }
+  #Critical threshold test TO BE FIXED
+  # if (summary(VPR.fit)$coefficients[,4][2] > sig){
+  #   print("VPR significance below critical threshold")
+  #   overview <- data.frame(Method = FALSE, Total.Change=FALSE, model.p = glance(VPR.fit)$p.value,
+  #                          residual.p = FALSE, VPRbreak.p = FALSE)
+  #   return(structure(list(summary=overview,
+  #                         VPR = VPR.fit, TSS.RESTREND = FALSE), class = "RESTREND.Object"))
+  # }
+
   VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
   RES <- lm(VPR.resid ~ ti)
+  R2.pval <- glance(RES)$p.value
+  R2.Rval <- summary(RES)$r.square
+  R2.intr <- RES$coefficients[[1]]
+  R2.slpe <- RES$coefficients[[2]]
+  R2.BH <- FALSE
+  R2.SC <- FALSE
+  m["RESTREND.fit", ] <- c(R2.slpe, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
 
-  #!!!!!!!!!!!!!!!!!!!!!!!! Plots need to be tested and improved !!!!!!!!!!!!!!!!!!!!!!!
-  if (plot){
-    m.range = 2*max(abs(RES$fitted.values))
-    plot(c(start(ti)[1]:end(ti)[1]), VPR.fit$residuals, pch=16,xlab="Accumulated Rainfall",
-         ylab="Annual VI", col="orange",main="VI vs Precip", ylim = c(-m.range, m.range))
-    par(new=T)
-    plot(c(start(ti)[1]:end(ti)[1]), RES$fitted.values, type = "l", lwd = 2, pch=16,
-         xlab="", ylab="", col="red", main="", ylim = c(-m.range, m.range))
-
-    R.Fval = summary(RES)$f[[1]]
-    R.Rval = summary(RES)$r.squared
-    R.pval = glance(RES)$p.value
-
-    rp = vector('expression',3)
-    rp[1] = substitute(expression(italic(R^2) == R.Rval),
-                       list(R.Rval = format(R.Rval,dig=3)))[2]
-    rp[2] = substitute(expression(italic(F) == R.Fval),
-                       list(R.Fval = format(R.Fval,dig=3)))[2]
-
-    rp[3] = substitute(expression(italic(p) == R.pval),
-                       list(R.pval = format(R.pval, digits = 3)))[2]
-    legend('topleft', legend = rp, bty = 'n')
-
-    # abline(RES, col = "red",lwd = 2)#, lty = "dashed")# need to add a trend line
-
-  }
   init <- RES$fitted.values[1]
   fin <- RES$fitted.values[end(RES$fitted.values)[1]]
   change <- fin - init
-  overview <- data.frame(Method = "RESTREND", Total.Change=change, model.p = glance(VPR.fit)$p.value,
-                         residual.p = glance(RES)$p.value, VPRbreak.p = FALSE)
-  return(structure(list(summary=overview,
-                        VPR = VPR.fit, TSS.RESTREND = RES), class = "TSSRESTREND"))
+
+  overview <- data.frame(Method = "RESTREND", Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
+                         residual.p = glance(RES)$p.value, VPRbreak.p = FALSE, bp.year=FALSE)
+  models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = RES, segVPR.fit=FALSE)
+  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+  ols.summary <- list(chow.sum=FALSE, OLS.table=m)
+
+  return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
+                        TSSRmodels=models), class = "TSSRESTREND"))
+
 }
+
+
 

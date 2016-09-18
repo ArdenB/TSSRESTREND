@@ -4,7 +4,7 @@
 \alias{VPR.BFAST}
 \title{BFAST Breakpoint Detector}
 \usage{
-VPR.BFAST(CTSR.VI, CTSR.RF, print = FALSE, plot = TRUE, details = FALSE)
+VPR.BFAST(CTSR.VI, CTSR.RF, season = "none")
 }
 \arguments{
 \item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
@@ -12,13 +12,13 @@ VPR.BFAST(CTSR.VI, CTSR.RF, print = FALSE, plot = TRUE, details = FALSE)
 \item{CTSR.RF}{Complete Time Series of Rain Fall.  An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
 If ACU.table is provided, CTSR.RF will be automitaclly calculated by \code{\link{rainfall.accumulator}}}
 
+\item{sig}{Significance of all the functions, sig=0.05}
+
 \item{print}{Prints more details at every step of the procces}
 
 \item{plot}{creates a plots of every step}
 
 \item{details}{returns adational details for BFAST}
-
-\item{sig}{Significance of all the functions, sig=0.05}
 }
 \value{
 breakpoints (____)

@@ -4,7 +4,7 @@
 \alias{CHOW}
 \title{Loops over breakpoints to find the most significant one}
 \usage{
-CHOW(anu.VI, acu.RF, VI.index, breakpoints, sig = 0.05, print = FALSE)
+CHOW(anu.VI, acu.RF, VI.index, breakpoints, sig = 0.05)
 }
 \description{
 TO BE ADDED
