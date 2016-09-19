@@ -104,57 +104,63 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   R2.BH <- segVPR.fit$coefficients[[3]]
   R2.SC <- segVPR.fit$coefficients[[4]]
   m["segVPR.fit", ] <- c(R2.slpe, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
-  # if (plot){
-    # df = data.frame(year=(t-1982), RF=adj.RF, NDVI,  breakpoint=z)
-    # fit0 <- lm(anu.VI[1:breakpoint] ~ sd.adjb4[1:breakpoint])
-    # fit1 <- lm(anu.VI[(breakpoint+1):len] ~ sd.adjaf[(breakpoint+1):len])
-    # fitRES <- lm(segRES.df$VI ~ segRES.df$sv.RF)
-    # # chow1 <- sctest(bpanalysis$residuals ~ t, type = "Chow", point = bkp)
-    # plt.ymin <- min(segRES.df$VI)
-    # plt.ymax <- max(segRES.df$VI)
-    # plt.xmin <- min(segRES.df$sv.RF)
-    # plt.xmax <- max(segRES.df$sv.RF)
-    # plot(segRES.df$sv.RF[1:breakpoint], segRES.df$VI[1:breakpoint], pch=16,
-    #      xlab="Rainfall Standard Variance", ylab="Annual max VI", col="orange",
-    #      xlim=c(plt.xmin, plt.xmax), ylim=c(plt.ymin, plt.ymax))
-    # par(new=T)
-    # plot(segRES.df$sv.RF[(breakpoint+1):len], segRES.df$VI[(breakpoint+1):len], pch=16,
-    #      xlab="", ylab="", col="purple", main="",
-    #      xlim=c(plt.xmin, plt.xmax), ylim=c(plt.ymin, plt.ymax))
-    # par(new=T)
-    # # abline(fit, col = "red",lwd = 2, lty = "dashed")
-    # abline(fit0, col = "orange", lwd = 2)
-    # abline(fit1, col = "purple", lwd = 2)
-    # abline(fitRES, col="red", lwd=2, lty="dashed")
-    # top <- segVPR.fit$coefficients[[1]]
-    # bh <-  segVPR.fit$coefficients[[3]]
-    # bot <- top+bh
-    # # lines(x=c(0, 0), y=c(top, bot), col="red", lwd=2, pch=0)
-    # arrows(0, bot, x1=0, y1=top, length =.075,  angle = 90, code=3, col="red", lwd=2)
-    # R.Fval = summary(segVPR.fit)$f[[1]]
-    # R.pval = glance(segVPR.fit)$p.value
-    # R.Rval = summary(segVPR.fit)$r.squared
-    # rp = vector('expression',3)
-    # rp[1] = substitute(expression(italic(R^2) == R.Rval),
-    #                    list(R.Rval = format(R.Rval,dig=3)))[2]
-    # rp[2] = substitute(expression(italic(F) == R.Fval),
-    #                    list(R.Fval  = format(R.Fval,dig=3)))[2]
-    #
-    # rp[3] = substitute(expression(italic(p) == R.pval),
-    #                    list(R.pval  = format(R.pval, digits = 3)))[2]
-    # legend('topleft', legend = rp, bty = 'n')
+  # browser()
 
-    # browser()
-  # }
+  #Added new section for creating a total height
+  resid.raw <- segVPR.fit$residuals
+  resid.BHadj <- c(resid.raw[1:breakpoint], resid.raw[(breakpoint+1):len] + R2.BH)
+  len <- length(resid.BHadj)
+  start = as.integer(start(ti)[1])
+  end = as.integer(end(ti)[1])
+  year = c(start:end)
+  VPR.resid<- ts(resid.BHadj, start=start(ti), end=end(ti), frequency = f)
+  RESchow <- sctest(resid.BHadj ~ year, type = "Chow", point = breakpoint)
+  browser()
+  if (RESchow$p.value[[1]]>sig){
+    bpanalysis <- lm(resid.BHadj~year)
+    R3.pval <- glance(bpanalysis)$p.value
+    R3.Rval <- summary(bpanalysis)$r.square
+    R3.intr <- bpanalysis$coefficients[[1]]
+    R3.slpe <- bpanalysis$coefficients[[2]]
+    R3.BH <- FALSE
+    R3.SC <- FALSE
+    m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
+  }else{
+    #Create the dummy variable
+    dummy <- rep(0, length(VPR.resid))
+    dummy[(breakpoint+1):length(VPR.resid)] = 1
+
+    segRES.df = data.frame(year=ti, VPR.residuals=VPR.resid,  dummy.var=dummy)
+
+    start = as.integer(start(ti)[1])
+    bkp = breakpoint + start-1
+
+    bpanalysis<-lm(VPR.residuals~I(year-(bkp+0.5))*dummy.var,segRES.df)
+    R3.pval <- glance(bpanalysis)$p.value
+    R3.Rval <- summary(bpanalysis)$r.square
+    R3.intr <- bpanalysis$coefficients[[1]]
+    R3.slpe <- bpanalysis$coefficients[[2]]
+    R3.BH <- bpanalysis$coefficients[[3]]
+    R3.SC <- bpanalysis$coefficients[[4]]
+    m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
+  }
+
+
+
   breakheight <- segVPR.fit$coefficients[[3]]
   bp.pval <- coef(summary(segVPR.fit))[15]
+
+  #from the residual change
+  init <- bpanalysis$fitted.values[1]
+  fin <- bpanalysis$fitted.values[end(bpanalysis$fitted.values)[1]]
+  change <- as.numeric(fin - init)
 
   ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=adj.RF)
   #May ad a total residual change
   overview <- data.frame(Method = "segmented.VPR",
-                         Residual.Change=FALSE, VPR.HeightChange=breakheight, model.p = glance(segVPR.fit)$p.value,
-                         residual.p = FALSE, VPRbreak.p = bp.pval, bp.year=bkp)
-  models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=segVPR.fit)
+                         Residual.Change=change, VPR.HeightChange=breakheight, model.p = glance(segVPR.fit)$p.value,
+                         residual.p = R3.pval, VPRbreak.p = bp.pval, bp.year=bkp)
+  models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=segVPR.fit)
   ols.summary <- list(chow.sum=FALSE, OLS.table=m)
 
   return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
