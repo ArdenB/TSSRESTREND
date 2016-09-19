@@ -53,5 +53,5 @@ print(dim(ACP.table))
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 results <- TSSRESTREND(CTSR.VI, ACP.table)
 print(results$summary)
-plot(results)
+plot(results, verbose=TRUE)
 

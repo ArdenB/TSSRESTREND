@@ -25,6 +25,11 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
   if (plots=="all"||plots=="bfast"){
     plot(x$TSSRmodels$BFAST)
   }
+  if (verbose==TRUE||plots=="chow"){
+    # chowbp <- x$TSSRmodels$BFAST
+    browser()
+
+  }
   #May add annual max VI vs RF
   #Plotting params
   breakpoint <- x$ols.summary$chow.sum$yr.index
