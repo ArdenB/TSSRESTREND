@@ -6,7 +6,7 @@
 \usage{
 TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
   acu.RF = FALSE, VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE,
-  sig = 0.05, print = FALSE, plot = TRUE, details = FALSE)
+  sig = 0.05, plot = FALSE, season = "none")
 }
 \arguments{
 \item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
@@ -29,9 +29,9 @@ NOTE. if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\lin
 
 \item{sig}{Significance of all the functions, sig=0.05}
 
-\item{print}{Prints more details at every step of the procces}
-
 \item{plot}{creates a plots of every step}
+
+\item{print}{Prints more details at every step of the procces}
 
 \item{details}{returns adational details for VPR and Residual trends}
 }

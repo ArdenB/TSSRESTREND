@@ -17,7 +17,7 @@ setwd(this.dir)
 # in.VI = read.csv("./demo_data/darlingVI.csv")
 # in.VI = read.csv("./demo_data/desertVI.csv")
 # in.VI = read.csv("./demo_data/southwaVI.csv")
-in.VI = read.csv("./demo_data/chowVI.csv")
+in.VI = read.csv("./demo_data/chow2VI.csv")
 
 # turn that data into a time series object.
   #Starts january 1982 and ends december 2013 with a
@@ -33,7 +33,7 @@ CTSR.VI = ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
 # in.RF = read.csv("./demo_data/darlingRF.csv")
 # in.RF = read.csv("./demo_data/desertRF.csv")
 # in.RF = read.csv("./demo_data/southwaRF.csv")
-in.RF = read.csv("./demo_data/chowRF.csv")
+in.RF = read.csv("./demo_data/chow2RF.csv")
 
 #turn the data into a time series object
 rf.data = ts(in.RF, end=c(2013,12), frequency = 12)

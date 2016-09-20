@@ -4,7 +4,8 @@
 \alias{plot.TSSRESTREND}
 \title{Plot function for class TSSRESTREND class}
 \usage{
-\method{plot}{TSSRESTREND}(x, verbose = FALSE, plots = "all", ...)
+\method{plot}{TSSRESTREND}(x, verbose = FALSE, plots = "all", sig = 0.05,
+  ...)
 }
 \arguments{
 \item{plots}{= "all"

@@ -115,35 +115,38 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   year = c(start:end)
   VPR.resid<- ts(resid.BHadj, start=start(ti), end=end(ti), frequency = f)
   RESchow <- sctest(resid.BHadj ~ year, type = "Chow", point = breakpoint)
-  browser()
-  if (RESchow$p.value[[1]]>sig){
-    bpanalysis <- lm(resid.BHadj~year)
-    R3.pval <- glance(bpanalysis)$p.value
-    R3.Rval <- summary(bpanalysis)$r.square
-    R3.intr <- bpanalysis$coefficients[[1]]
-    R3.slpe <- bpanalysis$coefficients[[2]]
-    R3.BH <- FALSE
-    R3.SC <- FALSE
-    m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
-  }else{
-    #Create the dummy variable
-    dummy <- rep(0, length(VPR.resid))
-    dummy[(breakpoint+1):length(VPR.resid)] = 1
+  # browser()
+  # if (RESchow$p.value[[1]]>sig){
+  #   bpanalysis <- lm(resid.BHadj~year)
+  #   R3.pval <- glance(bpanalysis)$p.value
+  #   R3.Rval <- summary(bpanalysis)$r.square
+  #   R3.intr <- bpanalysis$coefficients[[1]]
+  #   R3.slpe <- bpanalysis$coefficients[[2]]
+  #   R3.BH <- FALSE
+  #   R3.SC <- FALSE
+  #   m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
+  # }else{
+  #
+  # }
 
-    segRES.df = data.frame(year=ti, VPR.residuals=VPR.resid,  dummy.var=dummy)
 
-    start = as.integer(start(ti)[1])
-    bkp = breakpoint + start-1
+  #Create the dummy variable
+  dummy <- rep(0, length(VPR.resid))
+  dummy[(breakpoint+1):length(VPR.resid)] = 1
 
-    bpanalysis<-lm(VPR.residuals~I(year-(bkp+0.5))*dummy.var,segRES.df)
-    R3.pval <- glance(bpanalysis)$p.value
-    R3.Rval <- summary(bpanalysis)$r.square
-    R3.intr <- bpanalysis$coefficients[[1]]
-    R3.slpe <- bpanalysis$coefficients[[2]]
-    R3.BH <- bpanalysis$coefficients[[3]]
-    R3.SC <- bpanalysis$coefficients[[4]]
-    m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
-  }
+  segRES.df = data.frame(year=ti, VPR.residuals=VPR.resid,  dummy.var=dummy)
+
+  start = as.integer(start(ti)[1])
+  bkp = breakpoint + start-1
+
+  bpanalysis<-lm(VPR.residuals~I(year-(bkp+0.5))*dummy.var,segRES.df)
+  R3.pval <- glance(bpanalysis)$p.value
+  R3.Rval <- summary(bpanalysis)$r.square
+  R3.intr <- bpanalysis$coefficients[[1]]
+  R3.slpe <- bpanalysis$coefficients[[2]]
+  R3.BH <- bpanalysis$coefficients[[3]]
+  R3.SC <- bpanalysis$coefficients[[4]]
+  m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
 
 
 
@@ -161,7 +164,7 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
                          Residual.Change=change, VPR.HeightChange=breakheight, model.p = glance(segVPR.fit)$p.value,
                          residual.p = R3.pval, VPRbreak.p = bp.pval, bp.year=bkp)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=segVPR.fit)
-  ols.summary <- list(chow.sum=FALSE, OLS.table=m)
+  ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
 
   return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
                         TSSRmodels=models), class = "TSSRESTREND"))

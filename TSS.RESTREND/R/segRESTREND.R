@@ -106,7 +106,7 @@ seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
                          residual.p = glance(bpanalysis)$p.value, VPRbreak.p = FALSE, bp.year=bkp)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=FALSE)
   ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
-  ols.summary <- list(chow.sum=FALSE, OLS.table=m)
+  ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
   return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
                         TSSRmodels=models), class = "TSSRESTREND"))
 

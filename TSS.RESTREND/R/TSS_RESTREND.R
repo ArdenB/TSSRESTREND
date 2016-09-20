@@ -113,9 +113,10 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
-  if (!bp){# no breakpoints detected by the BFAST
+  if (BFAST.obj$nobp$Vt[[1]]){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
     chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)
+    chow.bpi <- FALSE
     # if (plot){
     #   VImax.plot(anu.VI)
     # }
@@ -124,6 +125,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig)
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
     chow.sum <-res.chow$bp.summary
+    chow.bpi <- res.chow$allbp.index
     # browser()
     test.Method = res.chow$n.Method
   }
@@ -135,7 +137,9 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ts.data$CTSR.VI <- CTSR.VI
     result$ts.data$CTSR.RF <- CTSR.RF
     result$ols.summary$chow.sum <- chow.sum
+    result$ols.summary$chow.ind <- chow.bpi
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
+
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
@@ -145,6 +149,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ts.data$CTSR.VI <- CTSR.VI
     result$ts.data$CTSR.RF <- CTSR.RF
     result$ols.summary$chow.sum <- chow.sum
+    result$ols.summary$chow.ind <- chow.bpi
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
 
     # browser()
@@ -164,6 +169,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ts.data$CTSR.VI <- CTSR.VI
     result$ts.data$CTSR.RF <- CTSR.RF
     result$ols.summary$chow.sum <- chow.sum
+    result$ols.summary$chow.ind <- chow.bpi
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }
   # print(result$summary)

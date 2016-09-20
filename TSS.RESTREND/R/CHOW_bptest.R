@@ -34,12 +34,14 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   empty.2 <- NaN
   empty.3 <- NaN
   ind.df <- data.frame(abs.index=breakpoints, yr.index = empty.1, reg.sig=empty.2, VPR.bpsig = empty.3)
+  bp.ind <-data.frame(abs.index=breakpoints, yr.index=NaN)
   for (bp in 1:length(breakpoints)){
     bpv = ind.df$abs.index[bp]
     for (n in 1:length(VI.index)){
       if (bpv>=VI.index[n] & bpv<=VI.index[n+1]){
         #print(n)}
         ind.df$yr.index[bp] = n
+        bp.ind$yr.index[bp] = n
       }
     }
   }
@@ -58,8 +60,9 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   }
   #Iterate over each of the breakpoints
   while (TRUE){
-    for (bp.num in nrow(ind.df)){ #the breakpoints number, first bp is 1,  etc
+    for (bp.num in 1:nrow(ind.df)){ #the breakpoints number, first bp is 1,  etc
       bp = ind.df$yr.index[bp.num]
+      # browser()
       #start and ends
       if (identical(ind.df$yr.index[bp.num-1], numeric(0))){
         bp.start = 1
@@ -81,6 +84,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
       ind.df$reg.sig[bp.num] = chow$p.value
 
     }
+    # browser()
     if (nrow(ind.df)>1){ #*****This needs to be tested with mutiple breakpoints*****
       #delete breakpoint with the largest p values (lowest significance)
       ind.df <- ind.df[!(1:nrow(ind.df) %in% (which.max(ind.df$reg.sig))),]
@@ -90,24 +94,25 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
       # }
       VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
       ind.df$VPR.bpsig[1] = VPR.chow$p.value
+      # browser()
 
       if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig){ # cant chow non-sig residulas (bpRESID.chow = FALSE)
         ind.df$reg.sig[1] = NaN
-        return(structure(list(n.Method = FALSE, bp.summary = ind.df,
+        return(structure(list(n.Method = FALSE, bp.summary = ind.df, allbp.index = bp.ind,
                               bpRESID.chow = FALSE, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
       }else if (Method == "seg.VPR" & ind.df$reg.sig[1] <= sig){
         ind.df$reg.sig[1] = NaN
-        return(structure(list(n.Method = "seg.VPR", bp.summary = ind.df,
+        return(structure(list(n.Method = "seg.VPR", bp.summary = ind.df, allbp.index = bp.ind,
                               bpRESID.chow = FALSE, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
       }else if (Method == "seg.RESTREND" & ind.df$reg.sig[1] > sig){
-        return(structure(list(n.Method = "RESTREND", bp.summary = ind.df,
+        return(structure(list(n.Method = "RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
                               bpRESID.chow = chow, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
       }else if (Method == "seg.RESTREND" & ind.df$reg.sig[1] <= sig){
         if (VPR.chow$p.value>sig){
-          return(structure(list(n.Method = "seg.RESTREND", bp.summary = ind.df,
+          return(structure(list(n.Method = "seg.RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
                                 bpRESID.chow = chow, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
         }else if(VPR.chow$p.value<=sig){
-          return(structure(list(n.Method = "seg.VPR", bp.summary = ind.df,
+          return(structure(list(n.Method = "seg.VPR", bp.summary = ind.df, allbp.index = bp.ind,
                                 bpRESID.chow = chow, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
         }
       }else{
