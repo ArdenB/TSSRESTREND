@@ -89,8 +89,15 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
   init <- RES$fitted.values[1]
   fin <- RES$fitted.values[end(RES$fitted.values)[1]]
   change <- fin - init
+  if (R2.pval<0.10){
+    tot.ch = change
+  }else{
+    tot.ch = 0
+  }
 
-  overview <- data.frame(Method = "RESTREND", Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
+
+  overview <- data.frame(Method = "RESTREND", Total.Change=tot.ch,
+                         Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
                          residual.p = glance(RES)$p.value, VPRbreak.p = FALSE, bp.year=FALSE)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = RES, segVPR.fit=FALSE)
   ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)

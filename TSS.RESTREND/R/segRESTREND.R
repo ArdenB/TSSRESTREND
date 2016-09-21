@@ -101,7 +101,14 @@ seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
   init <- bpanalysis$fitted.values[1]
   fin <- bpanalysis$fitted.values[end(bpanalysis$fitted.values)[1]]
   change <- as.numeric(fin - init)
-  overview <- data.frame(Method = "segmented.RESTREND",
+  if (R2.pval<0.10){
+    tot.ch = change
+  }else{
+    tot.ch = 0
+  }
+
+
+  overview <- data.frame(Method = "segmented.RESTREND", Total.Change=tot.ch,
                          Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
                          residual.p = glance(bpanalysis)$p.value, VPRbreak.p = FALSE, bp.year=bkp)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=FALSE)

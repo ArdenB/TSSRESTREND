@@ -16,7 +16,10 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
   anu.VI <- x$ts.data$anu.VI
   len <- length(anu.VI)
   ti <- time(anu.VI)
-
+  #Add a plot for VERBOSE (ctsr.vi vs VTSR.RF)
+  if (plots=="all"||plots=="bfast"){
+    plot(x$TSSRmodels$BFAST)
+  # browser()
   if (plots=="all"||plots=="CTS"){
     par(mar=c(5,4,4,4))
     plot(x$ts.data$CTSR.VI, col="olivedrab", lwd = 2, pch=16, xlab="Year", ylab="")
@@ -28,10 +31,8 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
     axis(side=4)
     mtext("Accumulated Rainfall", side=4, line=2, col="steelblue2")
   }
-  #Add a plot for VERBOSE (ctsr.vi vs VTSR.RF)
-  if (plots=="all"||plots=="bfast"){
-    plot(x$TSSRmodels$BFAST)
   }
+
   if (verbose==TRUE||plots=="chow"){
     # chowbp <- x$TSSRmodels$BFAST
     VI.index <- x$ts.data$VI.index
@@ -112,7 +113,7 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       rp[2] = substitute(expression(italic(p) == r.pval),
                          list(r.pval = format(r.pval, digits = 5)))[2]
       legend('topleft', legend = rp, bty = 'n')
-      browser()
+      # browser()
 
     }
   }
@@ -142,7 +143,7 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       # abline(fit, col = "red",lwd = 2, lty = "dashed")
       abline(fit0, col = "orange", lwd = 2)
       abline(fit1, col = "purple", lwd = 2)
-      abline(fitRES, col="red", lwd=2, lty="dashed")
+      abline(fitRES, col="darkgrey", lwd=2, lty="dashed")
       top <- x$TSSRmodels$segVPR.fit$coefficients[[1]]
       bh <-  x$TSSRmodels$segVPR.fit$coefficients[[3]]
       bot <- top+bh
@@ -151,14 +152,16 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       R.Fval = summary(x$TSSRmodels$segVPR.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$segVPR.fit)$p.value
       R.Rval = summary(x$TSSRmodels$segVPR.fit)$r.squared
-      rp = vector('expression',3)
-      rp[1] = substitute(expression(italic(R^2) == R.Rval),
-                         list(R.Rval = format(R.Rval,dig=3)))[2]
+      rp = vector('expression', 4)
+      rp[1] = substitute(expression(italic(BH) == bh),
+                         list(bh  = format(bh, digits = 3)))[2]
       rp[2] = substitute(expression(italic(F) == R.Fval),
                          list(R.Fval  = format(R.Fval,dig=3)))[2]
-
       rp[3] = substitute(expression(italic(p) == R.pval),
                          list(R.pval  = format(R.pval, digits = 3)))[2]
+      rp[4] = substitute(expression(italic(R^2) == R.Rval),
+                         list(R.Rval = format(R.Rval,dig=3)))[2]
+
       legend('topleft', legend = rp, bty = 'n')
     }else{
       plot(as.numeric(x$ts.data$anu.VI) ~ as.numeric(x$ts.data$acu.RF), pch=16, xlab="Accumulated Rainfall (mm)",
@@ -220,7 +223,7 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       plot(year[breakpoint+1:len], VPR.residuals[breakpoint+1:len], pch=16,
            xlab="", ylab="", col="purple", main="",
            xlim=c(start, end), ylim = c(-m.range, m.range))
-      abline(R.fit, col = "red",lwd = 2, lty = "dashed")
+      abline(R.fit, col = "darkgrey",lwd = 2, lty = "dashed")
 
 
       par(new=T)
@@ -229,27 +232,38 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       af.bp = x$TSSRmodels$resid.fit$coefficients[[1]] + x$TSSRmodels$resid.fit$coefficients[[3]]
       bpats2 <- append(bpa.fitts, c(b4.bp, af.bp), after = breakpoint)
       t2 <- append(ti, c(start+breakpoint-0.50001, start+breakpoint-0.49999), after=breakpoint)
-      plot(t2, bpats2, pch=16, type = "l", lwd = 2,
+      plot(t2, bpats2, pch=16, type = "l", lty = "dashed", lwd = 2,
            xlab="", ylab="", col="red", main="",
            xlim=c(start, end), ylim = c(-m.range, m.range))
       grid()
       #add a breakpoint band
-      abline(v=(breakpoint-0.5+start), col="white", lwd = 3, lty = "dotted")
+      abline(v=(breakpoint-0.5+start), col="white", lwd = 3)#, lty = "dotted")
       #Need to change the stastics that is shows here
 
       R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$resid.fit)$p.value
       R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
-      rp = vector('expression',3)
-      rp[1] = substitute(expression(italic(R^2) == R.Rval),
+      # rp = vector('expression',3)
+
+      top <- x$TSSRmodels$resid.fit$fitted.values[len]
+      bot <- x$TSSRmodels$resid.fit$fitted.values[1]
+      r.c <- top-bot
+      arrows((end+0.5), bot, x1=(end+0.5), y1=top, length =.075,  angle = 90, code=3, col="red", lwd=2)
+
+      rp = vector('expression', 3)
+      rp[1] = substitute(expression(italic(rc) == r.c),
+                         list(r.c  = format(r.c, digits = 3)))[2]
+      rp[2] = substitute(expression(italic(R^2) == R.Rval),
                          list(R.Rval = format(R.Rval,dig=3)))[2]
-      rp[2] = substitute(expression(italic(F) == R.Fval),
-                         list(R.Fval  = format(R.Fval,dig=3)))[2]
+      # rp[2] = substitute(expression(italic(F) == R.Fval),
+                         # list(R.Fval  = format(R.Fval,dig=3)))[2]
 
       rp[3] = substitute(expression(italic(p) == R.pval),
                          list(R.pval  = format(R.pval, digits = 3)))[2]
       legend('topleft', legend = rp, bty = 'n')
     }else if(x$summary$Method=="RESTREND"){
+      start = as.integer(start(ti)[1])
+      end = as.integer(end(ti)[1])
       RES <- x$TSSRmodels$resid.fit
       m.range = 2*max(abs(RES$fitted.values))
       plot(c(start(ti)[1]:end(ti)[1]), x$TSSRmodels$VPR.fit$residuals, pch=16,xlab="Accumulated Rainfall",
@@ -261,22 +275,29 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       R.Fval = summary(RES)$f[[1]]
       R.Rval = summary(RES)$r.squared
       R.pval = glance(RES)$p.value
+      # # lines(x=c(0, 0), y=c(top, bot), col="red", lwd=2, pch=0)
+      top <- x$TSSRmodels$resid.fit$fitted.values[len]
+      bot <- x$TSSRmodels$resid.fit$fitted.values[1]
+      r.c <- top-bot
+      arrows((end+0.5), bot, x1=(end+0.5), y1=top, length =.075,  angle = 90, code=3, col="red", lwd=2)
 
-      rp = vector('expression',3)
-      rp[1] = substitute(expression(italic(R^2) == R.Rval),
+      rp = vector('expression', 3)
+      rp[1] = substitute(expression(italic(rc) == r.c),
+                         list(r.c  = format(r.c, digits = 3)))[2]
+      rp[2] = substitute(expression(italic(R^2) == R.Rval),
                          list(R.Rval = format(R.Rval,dig=3)))[2]
-      rp[2] = substitute(expression(italic(F) == R.Fval),
-                         list(R.Fval = format(R.Fval,dig=3)))[2]
-
       rp[3] = substitute(expression(italic(p) == R.pval),
                          list(R.pval = format(R.pval, digits = 3)))[2]
+      # rp[3] = substitute(expression(italic(F) == R.Fval),
+      #                    list(R.Fval = format(R.Fval,dig=3)))[2]
+
       legend('topleft', legend = rp, bty = 'n')
     }else if(x$summary$Method=="segmented.VPR"){
       # browser()
-      resid.raw<- x$TSSRmodels$segVPR.fit$residuals
+      # resid.raw<- x$TSSRmodels$segVPR.fit$residuals
       R2.BH <- x$summary$VPR.HeightChange
-
-      VPR.residuals <- c(resid.raw[1:breakpoint], resid.raw[(breakpoint+1):len] + R2.BH)
+      # c(resid.raw[1:breakpoint], resid.raw[(breakpoint+1):len] + R2.BH)
+      VPR.residuals <- x$TSSRmodels$segVPR.fit$residuals
       len <- length(VPR.residuals)
       start = as.integer(start(ti)[1])
       end = as.integer(end(ti)[1])
@@ -316,97 +337,31 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
            xlab="", ylab="", col="red", main="", lty = "dashed",
            xlim=c(start, end), ylim = c(-m.range, m.range))
       #add a breakpoint band
-      abline(v=(breakpoint-0.5+start), col="white", lwd = 3, lty = "dotted")
+      abline(v=(breakpoint-0.5+start), col="white", lwd = 3)#, lty = "dotted")
+
+      top <- x$TSSRmodels$resid.fit$fitted.values[len]
+      bot <- x$TSSRmodels$resid.fit$fitted.values[1]
+      r.c <- top-bot
+      # # lines(x=c(0, 0), y=c(top, bot), col="red", lwd=2, pch=0)
+      arrows((end+0.5), bot, x1=(end+0.5), y1=top, length =.075,  angle = 90, code=3, col="red", lwd=2)
       #Need to change the stastics that is shows here
 
       R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$resid.fit)$p.value
       R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
-      rp = vector('expression',3)
-      rp[1] = substitute(expression(italic(R^2) == R.Rval),
+      rp = vector('expression',4)
+      rp[1] = substitute(expression(italic(rc) == r.c),
+                         list(r.c  = format(r.c, digits = 3)))[2]
+      rp[2] = substitute(expression(italic(R^2) == R.Rval),
                          list(R.Rval = format(R.Rval,dig=3)))[2]
-      rp[2] = substitute(expression(italic(F) == R.Fval),
+      rp[3] = substitute(expression(italic(F) == R.Fval),
                          list(R.Fval  = format(R.Fval,dig=3)))[2]
 
-      rp[3] = substitute(expression(italic(p) == R.pval),
+      rp[4] = substitute(expression(italic(p) == R.pval),
                          list(R.pval  = format(R.pval, digits = 3)))[2]
       legend('topleft', legend = rp, bty = 'n')
-      # if (RESchow$p.value[[1]]>sig){
-      #
-      #   xlim = c(start, end)
-      #   m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values))
-      #
-      #   R.fit <- lm(VPR.residuals ~ year)
-      #   plot(VPR.residuals ~ year, pch=16,
-      #        xlab="", ylab="", col="orange", main="segmented VPR RESTREND",
-      #        xlim=c(start, end), ylim = c(-m.range, m.range))
-      #   # abline(R.fit, col = "red",lwd = 2, lty = "dashed")
-      #   grid()
-      #   par(new=T)
-      #   plot(c(start(ti)[1]:end(ti)[1]), R.fit$fitted.values, type = "l", lty = "dashed", lwd = 2, pch=16,
-      #        xlab="", ylab="", col="red", main="", ylim = c(-m.range, m.range))
-      #
-      #
-      #   R.Fval = summary(R.fit)$f[[1]]
-      #   R.Rval = summary(R.fit)$r.squared
-      #   R.pval = glance(R.fit)$p.value
-      #
-      #   rp = vector('expression',3)
-      #   rp[1] = substitute(expression(italic(R^2) == R.Rval),
-      #                      list(R.Rval = format(R.Rval,dig=3)))[2]
-      #   rp[2] = substitute(expression(italic(F) == R.Fval),
-      #                      list(R.Fval = format(R.Fval,dig=3)))[2]
-      #
-      #   rp[3] = substitute(expression(italic(p) == R.pval),
-      #                      list(R.pval = format(R.pval, digits = 3)))[2]
-      #   legend('topleft', legend = rp, bty = 'n')
-      # }else{
-      #   R.fit <- lm(VPR.residuals ~ year)
-      #   R.fit0 <- lm(VPR.residuals[1:breakpoint] ~ year[1:breakpoint])
-      #   R.fit1 <- lm(VPR.residuals[breakpoint+1:len] ~ year[breakpoint+1:len])
-      #
-      #
-      #   xlim = c(start, end)
-      #   m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values))
-      #
-      #
-      #   plot(year[1:breakpoint], VPR.residuals[1:breakpoint], pch=16,
-      #        xlab="time", ylab="Residuals", col="orange", xlim=xlim, ylim = c(-m.range, m.range))
-      #   grid()
-      #   title("Segmented VPR RESTREND")
-      #   par(new=T)
-      #   plot(year[breakpoint+1:len], VPR.residuals[breakpoint+1:len], pch=16,
-      #        xlab="", ylab="", col="purple", main="",
-      #        xlim=c(start, end), ylim = c(-m.range, m.range))
-      #   # abline(R.fit, col = "red",lwd = 2, lty = "dashed")
-      #
-      #
-      #   par(new=T)
-      #   bpa.fitts <- ts(x$TSSRmodels$resid.fit$fitted.values, start=ti[1], end=tail(ti, 1), frequency = 1)
-      #   b4.bp = x$TSSRmodels$resid.fit$coefficients[[1]]
-      #   af.bp = x$TSSRmodels$resid.fit$coefficients[[1]] + x$TSSRmodels$resid.fit$coefficients[[3]]
-      #   bpats2 <- append(bpa.fitts, c(b4.bp, af.bp), after = breakpoint)
-      #   t2 <- append(ti, c(start+breakpoint-0.50001, start+breakpoint-0.49999), after=breakpoint)
-      #   plot(t2, bpats2, pch=16, type = "l", lwd = 2,
-      #        xlab="", ylab="", col="red", main="",
-      #        xlim=c(start, end), ylim = c(-m.range, m.range))
-      #   #add a breakpoint band
-      #   abline(v=(breakpoint-0.5+start), col="white", lwd = 3, lty = "dotted")
-      #   #Need to change the stastics that is shows here
-      #
-      #   R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
-      #   R.pval = glance(x$TSSRmodels$resid.fit)$p.value
-      #   R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
-      #   rp = vector('expression',3)
-      #   rp[1] = substitute(expression(italic(R^2) == R.Rval),
-      #                      list(R.Rval = format(R.Rval,dig=3)))[2]
-      #   rp[2] = substitute(expression(italic(F) == R.Fval),
-      #                      list(R.Fval  = format(R.Fval,dig=3)))[2]
-      #
-      #   rp[3] = substitute(expression(italic(p) == R.pval),
-      #                      list(R.pval  = format(R.pval, digits = 3)))[2]
-      #   legend('topleft', legend = rp, bty = 'n')
-      # }
+
+
     }
   }
 }

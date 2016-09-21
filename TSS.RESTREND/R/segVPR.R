@@ -108,26 +108,14 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
 
   #Added new section for creating a total height
   resid.raw <- segVPR.fit$residuals
-  resid.BHadj <- c(resid.raw[1:breakpoint], resid.raw[(breakpoint+1):len] + R2.BH)
-  len <- length(resid.BHadj)
+  # resid.BHadj <- c(resid.raw[1:breakpoint], resid.raw[(breakpoint+1):len] + R2.BH)
+  len <- length(resid.raw)
   start = as.integer(start(ti)[1])
   end = as.integer(end(ti)[1])
   year = c(start:end)
-  VPR.resid<- ts(resid.BHadj, start=start(ti), end=end(ti), frequency = f)
-  RESchow <- sctest(resid.BHadj ~ year, type = "Chow", point = breakpoint)
-  # browser()
-  # if (RESchow$p.value[[1]]>sig){
-  #   bpanalysis <- lm(resid.BHadj~year)
-  #   R3.pval <- glance(bpanalysis)$p.value
-  #   R3.Rval <- summary(bpanalysis)$r.square
-  #   R3.intr <- bpanalysis$coefficients[[1]]
-  #   R3.slpe <- bpanalysis$coefficients[[2]]
-  #   R3.BH <- FALSE
-  #   R3.SC <- FALSE
-  #   m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
-  # }else{
-  #
-  # }
+  VPR.resid<- ts(resid.raw, start=start(ti), end=end(ti), frequency = f)
+  RESchow <- sctest(resid.raw ~ year, type = "Chow", point = breakpoint)
+
 
 
   #Create the dummy variable
@@ -160,7 +148,16 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
 
   ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=adj.RF)
   #May ad a total residual change
-  overview <- data.frame(Method = "segmented.VPR",
+  tc <- c(0, 0)
+  if (R3.pval<0.10){
+    tc[1] = change
+  }
+
+  if (bp.pval<0.10){
+    tc[2] = breakheight
+  }
+  tot.ch = sum(tc)
+  overview <- data.frame(Method = "segmented.VPR", Total.Change=tot.ch,
                          Residual.Change=change, VPR.HeightChange=breakheight, model.p = glance(segVPR.fit)$p.value,
                          residual.p = R3.pval, VPRbreak.p = bp.pval, bp.year=bkp)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=segVPR.fit)
