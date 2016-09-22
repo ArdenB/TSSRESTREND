@@ -7,6 +7,6 @@
 \method{print}{TSSRESTREND}(x, ...)
 }
 \description{
-print *******
+print function
 }
 

@@ -15,11 +15,11 @@ seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig = 0.05)
 
 \item{breakpoint}{TO BE ADDED}
 
+\item{rf.af}{rain}
+
 \item{sig}{Significance of all the functions, sig=0.05}
 
-\item{print}{Prints more details at every step of the procces}
-
-\item{plot}{creates a plots of the VPR vs rainfall standard variance}
+\item{rf.bf}{rain}
 }
 \value{
 summary

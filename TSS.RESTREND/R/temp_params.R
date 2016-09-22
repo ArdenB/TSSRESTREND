@@ -45,11 +45,11 @@
 #' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
 #' @param ACP.table
 #' A table of every combination of offset period and accumulation period. if ACP.table = FALSE, CTSR.RF and acu.RF must be provided
-#' @param CTSR.RF
-#' Complete Time Series of Rain Fall.  An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
-#' If ACU.table is provided, CTSR.RF will be automitaclly calculated by \code{\link{rainfall.accumulator}}
-#' @param anu.VI
-#' The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.
+#' @param CTSR.RF -  Complete Time Series of Rainfall.
+#'                An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
+#'                If ACU.table is provided, CTSR.RF will be automitaclly calculated using \code{\link{rainfall.accumulator}}
+#' @param anu.VI -  annual (Growing season) max VI.
+#'                if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.
 #' @param acu.RF
 #' The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)
 #' @param VI.index

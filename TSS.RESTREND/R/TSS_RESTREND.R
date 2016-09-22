@@ -1,41 +1,54 @@
 #' @title Time Series Segmentation of Residual Trends (MAIN FUNCTION)
 #'
-#' @description
-#' This function will perform the complete Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
-#' look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals and the VPR is assessed using a chow test an
-#' then the total time series change is calculated. Calls ____________
 #' @importFrom stats coef end frequency lm sd start time ts
 #' @importFrom graphics abline arrows legend par plot
 #' @importFrom utils tail
 #' @importFrom broom glance
+#'
+#' @description
+#' Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly
+#' time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
+#' look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
+#' and the VPR is assessed using a chow test an then the total time series change is calculated.
+#'
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
 #' @param CTSR.VI
-#' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
+#'        Complete Monthly Time Series of Vegetation Index values.
+#'        An object of class \code{'ts'}.
 #' @param ACP.table
-#' A table of every combination of offset period and accumulation period. if ACP.table = FALSE, CTSR.RF and acu.RF must be provided
+#'        A table of every combination of offset period and accumulation period.
+#'        ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.
+#'        if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
+#'        rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.
 #' @param CTSR.RF
-#' Complete Time Series of Rain Fall.  An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
-#' If ACU.table is provided, CTSR.RF will be automitaclly calculated by \code{\link{rainfall.accumulator}}
+#'        Complete Time Series of Rainfall. An object of class 'ts' and be the same length
+#'        and cover the same time range as CTSR.VI.
+#'        If ACU.table is provided, CTSR.RF will be automitaclly calculated sing the
+#'        \code{\link{ACP.calculator}}
 #' @param anu.VI
-#' The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.
+#'        The annual (Growing season) max VI. if anu.VI=FALSE, it will be
+#'        calculated from the CTSR.VI using \code{\link{AnMax.VI}}.
 #' @param acu.RF
-#' The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)
+#'        The optimal accumulated rainfall for anu.VI. Mut be a object of class \code{'ts'}
+#'        and of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
+#'        calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}
 #' @param VI.index
-#' the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.
-#' NOTE. if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.
+#'        the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
+#'        as anu.VI. NOTE. R indexs from 1 rather than 0.
+#'        if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.
 #' @param rf.b4
-#' If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before the breakpoint. must be the same length as the anu.VI
+#'        If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
+#'        the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
+#'        be generated using \code{\link{AnnualRF.Cal}}
 #' @param rf.af
-#' If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after the breakpoint. must be the same length as the anu.VI
+#'        If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
+#'        the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
+#'        be generated using \code{\link{AnnualRF.Cal}}
 #' @param sig
-#' Significance of all the functions, sig=0.05
-#' @param print
-#' Prints more details at every step of the procces
-#' @param plot
-#' creates a plots of every step
-#' @param details
-#' returns adational details for VPR and Residual trends
+#'        Significance of all the functions, sig=0.05
+#' @param season
+#'        See \code{\link{bfast}}
 #'
 #' @return list
 #' (To be filled in)
@@ -48,7 +61,7 @@
 #' }
 #'
 TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
-                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, plot=FALSE, season="none"){
+                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none"){
 
   while (TRUE){ #Test the variables
     if (class(CTSR.VI) != "ts")
@@ -117,16 +130,13 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     test.Method = "RESTREND"
     chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)
     chow.bpi <- FALSE
-    # if (plot){
-    #   VImax.plot(anu.VI)
-    # }
+
   }else{
     bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig)
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
     chow.sum <-res.chow$bp.summary
     chow.bpi <- res.chow$allbp.index
-    # browser()
     test.Method = res.chow$n.Method
   }
 
@@ -142,7 +152,6 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
 
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
-    print(brkp)
     result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig)
     result$TSSRmodels$CTS.fit <- CTS.lm
     result$TSSRmodels$BFAST <- BFAST.obj
@@ -152,14 +161,11 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ols.summary$chow.ind <- chow.bpi
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
 
-    # browser()
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
-      #Improve the figure
       VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = brkp)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
-      #!!!!!!!!!!!!!!!!!!!!!!!!!!#
     }
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
@@ -172,11 +178,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ols.summary$chow.ind <- chow.bpi
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }
-  # print(result$summary)
-  # browser()
-  if (plot){
-    plot(results)
-  }
+
   return(result) #add CTSR
 }
 

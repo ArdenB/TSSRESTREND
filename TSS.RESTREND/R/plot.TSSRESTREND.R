@@ -3,6 +3,8 @@
 #' @description Plot *******
 #'
 #' @import  bfast
+#' @importFrom  graphics axis grid lines mtext title
+#' @importFrom stats predict
 #'
 #' @param plots = "all"
 #' User can create a single plot,

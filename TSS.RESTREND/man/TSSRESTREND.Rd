@@ -6,43 +6,54 @@
 \usage{
 TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
   acu.RF = FALSE, VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE,
-  sig = 0.05, plot = FALSE, season = "none")
+  sig = 0.05, season = "none")
 }
 \arguments{
-\item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
+\item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
+An object of class \code{'ts'}.}
 
-\item{ACP.table}{A table of every combination of offset period and accumulation period. if ACP.table = FALSE, CTSR.RF and acu.RF must be provided}
+\item{ACP.table}{A table of every combination of offset period and accumulation period.
+ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.
+if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
+rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.}
 
-\item{CTSR.RF}{Complete Time Series of Rain Fall.  An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
-If ACU.table is provided, CTSR.RF will be automitaclly calculated by \code{\link{rainfall.accumulator}}}
+\item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' and be the same length
+and cover the same time range as CTSR.VI.
+If ACU.table is provided, CTSR.RF will be automitaclly calculated sing the
+\code{\link{ACP.calculator}}}
 
-\item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
+\item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be
+calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
 
-\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)}
+\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Mut be a object of class \code{'ts'}
+and of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
+calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
 
-\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.
-NOTE. if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
+\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
+as anu.VI. NOTE. R indexs from 1 rather than 0.
+if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
 
-\item{rf.b4}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before the breakpoint. must be the same length as the anu.VI}
+\item{rf.b4}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
+the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
+be generated using \code{\link{AnnualRF.Cal}}}
 
-\item{rf.af}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after the breakpoint. must be the same length as the anu.VI}
+\item{rf.af}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
+the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
+be generated using \code{\link{AnnualRF.Cal}}}
 
 \item{sig}{Significance of all the functions, sig=0.05}
 
-\item{plot}{creates a plots of every step}
-
-\item{print}{Prints more details at every step of the procces}
-
-\item{details}{returns adational details for VPR and Residual trends}
+\item{season}{See \code{\link{bfast}}}
 }
 \value{
 list
 (To be filled in)
 }
 \description{
-This function will perform the complete Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
-look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals and the VPR is assessed using a chow test an
-then the total time series change is calculated. Calls ____________
+Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly
+time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
+look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
+and the VPR is assessed using a chow test an then the total time series change is calculated.
 }
 \examples{
 

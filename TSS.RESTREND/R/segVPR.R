@@ -17,12 +17,12 @@
 #' the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.
 #' @param breakpoint
 #' TO BE ADDED
+#' @param rf.bf
+#' rain
+#' @param rf.af
+#' rain
 #' @param sig
 #' Significance of all the functions, sig=0.05
-#' @param print
-#' Prints more details at every step of the procces
-#' @param plot
-#' creates a plots of the VPR vs rainfall standard variance
 #'
 #' @return summary
 #' (To be filled in)
