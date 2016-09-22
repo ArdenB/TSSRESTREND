@@ -10,28 +10,28 @@ TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
-An object of class \code{'ts'}.}
+An object of class \code{'ts'} object without NA's.}
 
 \item{ACP.table}{A table of every combination of offset period and accumulation period.
 ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.
 if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
 rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.}
 
-\item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' and be the same length
-and cover the same time range as CTSR.VI.
-If ACU.table is provided, CTSR.RF will be automitaclly calculated sing the
+\item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' object without NA's
+and be the same length and cover the same time range as CTSR.VI.
+If ACU.table is provided, CTSR.RF will be automitaclly calculated using the
 \code{\link{ACP.calculator}}}
 
-\item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be
-calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
+\item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
+if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Mut be a object of class \code{'ts'}
-and of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
+\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
 calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
 
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.
-if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
+if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
 \item{rf.b4}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
@@ -41,13 +41,45 @@ be generated using \code{\link{AnnualRF.Cal}}}
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
 be generated using \code{\link{AnnualRF.Cal}}}
 
-\item{sig}{Significance of all the functions, sig=0.05}
+\item{sig}{Significance of all the functions. defualt sig=0.05}
 
-\item{season}{See \code{\link{bfast}}}
+\item{season}{See \code{\link[bfast]{bfast}}}
 }
 \value{
-list
-(To be filled in)
+An object of class \code{'TSSRESTREND'} is a list with the following elements:
+\describe{
+  \item{summary}{
+   \describe{
+   \item{Method}{The method used to determine total change. (\emph{RESTREND} see \code{\link{RESTREND}},
+     \emph{segmented.RESTREND} see \code{\link{seg.RESTREND}}, \emph{segmented.VPR} see
+     \code{\link{seg.VPR}})}
+   \item{Total.Change}{The total significant change. Residual.Change + VPR.HeightChange. }
+   \item{Residual.Change}{The change in the VPR Residuals over the time period}
+   \item{VPR.HeightChange}{The change in VI at mean rainfall for a "ts" with a significant
+     breakpoint in the VPR}
+   \item{model.p}{p value of the regression model fitted to the VPR. See \code{\link[stats]{lm}}}
+   \item{residual.p}{p value of the regression model fitted to the VPR Residuals. See \code{\link[stats]{lm}}}
+   \item{VPRbreak.p}{the p value associated with the break height. See \code{\link[stats]{lm}}}
+   \item{bp.year}{The Year of the most significant breakpoint}
+   }}
+  \item{ts.data}{The Time series used in analysis. See Arguments for description
+   \itemize{
+     \item CTSR.VI
+     \item CTSR.RF
+     \item anu.VI
+     \item VI.index
+     \item acu.RF
+     \item StdVar.RF see \code{\link{seg.VPR}})}
+     }
+   \item{ols.summary}{
+     \describe{
+       \item{chow.summary}{summary of the most significant breakpoint. }
+       \item{chow.ind}{Summary of every detected breakpoint}
+       \item{OLS.table}{A matrix containing the coefficents for the CTS.fit, VPR.fit, RESTREND.fit and segVPR.fit}
+       }}
+   \item{TSSRmodels}{
+   models of class "lm" \code{\link[stats]{lm}} and class "bfast" \code{\link[bfast]{bfast}} generated.}
+   }
 }
 \description{
 Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly
@@ -65,5 +97,11 @@ print("Hello World")
 }
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
+}
+\seealso{
+\itemize{
+   \item \code{\link{plot.TSSRESTREND}}
+   \item \code{\link{print.TSSRESTREND}}
+   }
 }
 
