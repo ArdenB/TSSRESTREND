@@ -1,4 +1,4 @@
-#' @title Antecedental Accumulation calculator for the VI Complete Time Series
+#' @title Antecedental Rainfall Accumulation calculator for the VI Complete Time Series
 #'
 #' @description
 #' Takes the Complete Time Series Vegetation Index and a table of every possible accumulation period and offset
@@ -6,14 +6,13 @@
 #' slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation that has the highest R-squared
 #' and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.
 #'
-#' @param CTSR.VI
-#' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
-#' @param ACP.table
-#' A table of every combination of offset period and accumulation period. if ACP.table = FALSE, CTSR.RF and acu.RF must be provided
-#' @return summary
-#' (To be filled in)
-#' @return CTSR.precip (CTSR.RF)
-#' Complete Time Series of the optimally accumulated rainfall.An object of class 'ts'.
+#' @inheritParams TSSRESTREND
+#' @return A list containing:
+#' @return \bold{summary}
+#'        a Matrix containing "slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change"
+#'        of the \code{\link[stats]{lm}} between Antecedental Rainfall Accumulation (CTSR.RF) and the CTSR.VI
+#' @return \bold{CTSR.precip}
+#'        see CTSR.RF in \code{\link{TSSRESTREND}} for description
 #' @export
 #'
 ACP.calculator <- function(CTSR.VI, ACP.table){

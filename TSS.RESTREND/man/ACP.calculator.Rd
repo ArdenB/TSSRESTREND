@@ -2,21 +2,26 @@
 % Please edit documentation in R/ACPcalculator.R
 \name{ACP.calculator}
 \alias{ACP.calculator}
-\title{Antecedental Accumulation calculator for the VI Complete Time Series}
+\title{Antecedental Rainfall Accumulation calculator for the VI Complete Time Series}
 \usage{
 ACP.calculator(CTSR.VI, ACP.table)
 }
 \arguments{
-\item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
+\item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
+An object of class \code{'ts'} object without NA's.}
 
-\item{ACP.table}{A table of every combination of offset period and accumulation period. if ACP.table = FALSE, CTSR.RF and acu.RF must be provided}
+\item{ACP.table}{A table of every combination of offset period and accumulation period.
+ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
 }
 \value{
-summary
-(To be filled in)
+A list containing:
 
-CTSR.precip (CTSR.RF)
-Complete Time Series of the optimally accumulated rainfall.An object of class 'ts'.
+\bold{summary}
+       a Matrix containing "slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change"
+       of the \code{\link[stats]{lm}} between Antecedental Rainfall Accumulation (CTSR.RF) and the CTSR.VI
+
+\bold{CTSR.precip}
+       see CTSR.RF in \code{\link{TSSRESTREND}} for description
 }
 \description{
 Takes the Complete Time Series Vegetation Index and a table of every possible accumulation period and offset

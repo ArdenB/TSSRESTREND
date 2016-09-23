@@ -13,9 +13,7 @@ TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
 An object of class \code{'ts'} object without NA's.}
 
 \item{ACP.table}{A table of every combination of offset period and accumulation period.
-ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.
-if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
-rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.}
+ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
 
 \item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' object without NA's
 and be the same length and cover the same time range as CTSR.VI.
@@ -48,7 +46,7 @@ be generated using \code{\link{AnnualRF.Cal}}}
 \value{
 An object of class \code{'TSSRESTREND'} is a list with the following elements:
 \describe{
-  \item{summary}{
+  \item{\bold{\emph{summary}}}{
    \describe{
    \item{Method}{The method used to determine total change. (\emph{RESTREND} see \code{\link{RESTREND}},
      \emph{segmented.RESTREND} see \code{\link{seg.RESTREND}}, \emph{segmented.VPR} see
@@ -62,7 +60,7 @@ An object of class \code{'TSSRESTREND'} is a list with the following elements:
    \item{VPRbreak.p}{the p value associated with the break height. See \code{\link[stats]{lm}}}
    \item{bp.year}{The Year of the most significant breakpoint}
    }}
-  \item{ts.data}{The Time series used in analysis. See Arguments for description
+  \item{\bold{\emph{ts.data}}}{The Time series used in analysis. See Arguments for description
    \itemize{
      \item CTSR.VI
      \item CTSR.RF
@@ -71,13 +69,13 @@ An object of class \code{'TSSRESTREND'} is a list with the following elements:
      \item acu.RF
      \item StdVar.RF see \code{\link{seg.VPR}})}
      }
-   \item{ols.summary}{
+  \item{\bold{\emph{ols.summary}}}{
      \describe{
        \item{chow.summary}{summary of the most significant breakpoint. }
        \item{chow.ind}{Summary of every detected breakpoint}
        \item{OLS.table}{A matrix containing the coefficents for the CTS.fit, VPR.fit, RESTREND.fit and segVPR.fit}
        }}
-   \item{TSSRmodels}{
+   \item{\bold{\emph{TSSRmodels}}}{
    models of class "lm" \code{\link[stats]{lm}} and class "bfast" \code{\link[bfast]{bfast}} generated.}
    }
 }
@@ -87,11 +85,39 @@ time series of a VI and its corrosponding precipitation. Will caculate missing i
 look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
 and the VPR is assessed using a chow test an then the total time series change is calculated.
 }
+\note{
+if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
+       rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.
+}
 \examples{
+\dontrun{
+#To get the letest version of the package (Still in development)
+install.packages("devtools")
+library("devtools")
+install_github("ArdenB/TSSRESTREND", subdir="TSS.RESTREND")
+library(TSS.RESTREND)
+}
+#Find the path of the rabbitRF.csv dataset, read it in and turn it into a time series
+rf.path<- system.file("extdata", "rabbitRF.csv", package = "TSS.RESTREND", mustWork = TRUE)
+in.RF <- read.csv(rf.path)
+rf.data <- ts(in.RF, end=c(2013,12), frequency = 12)
 
+#Find the path of the rabbitVI.csv dataset and read it in
+vi.path <- system.file("extdata", "rabbitVI.csv", package = "TSS.RESTREND", mustWork = TRUE)
+in.VI <- read.csv(vi.path)
+CTSR.VI <- ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
+
+#Define the max accumuulation period
+max.acp <- 12
+#Define the max offset period
+max.osp <- 4
+#Create a table of every possible precipitation value given the max.acp and max.osp
+ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
+results <- TSSRESTREND(CTSR.VI, ACP.table)
+print(results)
 
 \dontrun{
-print("Hello World")
+plot(results, verbose=TRUE)
 }
 
 }
