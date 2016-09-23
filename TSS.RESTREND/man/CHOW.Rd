@@ -2,11 +2,48 @@
 % Please edit documentation in R/CHOW_bptest.R
 \name{CHOW}
 \alias{CHOW}
-\title{Loops over breakpoints to find the most significant one}
+\title{Chow test on detected breakpoints}
 \usage{
 CHOW(anu.VI, acu.RF, VI.index, breakpoints, sig = 0.05)
 }
+\arguments{
+\item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
+if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
+
+\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
+calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
+
+\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
+as anu.VI. NOTE. R indexs from 1 rather than 0.
+if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
+
+\item{breakpoints}{vector containing the breakpoints detected by \code{\link{VPR.BFAST}} (bkps)}
+
+\item{sig}{Significance of all the functions. defualt sig=0.05}
+}
+\value{
+\bold{n.Method}
+         The method that the ts should be tested with.  TSSRESTREND internal communication.
+
+\bold{bp.summary}
+         Summary of the most signifcant breakpoint in the residuals and VPR.
+         see \code{\link[strucchange]{sctest}}
+
+\bold{allbp.index}
+         the Annual index of every breakpoint. Used by \code{\link{plot.TSSRESTREND}}
+
+bpRESID.chow
+         Chow test in the VPR residuals. See \code{\link[strucchange]{sctest}}
+
+bpVPR.chow
+         Chow test in the VPR. See \code{\link[strucchange]{sctest}}
+}
 \description{
-TO BE ADDED
+Takes the breakpoints detected by \code{\link{VPR.BFAST}}, finds the most significant one then tests it in both
+the residuals and the VPR.
+}
+\author{
+Arden Burrell, arden.burrell@unsw.edu.au
 }
 

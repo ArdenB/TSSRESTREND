@@ -9,28 +9,13 @@
 #' @importFrom broom glance
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
+#' @inheritParams TSSRESTREND
+#' @inheritParams seg.VPR
 #'
-#' @param anu.VI
-#' The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)
-#' @param acu.RF
-#' The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)
-#' @param VI.index
-#' the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.
-#' @param sig
-#' Significance of all the functions, sig=0.05
-#' @param print
-#' Prints more details at every step of the procces
-#' @param plot
-#' creates a plots of the residulas vs time
-#'
-#' @return summary
-#' (To be filled in)
-#' @return VPR
-#' the lm (See lm_______)
-#' @return TSS.RESTREND
-#' the lm of the residuals
+#' @return a list of class TSSRESTREND.
+#'        See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
+#'        this list will be incomplete.
 #' @export
-#'
 
 seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
 

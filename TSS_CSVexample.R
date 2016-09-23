@@ -48,9 +48,9 @@ max.osp <- 4
 ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 
 #save this data out
-# rabbitACPtable <- ACP.table
+rabbitACPtable <- ACP.table
 # rabbitACPtable <- iconv(rabbitACPtable, "latin1", "ASCII", sub="")
-# save(rabbitACPtable, file = "./TSS.RESTREND/data/rabbitACPtable.rda")
+save(rabbitACPtable, file = "./TSS.RESTREND/data/rabbitACPtable.rda")
 
 # check the ACP.table is the right shape
 print(dim(ACP.table))

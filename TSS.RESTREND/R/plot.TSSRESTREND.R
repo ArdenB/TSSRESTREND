@@ -1,13 +1,21 @@
 #' @title  Plot function for class TSSRESTREND class
 #'
-#' @description Plot *******
+#' @description Produces plots for class TSSRESTREND
 #'
 #' @import  bfast
 #' @importFrom  graphics axis grid lines mtext title
 #' @importFrom stats predict
 #'
-#' @param plots = "all"
-#' User can create a single plot,
+#'
+#' @param x
+#'        Object of class TSSRESTREND
+#' @param plots
+#'        Defualts to "all", will produce the standard plots, plots can be called individually,
+#'        "bfast", "chow", "VPR", "anu.VI", "final".
+#' @param verbose
+#'        Will produce extra plots. CUrrently only add the chow plot
+#' @param sig
+#'        Significance
 #'
 #' @export
 

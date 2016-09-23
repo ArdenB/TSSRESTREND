@@ -15,5 +15,8 @@ rabbitACPtable
 Rainfall Accumulation Table form a part of the Simpson-sStrzelecki Dunefields bioregion
 impacted by reduced rabbit predation after the release of RHD.
 }
+\examples{
+data(rabbitACPtable)
+}
 \keyword{datasets}
 

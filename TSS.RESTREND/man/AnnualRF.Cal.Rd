@@ -8,26 +8,43 @@ AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = FALSE,
   allow.negative = FALSE)
 }
 \arguments{
-\item{anu.VI}{The annual (Growing season) max VI. Which can be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
+\item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
+if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. NOTE. R indexs from 1 rather than 0.
-NOTE. if VI.index=FALSE, It can be calculated from the CTSR.VI using \code{\link{AnMax.VI}}.}
+\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
+as anu.VI. NOTE. R indexs from 1 rather than 0.
+if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{ACP.table}{A table of every combination of offset period and accumulation period. It can be calculated from ________}
+\item{ACP.table}{A table of every combination of offset period and accumulation period.
+ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
+
+\item{Breakpoint}{Used when calcualting rf.bf and rf.af for ts with breakpoints in the VPR.  See \code{\link{CHOW}}}
+
+\item{allow.negative}{IF true, will not preference positive slope}
 }
 \value{
-_____(acu.RF)
-The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI.
-if anu.RF=FALSE, it will be calculated from ACP.table. see(____)
+\bold{summary}
+       a Matrix containing "slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change"
+       of the \code{\link[stats]{lm}} of VI ~ rainfall. If Breakpoint, summary covers both rf.b4 and rf.af.
 
-summary
-(To be filled in)
+\bold{acu.RF}
+       The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. IT is caculated
+       from the ACP.table by finding the acp and osp that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall)
+
+\bold{rf.b4}
+       The optimal acumulated rainfall before the Breakpoint
+
+\bold{rf.af}
+       The Optimally accumulated rainfall after the Breakpoint
 }
 \description{
 Takes the Annual Max VI Time Series, the VI.index and a table of every possible accumulation period and offset
-period.  A OLS is calculated \code{\link{lm}} for every combination of VI ~ rainfall.  This Function preferences those results where
+period.  A OLS is calculated \code{\link[stats]{lm}} for every combination of VI ~ rainfall.  This Function preferences those results where
 slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation that has the highest R-squared
 and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.MISSING non
 peramtric and other variables
+}
+\author{
+Arden Burrell, arden.burrell@unsw.edu.au
 }
 

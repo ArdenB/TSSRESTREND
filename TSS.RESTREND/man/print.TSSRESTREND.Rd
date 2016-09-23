@@ -6,7 +6,10 @@
 \usage{
 \method{print}{TSSRESTREND}(x, ...)
 }
+\arguments{
+\item{x}{Object of class TSSRESTREND}
+}
 \description{
-print function
+print function for class TSSRESTREND
 }
 

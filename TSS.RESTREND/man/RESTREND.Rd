@@ -7,24 +7,23 @@
 RESTREND(anu.VI, acu.RF, VI.index, sig = 0.05)
 }
 \arguments{
-\item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)}
+\item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
+if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)}
+\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
+calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
 
-\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.}
+\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
+as anu.VI. NOTE. R indexs from 1 rather than 0.
+if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{sig}{Significance of all the functions, sig=0.05}
-
-\item{print}{Prints more details at every step of the procces}
-
-\item{plot}{creates a plots of the residulas vs time}
+\item{sig}{Significance of all the functions. defualt sig=0.05}
 }
 \value{
-summary
-(To be filled in)
-
-VPR
-the lm (See lm_______)
+a list of class TSSRESTREND.
+       See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
+       this list will be incomplete.
 }
 \description{
 For ts with no significant breakpoints in the residuals or the VPR. Takes annual VI max and it associated optimal accumulated precipitation

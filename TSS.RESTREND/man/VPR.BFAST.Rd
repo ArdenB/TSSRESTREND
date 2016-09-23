@@ -7,26 +7,33 @@
 VPR.BFAST(CTSR.VI, CTSR.RF, season = "none")
 }
 \arguments{
-\item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
+\item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
+An object of class \code{'ts'} object without NA's.}
 
-\item{CTSR.RF}{Complete Time Series of Rain Fall.  An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
-If ACU.table is provided, CTSR.RF will be automitaclly calculated by \code{\link{rainfall.accumulator}}}
+\item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' object without NA's
+and be the same length and cover the same time range as CTSR.VI.
+If ACU.table is provided, CTSR.RF will be automitaclly calculated using the
+\code{\link{ACP.calculator}}}
 
-\item{sig}{Significance of all the functions, sig=0.05}
-
-\item{print}{Prints more details at every step of the procces}
-
-\item{plot}{creates a plots of every step}
-
-\item{details}{returns adational details for BFAST}
+\item{season}{See \code{\link[bfast]{bfast}}}
 }
 \value{
-breakpoints (____)
-(To be filled in)
+List of objects:
+
+\bold{bkps}
+         The index of the Breakpoints detected. If no breakpoints are detected, bkps = FASLE
+
+\bold{BFAST.obj}
+         See \code{\link[bfast]{bfast}}
+
+\bold{CTS.lm}
+         the \code{\link[stata]{lm}} of CTSR.VI and CTSR.RF
 }
 \description{
-This function will perform the complete Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
-look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals and the VPR is assessed using a chow test an
-then the total time series change is calculated. Calls ____________
+Uses the Complete VI and Rainfall time series, calculates a \code{\link[stats]{lm}} between them
+     And then performs a \code{\link[bfast]{bfast}}
+}
+\author{
+Arden Burrell, arden.burrell@unsw.edu.au
 }
 

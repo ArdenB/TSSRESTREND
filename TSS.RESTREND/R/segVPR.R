@@ -5,33 +5,19 @@
 #' bor and after the breakpoint, then caculated the Precipitation Standard Variance, and regresses it with a dummy
 #' variable that is 0 before the breakpoint and 1 after it. WARNING NEED TO REMOVE acu.RF
 #'
-#' @importFrom strucchange sctest
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
+#' @importFrom strucchange sctest
 #'
-#' @param anu.VI
-#' The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)
-#' @param acu.RF
-#' The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)
-#' @param VI.index
-#' the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.
+#' @inheritParams TSSRESTREND
 #' @param breakpoint
-#' TO BE ADDED
-#' @param rf.bf
-#' rain
-#' @param rf.af
-#' rain
-#' @param sig
-#' Significance of all the functions, sig=0.05
+#'        The index of the most significant breakpoint as determined using \code{\link{CHOW}}.
 #'
-#' @return summary
-#' (To be filled in)
-#' @return VPR
-#' the lm (See lm_______)
-#' @return TSS.RESTREND
-#' FALSE
+#' @return a list of class TSSRESTREND.
+#'        See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
+#'        this list will be incomplete.
 #' @export
-#'
+
 seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05){
   while (TRUE){
     if (class(anu.VI) != "ts")
@@ -166,15 +152,4 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
                         TSSRmodels=models), class = "TSSRESTREND"))
 
-  #To be replaced with
-  # overview <- data.frame(Method = "segmented.RESTREND",
-  #                        Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
-  #                        residual.p = glance(bpanalysis)$p.value, VPRbreak.p = FALSE, bp.year=bkp)
-  # models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=FALSE)
-  #
-  # ols.summary <- list(chow.sum=FALSE, OLS.table=m)
-  # return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
-  #                       TSSRmodels=models), class = "TSSRESTREND"))
-  #
-  # browser()
 }

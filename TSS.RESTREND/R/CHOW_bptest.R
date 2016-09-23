@@ -1,10 +1,31 @@
-#' @title Loops over breakpoints to find the most significant one
+#' @title Chow test on detected breakpoints
 #'
 #' @description
-#' TO BE ADDED
-#' @importFrom strucchange sctest
-#' @export
+#' Takes the breakpoints detected by \code{\link{VPR.BFAST}}, finds the most significant one then tests it in both
+#' the residuals and the VPR.
 #'
+#' @author Arden Burrell, arden.burrell@unsw.edu.au
+#'
+#' @importFrom strucchange sctest
+#'
+#' @inheritParams TSSRESTREND
+#'
+#' @param breakpoints
+#' vector containing the breakpoints detected by \code{\link{VPR.BFAST}} (bkps)
+#'
+#' @return \bold{n.Method}
+#'          The method that the ts should be tested with.  TSSRESTREND internal communication.
+#' @return \bold{bp.summary}
+#'          Summary of the most signifcant breakpoint in the residuals and VPR.
+#'          see \code{\link[strucchange]{sctest}}
+#' @return \bold{allbp.index}
+#'          the Annual index of every breakpoint. Used by \code{\link{plot.TSSRESTREND}}
+#' @return bpRESID.chow
+#'          Chow test in the VPR residuals. See \code{\link[strucchange]{sctest}}
+#' @return bpVPR.chow
+#'          Chow test in the VPR. See \code{\link[strucchange]{sctest}}
+#' @export
+
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   #test the data to make sure its valid
   if (class(anu.VI) != "ts")

@@ -1,31 +1,25 @@
 #' @title BFAST Breakpoint Detector
 #'
 #' @description
-#' This function will perform the complete Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
-#' look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals and the VPR is assessed using a chow test an
-#' then the total time series change is calculated. Calls ____________
-#' @importFrom bfast bfast
-
-
-#' @param CTSR.VI
-#' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
-#' @param CTSR.RF
-#' Complete Time Series of Rain Fall.  An object of class 'ts' and be the same length and cover the same time range as CTSR.VI.
-#' If ACU.table is provided, CTSR.RF will be automitaclly calculated by \code{\link{rainfall.accumulator}}
-#' @param sig
-#' Significance of all the functions, sig=0.05
-#' @param print
-#' Prints more details at every step of the procces
-#' @param plot
-#' creates a plots of every step
-#' @param details
-#' returns adational details for BFAST
+#'      Uses the Complete VI and Rainfall time series, calculates a \code{\link[stats]{lm}} between them
+#'      And then performs a \code{\link[bfast]{bfast}}
 #'
-#' @return breakpoints (____)
-#' (To be filled in)
+#' @author Arden Burrell, arden.burrell@unsw.edu.au
+#'
+#' @importFrom bfast bfast
+#'
+#' @inheritParams TSSRESTREND
+#'
+#' @return List of objects:
+#' @return \bold{bkps}
+#'          The index of the Breakpoints detected. If no breakpoints are detected, bkps = FASLE
+#' @return \bold{BFAST.obj}
+#'          See \code{\link[bfast]{bfast}}
+#' @return \bold{CTS.lm}
+#'          the \code{\link[stata]{lm}} of CTSR.VI and CTSR.RF
 #' @export
 
-VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") { #plot=TRUE, details=FALSE
+VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") {
   #functions takes the complete time series VI and rainfall (RF)
 
   #Check the objects are Time series
@@ -48,24 +42,8 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") { #plot=TRUE, details=FAL
   CTS.fit <- lm(CTSR.VI ~ CTSR.RF)
   #Convert to a ts object
   resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f)
-
-  #To Be Removed
-  # #Print and plot
-  # if (print) { #Need better explination and a title but it will do for the moment
-  #   print(summary(CTS.fit))
-  # }
-  # if (plot){
-  #   #This plot need serius work but will do for the moment
-  #   plot(resid.ts)
-  # }
-
   #perform the BFAST
   bf.fit <- bfast(resid.ts, h=0.15, season=season, max.iter=3, level = 0.05)
-
-  # if (plot){
-  #   #if plot is requested
-  #   plot(bf.fit)
-  # }
 
   if (bf.fit$nobp$Vt[[1]] == FALSE) {
     numiter <- length(bf.fit$output)

@@ -29,4 +29,13 @@ period.  A OLS is calculated \code{\link{lm}} for every combination of VI ~ rain
 slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation that has the highest R-squared
 and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.
 }
+\examples{
+#Find the data
+vi.path <- system.file("extdata", "rabbitVI.csv", package = "TSS.RESTREND", mustWork = TRUE)
+in.VI <- read.csv(vi.path)
+CTSR.VI <- ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
+data(rabbitACPtable)
+ACPres <- ACP.calculator(CTSR.VI, rabbitACPtable)
+print(ACPres$summary)
+}
 

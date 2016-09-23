@@ -18,6 +18,7 @@
 #' A matrix with ever possible accumuated rainfall combination
 #'
 #' @export
+
 rainfall.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
 
   if (class(CTSR.VI) != "ts")
@@ -48,7 +49,7 @@ rainfall.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
   #Set up a blank matrix to write into
   m<- matrix(nrow=(max.acp*max.osp), ncol=len)
 
-  rownames(m)<- paste(row.nm, rep(1:max.acp, max.osp), sep = ".")
+  rownames(m)<- paste(row.nm, rep(1:max.acp, max.osp), sep = "-")
   colnames(m)<- c(1:len)
   # index <- 1
 

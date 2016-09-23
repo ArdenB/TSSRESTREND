@@ -7,29 +7,33 @@
 seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig = 0.05)
 }
 \arguments{
-\item{anu.VI}{The annual (Growing season) max VI. if anu.VI=FALSE, it will be calculated from the CTSR.VI. See (___)}
+\item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
+if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. if anu.RF=FALSE, it will be calculated from ACP.table. see(____)}
+\item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
+calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
 
-\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length as anu.VI. NOTE. R indexs from 1 rather than 0.}
+\item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
+as anu.VI. NOTE. R indexs from 1 rather than 0.
+if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{breakpoint}{TO BE ADDED}
+\item{breakpoint}{The index of the most significant breakpoint as determined using \code{\link{CHOW}}.}
 
-\item{rf.af}{rain}
+\item{rf.b4}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
+the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
+be generated using \code{\link{AnnualRF.Cal}}}
 
-\item{sig}{Significance of all the functions, sig=0.05}
+\item{rf.af}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
+the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
+be generated using \code{\link{AnnualRF.Cal}}}
 
-\item{rf.bf}{rain}
+\item{sig}{Significance of all the functions. defualt sig=0.05}
 }
 \value{
-summary
-(To be filled in)
-
-VPR
-the lm (See lm_______)
-
-TSS.RESTREND
-FALSE
+a list of class TSSRESTREND.
+       See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
+       this list will be incomplete.
 }
 \description{
 For ts with a significant breakpoints in the the VPR. Takes annual VI max, the optimal accumulated precipitation

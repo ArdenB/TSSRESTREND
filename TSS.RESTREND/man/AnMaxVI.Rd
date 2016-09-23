@@ -7,20 +7,28 @@
 AnMaxVI(CTSR.VI)
 }
 \arguments{
-\item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
+\item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
+An object of class \code{'ts'} object without NA's.}
 }
 \value{
 Max(anu.VI)
-The annual (Growing season) max VI.
+         The annual (Growing season) max VI. See \code{\link{TSSRESTREND}}
 
 Max.Month
-a Vector that has the month number where max values wew observed
+         The month number where max values were observed (1 for January).
+         if month > 12, the peak was detected in Nov, Dec, Jan.
+         In this case the peak seasonal value and position is used.
 
 index(VI.index)
-the index of the CTSR.VI ts that the anu.VI values occur at.R indexs from 1 rather than 0.
+         the index of the CTSR.VI ts that the anu.VI values occur at.
+         See \code{\link{TSSRESTREND}}. Note.R indexs from 1 rather than 0.
 }
 \description{
-Takes the montly time series of the VI and calculates the growing season max VI. In series where the peak occurs in November or December,
-an interannual growing season is assessed.
+Takes the montly time series of the VI and calculates the growing season max VI.
+       In series where the peak occurs in November or December,
+       an interannual growing season is assessed.
+}
+\author{
+Arden Burrell, arden.burrell@unsw.edu.au
 }
 

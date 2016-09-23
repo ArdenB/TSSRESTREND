@@ -8,10 +8,16 @@
   ...)
 }
 \arguments{
-\item{plots}{= "all"
-User can create a single plot,}
+\item{x}{Object of class TSSRESTREND}
+
+\item{verbose}{Will produce extra plots. CUrrently only add the chow plot}
+
+\item{plots}{Defualts to "all", will produce the standard plots, plots can be called individually,
+"bfast", "chow", "VPR", "anu.VI", "final".}
+
+\item{sig}{Significance}
 }
 \description{
-Plot *******
+Produces plots for class TSSRESTREND
 }
 
