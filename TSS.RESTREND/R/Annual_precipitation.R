@@ -25,6 +25,21 @@
 #'        The Optimally accumulated rainfall after the Breakpoint
 #' @export
 #'
+#' @examples
+#' ARC <- AnnualRF.Cal(stdRESTREND$max.NDVI, stdRESTREND$index, stdRESTRENDrfTab)
+#' print(ARC)
+#' \dontrun{
+#'
+#' #Test the complete time series for breakpoints
+#' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
+#' bp<-as.numeric(VPRBFdem$bkps)
+#'
+#' #test the significance of the breakpoints
+#' reschow <- CHOW(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, bp)
+#' brkp <- as.integer(reschow$bp.summary["yr.index"])
+#' ARCseg <-AnnualRF.Cal(segVPR$max.NDVI, segVPR$index, segVPRrfTab, Breakpoint = brkp)
+#' print(ARCseg)
+#' }
 AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.negative=FALSE){
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")

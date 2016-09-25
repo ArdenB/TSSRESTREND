@@ -15,6 +15,10 @@
 #'        See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
 #'        this list will be incomplete.
 #' @export
+#'
+#' @examples
+#' restrend <- RESTREND(stdRESTREND$max.NDVI, stdRESTREND$acc.precip, stdRESTREND$index)
+#' print(restrend)
 
 RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
   #check the data
@@ -54,13 +58,22 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
   #may wat to add a nonparametric trend test here
 
   #Critical threshold test TO BE FIXED
-  # if (summary(VPR.fit)$coefficients[,4][2] > sig){
-  #   print("VPR significance below critical threshold")
-  #   overview <- data.frame(Method = FALSE, Total.Change=FALSE, model.p = glance(VPR.fit)$p.value,
-  #                          residual.p = FALSE, VPRbreak.p = FALSE)
-  #   return(structure(list(summary=overview,
-  #                         VPR = VPR.fit, TSS.RESTREND = FALSE), class = "RESTREND.Object"))
-  # }
+  if (summary(VPR.fit)$coefficients[,4][2] > sig){
+
+    print("VPR significance below critical threshold")
+    tot.ch<- FALSE
+    change<- FALSE
+
+    overview <- data.frame(Method = "indeterminate", Total.Change=tot.ch,
+                           Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
+                           residual.p = FALSE, VPRbreak.p = FALSE, bp.year=FALSE)
+    models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=FALSE)
+    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+    ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+
+    return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
+                          TSSRmodels=models), class = "TSSRESTREND"))
+  }
 
   VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
   RES <- lm(VPR.resid ~ ti)

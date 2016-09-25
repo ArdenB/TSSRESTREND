@@ -17,6 +17,11 @@
 #'        See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
 #'        this list will be incomplete.
 #' @export
+#'
+#' @examples
+#' brkp <- as.integer(24) #calculated using th CHOW (DONTRUN) example
+#' VPRres <- seg.VPR(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, brkp, segVPR$RFB4, segVPR$RFAF)
+#' print(VPRres)
 
 seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05){
   while (TRUE){

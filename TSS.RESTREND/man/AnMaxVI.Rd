@@ -28,6 +28,10 @@ Takes the montly time series of the VI and calculates the growing season max VI.
        In series where the peak occurs in November or December,
        an interannual growing season is assessed.
 }
+\examples{
+anmax <- AnMaxVI(stdRESTRENDCTSR$cts.NDVI)
+print(anmax)
+}
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
 }

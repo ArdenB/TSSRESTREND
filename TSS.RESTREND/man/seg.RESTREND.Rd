@@ -32,6 +32,11 @@ For ts with a significant breakpoints in the residuals but not in the VPR. Takes
 optimal accumulated precipitation and regresses it with a dummy variable that is 0 before the breakpoint and 1
 after it
 }
+\examples{
+# brkp can be determined using VPR.BFAST and CHOW.
+brkp <-  as.integer(11)
+resu <- seg.RESTREND(segRESTREND$max.NDVI, segRESTREND$acc.precip, segRESTREND$index, brkp)
+}
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
 }

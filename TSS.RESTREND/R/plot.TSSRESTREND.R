@@ -13,16 +13,26 @@
 #'        Defualts to "all", will produce the standard plots, plots can be called individually,
 #'        "bfast", "chow", "VPR", "anu.VI", "final".
 #' @param verbose
-#'        Will produce extra plots. CUrrently only add the chow plot
+#'        Will produce extra plots. CUrrently only adds the chow plot
 #' @param sig
 #'        Significance
+#' @param ...
+#'        further arguments passed to the function.
 #'
 #' @export
 
 plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
   #May add annual max VI vs RF
   #Plotting params
-  breakpoint <- x$ols.summary$chow.sum$yr.index
+  if (class(x$ols.summary$chow.sum)=="logical"){
+    if (plots=="all"||plots=="final"){
+      stop("Incomplete TSSRESTREND object passed, This is a MISSING feature to be implemented in the next version")
+      # print("Incomplete TSSRESTREND object passed. Producing the plots possible with available data.")
+      # plots="final"
+    }else{
+      stop("Incomplete TSSRESTREND object passed, Can not produce the requested plot.")
+    }
+  }else{breakpoint <- x$ols.summary$chow.sum$yr.index}
   anu.VI <- x$ts.data$anu.VI
   len <- length(anu.VI)
   ti <- time(anu.VI)
@@ -128,6 +138,32 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
     }
   }
 
+  if (plots=="all"||plots=="anu.VI") {
+    if (!breakpoint){
+      yst <- start(anu.VI)[1]
+      ynd <- end(anu.VI)[1]
+      t = c(yst:ynd)
+      plot(t, anu.VI, pch=16, xlab="Year", ylab="Annual max VI", col="orange")
+      title("Annual VI max")
+      grid()
+
+    }else{
+      yst <- start(anu.VI)[1]
+      ynd <- end(anu.VI)[1]
+
+      t = c(yst:ynd)
+      plot(t[1:breakpoint], anu.VI[1:(breakpoint)], pch=16,xlab="Year",
+           ylab="Annual max VI", col="orange", xlim=c(yst, ynd),
+           ylim=c(min(anu.VI), max(anu.VI)) )
+      grid()
+      par(new=T)
+      plot(t[(breakpoint+1):len], anu.VI[(breakpoint+1):len], pch=16,
+           xlab="", ylab="", col="purple",main="", xlim=c(yst, ynd),
+           ylim=c(min(anu.VI), max(anu.VI)))
+      title("Annual VI max")
+      abline(v=(breakpoint-0.5+yst), col="red", lty = "dashed")
+    }
+  }
 
   if (plots=="all"||plots=="VPR"){
     if (x$summary$Method=="segmented.VPR"){
@@ -158,7 +194,7 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       bh <-  x$TSSRmodels$segVPR.fit$coefficients[[3]]
       bot <- top+bh
       # lines(x=c(0, 0), y=c(top, bot), col="red", lwd=2, pch=0)
-      arrows(0, bot, x1=0, y1=top, length =.075,  angle = 90, code=3, col="red", lwd=2)
+      arrows(0, bot, x1=0, y1=top, length =.075,  angle = 90, code=3, col="black", lwd=2)
       R.Fval = summary(x$TSSRmodels$segVPR.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$segVPR.fit)$p.value
       R.Rval = summary(x$TSSRmodels$segVPR.fit)$r.squared
@@ -179,37 +215,19 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       title("VPR fit")
       abline(x$TSSRmodels$VPR.fit, col = "red",lwd = 2, lty = "dashed")
       grid()
-      #Maybe add p values or r2 or something
+      R.pval = glance(x$TSSRmodels$VPR.fit)$p.value
+      R.Rval = summary(x$TSSRmodels$VPR.fit)$r.squared
+      rp = vector('expression', 2)
+      rp[1] = substitute(expression(italic(p) == R.pval),
+                         list(R.pval  = format(R.pval, digits = 3)))[2]
+      rp[2] = substitute(expression(italic(R^2) == R.Rval),
+                         list(R.Rval = format(R.Rval,dig=3)))[2]
+      legend('topleft', legend = rp, bty = 'n')
     }
   }
 
 
-  if (plots=="all"||plots=="anu.VI") {
-    if (!breakpoint){
-      yst <- start(anu.VI)[1]
-      ynd <- end(anu.VI)[1]
-      t = c(yst:ynd)
-      plot(t, anu.VI, pch=16, xlab="Year", ylab="Annual max VI", col="orange")
-      title("Annual VI max")
-      grid()
 
-    }else{
-      yst <- start(anu.VI)[1]
-      ynd <- end(anu.VI)[1]
-
-      t = c(yst:ynd)
-      plot(t[1:breakpoint], anu.VI[1:(breakpoint)], pch=16,xlab="Year",
-           ylab="Annual max VI", col="orange", xlim=c(yst, ynd),
-           ylim=c(min(anu.VI), max(anu.VI)) )
-      grid()
-      par(new=T)
-      plot(t[(breakpoint+1):len], anu.VI[(breakpoint+1):len], pch=16,
-           xlab="", ylab="", col="purple",main="", xlim=c(yst, ynd),
-           ylim=c(min(anu.VI), max(anu.VI)))
-      title("Annual VI max")
-      abline(v=(breakpoint-0.5+yst), col="red", lty = "dashed")
-    }
-  }
   if(plots=="all"||plots=="final") {
     if (x$summary$Method=="segmented.RESTREND"){
       VPR.residuals <- x$TSSRmodels$VPR.fit$residuals

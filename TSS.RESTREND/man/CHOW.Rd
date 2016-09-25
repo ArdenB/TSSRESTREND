@@ -43,6 +43,15 @@ bpVPR.chow
 Takes the breakpoints detected by \code{\link{VPR.BFAST}}, finds the most significant one then tests it in both
 the residuals and the VPR.
 }
+\examples{
+#Test the complete time series for breakpoints
+VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
+bp<-as.numeric(VPRBFdem$bkps)
+#test the significance of the breakpoints
+reschow <- CHOW(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, bp)
+print(reschow)
+
+}
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
 }

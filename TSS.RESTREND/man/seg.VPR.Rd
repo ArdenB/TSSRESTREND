@@ -40,6 +40,11 @@ For ts with a significant breakpoints in the the VPR. Takes annual VI max, the o
 bor and after the breakpoint, then caculated the Precipitation Standard Variance, and regresses it with a dummy
 variable that is 0 before the breakpoint and 1 after it. WARNING NEED TO REMOVE acu.RF
 }
+\examples{
+brkp <- as.integer(24) #calculated using th CHOW (DONTRUN) example
+VPRres <- seg.VPR(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, brkp, segVPR$RFB4, segVPR$RFAF)
+print(VPRres)
+}
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
 }

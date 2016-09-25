@@ -24,4 +24,11 @@ A matrix with ever possible accumuated rainfall combination
 Takes the time series of rainfall and resturns a rainfall accumulation table of every possible combination
 of the max accumulation period and the max offset period.
 }
+\examples{
+# Define the max accumuulation period
+acp <- 12
+#Define the max offset period
+osp <- 4
+rftable <- rainfall.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
+}
 

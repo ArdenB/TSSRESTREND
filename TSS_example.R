@@ -62,8 +62,36 @@ print(dim(ACP.table))
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 results <- TSSRESTREND(CTSR.VI, ACP.table)
 plot(results)
+# stdRESTRENDctRF <- stdRES.CTSRrf.TS
+# stdRESTRENDCTSR <- stdRESTREND.CTSR
+# save(stdRESTREND, file = "./TSS.RESTREND/data/stdRESTREND.rda")
+# save(stdRESTRENDCTSR, file = "./TSS.RESTREND/data/stdRESTREND_CTSR.rda")
+# save(stdRESTRENDctRF, file = "./TSS.RESTREND/data/stdRESTREND_RF.rda")
+# stdRESTRENDrfTab <- ACP.table
+# save(stdRESTRENDrfTab, file = "./TSS.RESTREND/data/stRESTREND_ACPtable.rda")
+
+# # segVPR <- data.frame(max.NDVI = results$ts.data$anu.VI, acum.RF=results$ts.data$acu.RF,
+# #                      index=results$ts.data$VI.index, RFB4=ARCseg$rf.b4, RFAF= ARCseg$rf.af)
+# # save(segVPR, file = "./TSS.RESTREND/data/segVPR.rda")
+# segVPRctRF <- segVPRD.CTSRrf.TS
+# save(segVPRctRF, file = "./TSS.RESTREND/data/segVPRctRF.rda")
+# segVPRrfTab <- ACP.table
+# save(segVPRrfTab, file = "./TSS.RESTREND/data/segVPR_ACPtable.rda")
+# segVPRCTSR <- segVPRD.CTSR
+# save(segVPRCTSR, file = "./TSS.RESTREND/data/segVPR_CTSR.rda")
 
 
-# end.time <- Sys.time()
+#
+# segRESTRENDctRF <- segRES.CTSRrf.TS
+# segRESTRENDCTSR <- segRESTREND.CTSR
+# save(segRESTREND, file = "./TSS.RESTREND/data/segRESTREND.rda")
+# save(segRESTRENDCTSR, file = "./TSS.RESTREND/data/segRESTREND_CTSR.rda")
+# save(segRESTRENDctRF, file = "./TSS.RESTREND/data/segRESTREND_RF.rda")
+# segRESTRENDrfTab <- ACP.table
+# save(segRESTRENDrfTab, file = "./TSS.RESTREND/data/segRESTREND_ACPtable.rda")
+
+
+
+# # end.time <- Sys.time()
 # time.taken <- end.time - start.time
 # print(time.taken)

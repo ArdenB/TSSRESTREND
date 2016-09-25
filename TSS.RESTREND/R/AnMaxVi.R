@@ -16,6 +16,9 @@
 #'          the index of the CTSR.VI ts that the anu.VI values occur at.
 #'          See \code{\link{TSSRESTREND}}. Note.R indexs from 1 rather than 0.
 #' @export
+#' @examples
+#' anmax <- AnMaxVI(stdRESTRENDCTSR$cts.NDVI)
+#' print(anmax)
 
 
 AnMaxVI <- function(CTSR.VI){

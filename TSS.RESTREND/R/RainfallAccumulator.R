@@ -18,6 +18,13 @@
 #' A matrix with ever possible accumuated rainfall combination
 #'
 #' @export
+#'
+#' @examples
+#' # Define the max accumuulation period
+#' acp <- 12
+#' #Define the max offset period
+#' osp <- 4
+#' rftable <- rainfall.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
 
 rainfall.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
 

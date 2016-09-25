@@ -12,12 +12,13 @@ setwd(this.dir)
 # library(TSS.RESTREND)
 
 #Import the .csv that contains the monthly Vegetation data
-in.VI = read.csv("./demo_data/rabitVI.csv")
+# in.VI = read.csv("./demo_data/rabitVI.csv")
 # in.VI = read.csv("./demo_data/mungoVI.csv")
 # in.VI = read.csv("./demo_data/darlingVI.csv")
 # in.VI = read.csv("./demo_data/desertVI.csv")
 # in.VI = read.csv("./demo_data/southwaVI.csv")
 # in.VI = read.csv("./demo_data/chow2VI.csv")
+in.VI = read.csv("./demo_data/failVI.csv")
 
 # turn that data into a time series object.
   #Starts january 1982 and ends december 2013 with a
@@ -28,12 +29,13 @@ CTSR.VI = ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
   # Note that the rainfall sequences is longer to allow for the
   # accumulation period and the offset period. The start dates vary but the
   # end dates are the same.
-in.RF = read.csv("./demo_data/rabitRF.csv")
+# in.RF = read.csv("./demo_data/rabitRF.csv")
 # in.RF = read.csv("./demo_data/mungoRF.csv")
 # in.RF = read.csv("./demo_data/darlingRF.csv")
 # in.RF = read.csv("./demo_data/desertRF.csv")
 # in.RF = read.csv("./demo_data/southwaRF.csv")
 # in.RF = read.csv("./demo_data/chow2RF.csv")
+in.RF = read.csv("./demo_data/failRF.csv")
 
 #turn the data into a time series object
 rf.data = ts(in.RF, end=c(2013,12), frequency = 12)
@@ -48,12 +50,12 @@ max.osp <- 4
 ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 
 #save this data out
-rabbitACPtable <- ACP.table
-# rabbitACPtable <- iconv(rabbitACPtable, "latin1", "ASCII", sub="")
-save(rabbitACPtable, file = "./TSS.RESTREND/data/rabbitACPtable.rda")
-
-# check the ACP.table is the right shape
-print(dim(ACP.table))
+# rabbitACPtable <- ACP.table
+# # rabbitACPtable <- iconv(rabbitACPtable, "latin1", "ASCII", sub="")
+# save(rabbitACPtable, file = "./TSS.RESTREND/data/rabbitACPtable.rda")
+#
+# # check the ACP.table is the right shape
+# print(dim(ACP.table))
 
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 results <- TSSRESTREND(CTSR.VI, ACP.table)

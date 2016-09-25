@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{Object of class TSSRESTREND}
+
+\item{...}{further arguments passed to the function.}
 }
 \description{
 print function for class TSSRESTREND

@@ -27,11 +27,15 @@ List of objects:
          See \code{\link[bfast]{bfast}}
 
 \bold{CTS.lm}
-         the \code{\link[stata]{lm}} of CTSR.VI and CTSR.RF
+         the \code{\link[stats]{lm}} of CTSR.VI and CTSR.RF
 }
 \description{
 Uses the Complete VI and Rainfall time series, calculates a \code{\link[stats]{lm}} between them
      And then performs a \code{\link[bfast]{bfast}}
+}
+\examples{
+VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
+print(VPRBFdem)
 }
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au

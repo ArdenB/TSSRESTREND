@@ -16,6 +16,11 @@
 #'        See \code{\link{TSSRESTREND}} for details. Note. if called seperatly from TSSRESTREND,
 #'        this list will be incomplete.
 #' @export
+#'
+#' @examples
+#' # brkp can be determined using VPR.BFAST and CHOW.
+#' brkp <-  as.integer(11)
+#' resu <- seg.RESTREND(segRESTREND$max.NDVI, segRESTREND$acc.precip, segRESTREND$index, brkp)
 
 seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
 

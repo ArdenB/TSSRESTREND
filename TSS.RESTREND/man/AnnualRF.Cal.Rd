@@ -44,6 +44,22 @@ slope>0 (increase in rainfall causes an increase in vegetation), returning the r
 and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.MISSING non
 peramtric and other variables
 }
+\examples{
+ARC <- AnnualRF.Cal(stdRESTREND$max.NDVI, stdRESTREND$index, stdRESTRENDrfTab)
+print(ARC)
+\dontrun{
+
+#Test the complete time series for breakpoints
+VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
+bp<-as.numeric(VPRBFdem$bkps)
+
+#test the significance of the breakpoints
+reschow <- CHOW(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, bp)
+brkp <- as.integer(reschow$bp.summary["yr.index"])
+ARCseg <-AnnualRF.Cal(segVPR$max.NDVI, segVPR$index, segVPRrfTab, Breakpoint = brkp)
+print(ARCseg)
+}
+}
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
 }

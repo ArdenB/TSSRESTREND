@@ -25,6 +25,15 @@
 #' @return bpVPR.chow
 #'          Chow test in the VPR. See \code{\link[strucchange]{sctest}}
 #' @export
+#'
+#' @examples
+#' #Test the complete time series for breakpoints
+#' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
+#' bp<-as.numeric(VPRBFdem$bkps)
+#' #test the significance of the breakpoints
+#' reschow <- CHOW(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, bp)
+#' print(reschow)
+#'
 
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   #test the data to make sure its valid
@@ -70,7 +79,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   #split VPR sig from VPR insignificant
   VPR.fit <- lm(anu.VI ~ acu.RF)
   if (summary(VPR.fit)$coefficients[,4][2] > sig){
-    if (print){print("VPR significance below critical threshold, Testing breakpoints in the VPR")}
+    print("VPR significance below critical threshold, Testing breakpoints in the VPR")
     ind <- acu.RF #independent variable
     dep <- anu.VI #dependent variable
     Method = "seg.VPR"
@@ -98,7 +107,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
         bp.end = ind.df$yr.index[bp.num+1]}
       #perform the chow test
       bkp = bp - (bp.start-1)
-      print(bkp)
+      # print(bkp)
       chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end], type = "Chow", point = bkp)
 
 
@@ -119,7 +128,8 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
 
       if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig){ # cant chow non-sig residulas (bpRESID.chow = FALSE)
         ind.df$reg.sig[1] = NaN
-        return(structure(list(n.Method = FALSE, bp.summary = ind.df, allbp.index = bp.ind,
+        # Passing to the RESTREND function to catch broken VPR
+        return(structure(list(n.Method = "RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
                               bpRESID.chow = FALSE, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
       }else if (Method == "seg.VPR" & ind.df$reg.sig[1] <= sig){
         ind.df$reg.sig[1] = NaN

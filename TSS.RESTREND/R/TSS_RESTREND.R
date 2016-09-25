@@ -189,6 +189,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
+  # browser()
   if (BFAST.obj$nobp$Vt[[1]]){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
     chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)

@@ -28,6 +28,10 @@ a list of class TSSRESTREND.
 \description{
 For ts with no significant breakpoints in the residuals or the VPR. Takes annual VI max and it associated optimal accumulated precipitation
 }
+\examples{
+restrend <- RESTREND(stdRESTREND$max.NDVI, stdRESTREND$acc.precip, stdRESTREND$index)
+print(restrend)
+}
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
 }

@@ -16,8 +16,12 @@
 #' @return \bold{BFAST.obj}
 #'          See \code{\link[bfast]{bfast}}
 #' @return \bold{CTS.lm}
-#'          the \code{\link[stata]{lm}} of CTSR.VI and CTSR.RF
+#'          the \code{\link[stats]{lm}} of CTSR.VI and CTSR.RF
 #' @export
+#'
+#' @examples
+#' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
+#' print(VPRBFdem)
 
 VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") {
   #functions takes the complete time series VI and rainfall (RF)

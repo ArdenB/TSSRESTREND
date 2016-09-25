@@ -4,7 +4,7 @@
 #' @inheritParams plot.TSSRESTREND
 #' @export
 
-print.TSSRESTREND <- function(x){
+print.TSSRESTREND <- function(x, ...){
   print(x$summary)
   print(x$ols.summary)
 }

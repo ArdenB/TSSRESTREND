@@ -10,12 +10,14 @@
 \arguments{
 \item{x}{Object of class TSSRESTREND}
 
-\item{verbose}{Will produce extra plots. CUrrently only add the chow plot}
+\item{verbose}{Will produce extra plots. CUrrently only adds the chow plot}
 
 \item{plots}{Defualts to "all", will produce the standard plots, plots can be called individually,
 "bfast", "chow", "VPR", "anu.VI", "final".}
 
 \item{sig}{Significance}
+
+\item{...}{further arguments passed to the function.}
 }
 \description{
 Produces plots for class TSSRESTREND
