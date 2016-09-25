@@ -6,8 +6,8 @@ Version: 0.1.02
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description:
     To perform the Time Series Segmented Residual Trend (TSS-RESTREND) method.
-    The full details are available in (Burrell et al. 2016).
-License:  GPL (>= 2)
+    The full details are available in (Burrell et al. 2016???? To be updated after the paper is published).
+License:  GPL-3
 LazyData: TRUE
 Imports:
     stats,

@@ -73,6 +73,20 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
 
     return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
                           TSSRmodels=models), class = "TSSRESTREND"))
+  }else if (R.slpe < 0){
+    print("VPR slope is negative")
+    tot.ch<- FALSE
+    change<- FALSE
+
+    overview <- data.frame(Method = "IND-agr?", Total.Change=tot.ch,
+                           Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
+                           residual.p = FALSE, VPRbreak.p = FALSE, bp.year=FALSE)
+    models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=FALSE)
+    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+    ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+
+    return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
+                          TSSRmodels=models), class = "TSSRESTREND"))
   }
 
   VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
