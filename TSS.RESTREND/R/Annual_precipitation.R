@@ -133,7 +133,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))
     }else{
       mx <- m[m[, "slope"] >= 0,]
-      if (dim(mx)[1] == 0){
+      if (length(mx) <= 6){
         warning("No positve slopes exist before the bp. Returing most significant negative slope")
         max.line <- which.max(m[, "R^2.Value"])
         suma <- m[max.line,]
@@ -145,7 +145,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
       }
       px <- p[p[, "slope"] >= 0,]
-      if (dim(px)[1] == 0){
+      if (length(px)<= 6){
         warning("No positve slopes exist after the bp. Returing most significant negative slope")
         pmax.line <- which.max(p[, "R^2.Value"])
         p.suma <- p[pmax.line,]
