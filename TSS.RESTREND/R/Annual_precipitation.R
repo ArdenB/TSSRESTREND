@@ -105,9 +105,11 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       return(structure(list(summary=suma, annual.precip = anu.ARF)))
     }else{
 
-      mx <- m[m[, "slope"] > 0,]
-      if (dim(mx)[1] == 0){
-        warning("No positve slopes exist. Returing most significant negative slope")
+      mx <- matrix(m[m[, "slope"] >= 0,],  ncol=6)
+      colnames(mx) <- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+      # browser()
+      if (dim(mx)[1] <= 1){
+        warning("Insufficent positve slopes exist. Returing most significant negative slope")
         max.line <- which.max(m[, "R^2.Value"])
         suma <- m[max.line,]
         anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
@@ -132,9 +134,10 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       summ <- c(suma, p.suma)
       return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))
     }else{
-      mx <- m[m[, "slope"] >= 0,]
-      if (length(mx) <= 6){
-        warning("No positve slopes exist before the bp. Returing most significant negative slope")
+      mx <- matrix(m[m[, "slope"] >= 0,],  ncol=6)
+      colnames(mx)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+      if (dim(mx)[1] <= 1){
+        warning("Insufficent positve slopes exist before the bp. Returing most significant negative slope")
         max.line <- which.max(m[, "R^2.Value"])
         suma <- m[max.line,]
         anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
@@ -144,9 +147,10 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         suma <- mx[max.line,]
         anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
       }
-      px <- p[p[, "slope"] >= 0,]
-      if (length(px)<= 6){
-        warning("No positve slopes exist after the bp. Returing most significant negative slope")
+      px <- matrix(p[p[, "slope"] > 0,],  ncol=6)
+      colnames(px)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+      if (dim(px)[1] <= 1){
+        warning("Insufficent positve slopes exist after the bp. Returing most significant negative slope")
         pmax.line <- which.max(p[, "R^2.Value"])
         p.suma <- p[pmax.line,]
         panu.ARF <- ts(anu.ACUP[pmax.line, ], start=c(yst, mst), frequency = 1)

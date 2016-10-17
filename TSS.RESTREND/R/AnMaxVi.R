@@ -60,9 +60,12 @@ AnMaxVI <- function(CTSR.VI){
       # print(test)
       df$Max.month[row] = which.max(test)+10
       df$Max[row] = max(test, na.rm=TRUE)
-      nxtyr <- m[row+2, 2:12]
-      df$Max.month[row+1] = which.max(nxtyr)+2
-      df$Max[row+1] = max(nxtyr)
+      try({
+        nxtyr <- m[row+2, 2:12]
+        df$Max.month[row+1] = which.max(nxtyr)+2
+        df$Max[row+1] = max(nxtyr)
+      }, silent = TRUE)
+
     }
   }
   df$index <- ((df$index-sty)*12+df$Max.month)
