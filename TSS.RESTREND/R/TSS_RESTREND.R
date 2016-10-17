@@ -130,9 +130,10 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object. Please check the data")
 
-    if ((!ACP.table) && (!CTSR.RF || acu.RF))
-      stop("Insufficent Rainfall data provided. Provide either a complete ACP.table or both the CTSR.RF & acu.RF")
 
+    if ((class(ACP.table)=="logical") && (!CTSR.RF || acu.RF))
+      stop("Insufficent Rainfall data provided. Provide either a complete ACP.table or both the CTSR.RF & acu.RF")
+    # browser()
     if ((!anu.VI)||(!VI.index)){
       max.df <- AnMaxVI(CTSR.VI)
       anu.VI <- max.df$Max
