@@ -13,12 +13,12 @@ setwd(this.dir)
 
 #Import the .csv that contains the monthly Vegetation data
 # in.VI = read.csv("./demo_data/rabitVI.csv")
-in.VI = read.csv("./demo_data/mungoVI.csv")
+# in.VI = read.csv("./demo_data/mungoVI.csv")
 # in.VI = read.csv("./demo_data/darlingVI.csv")
 # in.VI = read.csv("./demo_data/desertVI.csv")
 # in.VI = read.csv("./demo_data/southwaVI.csv")
 # in.VI = read.csv("./demo_data/chow2VI.csv")
-# in.VI = read.csv("./demo_data/failVI.csv")
+in.VI = read.csv("./demo_data/failVI.csv")
 
 # turn that data into a time series object.
   #Starts january 1982 and ends december 2013 with a
@@ -30,12 +30,12 @@ CTSR.VI = ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
   # accumulation period and the offset period. The start dates vary but the
   # end dates are the same.
 # in.RF = read.csv("./demo_data/rabitRF.csv")
-in.RF = read.csv("./demo_data/mungoRF.csv")
+# in.RF = read.csv("./demo_data/mungoRF.csv")
 # in.RF = read.csv("./demo_data/darlingRF.csv")
 # in.RF = read.csv("./demo_data/desertRF.csv")
 # in.RF = read.csv("./demo_data/southwaRF.csv")
 # in.RF = read.csv("./demo_data/chow2RF.csv")
-# in.RF = read.csv("./demo_data/failRF.csv")
+in.RF = read.csv("./demo_data/failRF.csv")
 
 #turn the data into a time series object
 rf.data = ts(in.RF, end=c(2013,12), frequency = 12)

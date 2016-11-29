@@ -53,7 +53,8 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
 
 
   }
-  mx <- m[m[, "slope"] > 0,]
+  mx <- matrix(m[m[, "slope"] > 0,], ncol=6)
+  colnames(mx)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
   #
   if (dim(mx)[1] == 0){
     # warning("No positve slopes exist. Returing most significant negative slope")
