@@ -2,11 +2,13 @@
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.1.02
+Version: 0.1.03
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description:
-    To perform the Time Series Segmented Residual Trend (TSS-RESTREND) method.
-    The full details are available in (Burrell et al. 2016???? To be updated after the paper is published).
+    TSS.RESTREND This script is a a demonstration of the Segmented RESTREND method proposed in Burrell et. al., (2016?).
+    (Paper submitted). TSS.RESTREND is a modification of the RESTREND method originally proposed by Evans and Geerke (2006).
+    It incoperates BFAST breakpoint detection to look for major ecosystem changes.  The version in development and additional
+    documentation, data and example scripts can be can be found at \url{https://github.com/ArdenB/TSSRESTREND}.
 License:  GPL-3
 LazyData: TRUE
 Imports:

@@ -12,7 +12,7 @@ It incoperates BFAST breakpoint detection to look for major ecosystem changes.  
 documentation, data and example scripts can be can be found at \url{https://github.com/ArdenB/TSSRESTREND}.
 }
 \details{
-Version 0.1.02
+Version 0.1.03
 }
 \note{
 This code is a demostration of the method and not the code used in Burrell et. al., (2016?).

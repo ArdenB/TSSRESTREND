@@ -49,7 +49,9 @@
 #'        Significance of all the functions. defualt sig=0.05
 #' @param season
 #'        See \code{\link[bfast]{bfast}}
-#'
+#' @param exclude
+#'        A numberic vector containg months excluded from breakpoint detection.  This was included to
+#'        allow sensor transitions to be masked.
 #' @return
 #' An object of class \code{'TSSRESTREND'} is a list with the following elements:
 #' \describe{
@@ -124,7 +126,7 @@
 #' }
 #'
 TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
-                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none"){
+                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0){
 
   while (TRUE){ #Test the variables
     if (class(CTSR.VI) != "ts")
@@ -190,8 +192,13 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
+  bp <- bp[!bp %in% exclude]
+  if (length(bp)==0) {
+    bp <- FALSE
+  }
+
   # browser()
-  if (BFAST.obj$nobp$Vt[[1]]){# no breakpoints detected by the BFAST
+  if (bp==FALSE){# no breakpoints detected by the BFAST
     test.Method = "RESTREND"
     chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)
     chow.bpi <- FALSE
