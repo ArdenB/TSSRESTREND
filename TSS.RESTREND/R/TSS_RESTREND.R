@@ -96,7 +96,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' #To get the letest version of the package (Still in development)
+#' #To get the latest version of the package (Still in development)
 #' install.packages("devtools")
 #' library("devtools")
 #' install_github("ArdenB/TSSRESTREND", subdir="TSS.RESTREND")

@@ -31,4 +31,3 @@ acp <- 12
 osp <- 4
 rftable <- rainfall.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
 }
-

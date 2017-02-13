@@ -1,4 +1,3 @@
-
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
@@ -9,7 +8,7 @@ Description:
     (Paper submitted). TSS.RESTREND is a modification of the RESTREND method originally proposed by Evans and Geerke (2006).
     It incoperates BFAST breakpoint detection to look for major ecosystem changes.  The version in development and additional
     documentation, data and example scripts can be can be found at \url{https://github.com/ArdenB/TSSRESTREND}.
-License:  GPL-3
+License: GPL-3
 LazyData: TRUE
 Imports:
     stats,
@@ -22,4 +21,4 @@ Imports:
     RcppRoll
 Depends:
     R (>= 3.2.0)
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0

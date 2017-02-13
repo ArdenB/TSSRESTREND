@@ -19,4 +19,7 @@ This code is a demostration of the method and not the code used in Burrell et. a
        The original code uses both python and R and was designed for batch proccessing. For the pixels
        tested using the TSS.RESTREND package it produces identical results.
 }
+\author{
+\strong{Maintainer}: Arden Burrell \email{arden.burrell@unsw.edu.au}
 
+}

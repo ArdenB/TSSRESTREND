@@ -15,4 +15,3 @@ segVPR
 contains anu.VI, acu.RF,  VI.index, rf.b4, rf.af. Range 1982 - 2013. Breakpoint for this pixel is 24 (2005)
 }
 \keyword{datasets}
-

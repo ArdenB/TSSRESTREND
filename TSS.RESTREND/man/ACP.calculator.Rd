@@ -22,6 +22,12 @@ A list containing:
 
 \bold{CTSR.precip}
        see CTSR.RF in \code{\link{TSSRESTREND}} for description
+
+\bold{CTSR.osp}
+       The offest period for the complete time series rainfall
+
+\bold{CTSR.acp}
+       The accumulation period for the complete time series rainfall
 }
 \description{
 Takes the Complete Time Series Vegetation Index and a table of every possible accumulation period and offset
@@ -38,4 +44,3 @@ data(rabbitACPtable)
 ACPres <- ACP.calculator(CTSR.VI, rabbitACPtable)
 print(ACPres$summary)
 }
-

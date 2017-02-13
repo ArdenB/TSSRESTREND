@@ -13,6 +13,10 @@
 #'        of the \code{\link[stats]{lm}} between Antecedental Rainfall Accumulation (CTSR.RF) and the CTSR.VI
 #' @return \bold{CTSR.precip}
 #'        see CTSR.RF in \code{\link{TSSRESTREND}} for description
+#' @return \bold{CTSR.osp}
+#'        The offest period for the complete time series rainfall
+#' @return \bold{CTSR.acp}
+#'        The accumulation period for the complete time series rainfall
 #' @export
 #' @examples
 #' #Find the data
@@ -61,14 +65,23 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
     max.line <- which.max(m[, "R^2.Value"])
     suma <- m[max.line,]
     CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
+
+    namestr <- rownames(rfx)[max.line]
+    nmsplit <- strsplit(namestr, "\\-")[[1]]
+    osp <- as.numeric(nmsplit[1])
+    acp <- as.numeric(nmsplit[2])
     # browser()
-    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
+    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.ops = osp, CTSR.acp = acp)))
   }else{
     rfx <- ACP.table[m[, "slope"] > 0,]
     max.line <- which.max(mx[, "R^2.Value"])
     suma <- mx[max.line,]
     CTSR.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 12)
-    # browser()
-    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF)))
+
+    namestr <- rownames(rfx)[max.line]
+    nmsplit <- strsplit(namestr, "\\-")[[1]]
+    osp <- as.numeric(nmsplit[1])
+    acp <- as.numeric(nmsplit[2])
+    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.ops = osp, CTSR.acp = acp)))
   }
 }
