@@ -1,17 +1,17 @@
 this.dir <- dirname(parent.frame(2)$ofile)
 setwd(this.dir)
 #
-# load("./demo_data/stdRESTREND.Rda")
-# load("./demo_data/stdRESTREND_CTSR.Rda")
-# load("./demo_data/stdRESTREND_RF.Rda")
-# CTSR.VI <- stdRESTREND.CTSR$cts.NDVI
-# rf.data <- stdRES.CTSRrf.TS$precip
-# #
-load("./demo_data/segRESTREND.Rda")
-load("./demo_data/segRESTREND_CTSR.Rda")
-load("./demo_data/segRESTREND_RF.Rda")
-CTSR.VI <- segRESTREND.CTSR$cts.NDVI
-rf.data <- segRES.CTSRrf.TS$precip
+load("./demo_data/stdRESTREND.Rda")
+load("./demo_data/stdRESTREND_CTSR.Rda")
+load("./demo_data/stdRESTREND_RF.Rda")
+CTSR.VI <- stdRESTREND.CTSR$cts.NDVI
+rf.data <- stdRES.CTSRrf.TS$precip
+#
+# load("./demo_data/segRESTREND.Rda")
+# load("./demo_data/segRESTREND_CTSR.Rda")
+# load("./demo_data/segRESTREND_RF.Rda")
+# CTSR.VI <- segRESTREND.CTSR$cts.NDVI
+# rf.data <- segRES.CTSRrf.TS$precip
 # # #
 # load("./demo_data/segVPRD.Rda")
 # load("./demo_data/segVPRD_CTSR.Rda")
@@ -61,7 +61,7 @@ print(dim(ACP.table))
 
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 # exc = c(125:127)
-results <- TSSRESTREND(CTSR.VI, ACP.table, exclude = exc)
+results <- TSSRESTREND(CTSR.VI, ACP.table)
 plot(results)
 # stdRESTRENDctRF <- stdRES.CTSRrf.TS
 # stdRESTRENDCTSR <- stdRESTREND.CTSR

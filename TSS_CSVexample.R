@@ -12,8 +12,8 @@ setwd(this.dir)
 # library(TSS.RESTREND)
 
 #Import the .csv that contains the monthly Vegetation data
-in.VI = read.csv("./demo_data/rabitVI.csv")
-# in.VI = read.csv("./demo_data/mungoVI.csv")
+# in.VI = read.csv("./demo_data/rabitVI.csv")
+in.VI = read.csv("./demo_data/mungoVI.csv")
 # in.VI = read.csv("./demo_data/darlingVI.csv")
 # in.VI = read.csv("./demo_data/desertVI.csv")
 # in.VI = read.csv("./demo_data/southwaVI.csv")
@@ -29,8 +29,8 @@ CTSR.VI = ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
   # Note that the rainfall sequences is longer to allow for the
   # accumulation period and the offset period. The start dates vary but the
   # end dates are the same.
-in.RF = read.csv("./demo_data/rabitRF.csv")
-# in.RF = read.csv("./demo_data/mungoRF.csv")
+# in.RF = read.csv("./demo_data/rabitRF.csv")
+in.RF = read.csv("./demo_data/mungoRF.csv")
 # in.RF = read.csv("./demo_data/darlingRF.csv")
 # in.RF = read.csv("./demo_data/desertRF.csv")
 # in.RF = read.csv("./demo_data/southwaRF.csv")
