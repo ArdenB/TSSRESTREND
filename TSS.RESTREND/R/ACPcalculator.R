@@ -66,11 +66,11 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
     suma <- m[max.line,]
     CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
 
+    # browser()
     namestr <- rownames(rfx)[max.line]
     nmsplit <- strsplit(namestr, "\\-")[[1]]
     osp <- as.numeric(nmsplit[1])
     acp <- as.numeric(nmsplit[2])
-    # browser()
     return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.ops = osp, CTSR.acp = acp)))
   }else{
     rfx <- ACP.table[m[, "slope"] > 0,]

@@ -147,8 +147,11 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     }
     if (!CTSR.RF){
       CTS.Str <- ACP.calculator(CTSR.VI, ACP.table)
+      # browser()
       CTSR.RF <- CTS.Str$CTSR.precip
       details.CTS.VPR <- CTS.Str$summary #DETAILS object
+      CTSR.osp <- CTS.Str$CTSR.osp
+      CTSR.acp <- CTS.Str$CTSR.acp
     }else{
       if (class(CTSR.RF) != "ts")
         stop("CTSR.RF Not a time series object")
@@ -163,9 +166,11 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
       if (!identical(freq, freq2))
         stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")
     }
-    # browser()
     if (!acu.RF){
       precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table)
+      # browser()
+      osp <- precip.df$osp
+      acp <- precip.df$acp
       acu.RF <- precip.df$annual.precip
       details.VPR<- precip.df$summary
     }else{
@@ -193,6 +198,9 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
   bp <- bp[!bp %in% exclude]
+  # browser()
+  acum.df <- data.frame(CTSR.osp= CTSR.osp, CTSR.acp = CTSR.acp, osp = osp, acp = acp, osp.b4 = NaN, acp.b4 = NaN,
+                        osp.af = NaN, acp.af = NaN)
   if (length(bp)==0) {
     bp <- FALSE
   }
@@ -238,6 +246,11 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
       VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = brkp)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
+      # browser()
+      acum.df$osp.b4 <- VPRbp.df$osp.b4
+      acum.df$acp.b4 <- VPRbp.df$acp.b4
+      acum.df$osp.af <- VPRbp.df$osp.af
+      acum.df$acp.af <- VPRbp.df$acp.af
     }
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
@@ -250,7 +263,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ols.summary$chow.ind <- chow.bpi
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }
-
+  result$acum.df <- acum.df
   return(result) #add CTSR
 }
 

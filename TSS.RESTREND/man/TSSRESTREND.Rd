@@ -94,7 +94,7 @@ if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
 }
 \examples{
 \dontrun{
-#To get the letest version of the package (Still in development)
+#To get the latest version of the package (Still in development)
 install.packages("devtools")
 library("devtools")
 install_github("ArdenB/TSSRESTREND", subdir="TSS.RESTREND")
@@ -124,12 +124,13 @@ plot(results, verbose=TRUE)
 }
 
 }
+\author{
+Arden Burrell, arden.burrell@unsw.edu.au
+}
 \seealso{
 \itemize{
    \item \code{\link{plot.TSSRESTREND}}
    \item \code{\link{print.TSSRESTREND}}
    }
 }
-\author{
-Arden Burrell, arden.burrell@unsw.edu.au
-}
+

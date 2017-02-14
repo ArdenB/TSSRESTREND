@@ -128,7 +128,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
 
         return(structure(list(summary=suma, annual.precip = anu.ARF, osp=osp, acp=acp)))
       }else{
-        rfx <- anu.ACUP[m[, "slope"] > 0,]
+        rfx <- anu.ACUP[m[, "slope"] >= 0,]
         max.line <- which.max(mx[, "R^2.Value"])
         suma <- mx[max.line,]
         anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
@@ -142,16 +142,29 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       }
     }
   }else{
+
     if (allow.negative){
       max.line <- which.max(m[, "R^2.Value"])
       suma <- m[max.line,]
       anu.ARF <- ts(anu.ACUP[max.line, ], start=yst, frequency = 1)
 
+      namestr <- rownames(m)[max.line]
+      # browser()
+      nmsplit <- strsplit(namestr, "\\-")[[1]]
+      osp.b4 <- as.numeric(nmsplit[1])
+      acp.b4 <- as.numeric(nmsplit[2])
+
       pmax.line <- which.max(p[, "R^2.Value"])
       p.suma <- p[pmax.line,]
       panu.ARF <- ts(anu.ACUP[pmax.line, ], start=yst, frequency = 1)
       summ <- c(suma, p.suma)
-      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))
+
+      namestr.af <- rownames(p)[pmax.line]
+      nmsplit.af <- strsplit(namestr.af, "\\-")[[1]]
+      osp.af <- as.numeric(nmsplit[1])
+      acp.af <- as.numeric(nmsplit[2])
+
+      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF, osp.b4 = ops.b4, acp.b4 = acp.b4, osp.af = osp.af, acp.af = acp.af)))
     }else{
       mx <- matrix(m[m[, "slope"] >= 0,],  ncol=6)
       colnames(mx)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
@@ -160,11 +173,21 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         max.line <- which.max(m[, "R^2.Value"])
         suma <- m[max.line,]
         anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
+        # browser()
+        namestr <- rownames(m)[max.line]
+        nmsplit <- strsplit(namestr, "\\-")[[1]]
+        osp.b4 <- as.numeric(nmsplit[1])
+        acp.b4 <- as.numeric(nmsplit[2])
       }else{
         rfx <- anu.ACUP[m[, "slope"] > 0,]
         max.line <- which.max(mx[, "R^2.Value"])
         suma <- mx[max.line,]
         anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
+        # browser()
+        namestr <- rownames(rfx)[max.line]
+        nmsplit <- strsplit(namestr, "\\-")[[1]]
+        osp.b4 <- as.numeric(nmsplit[1])
+        acp.b4 <- as.numeric(nmsplit[2])
       }
       px <- matrix(p[p[, "slope"] > 0,],  ncol=6)
       colnames(px)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
@@ -173,14 +196,26 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         pmax.line <- which.max(p[, "R^2.Value"])
         p.suma <- p[pmax.line,]
         panu.ARF <- ts(anu.ACUP[pmax.line, ], start=c(yst, mst), frequency = 1)
+        # browser()
+        namestr.af <- rownames(p)[pmax.line]
+        nmsplit.af <- strsplit(namestr.af, "\\-")[[1]]
+        osp.af <- as.numeric(nmsplit[1])
+        acp.af <- as.numeric(nmsplit[2])
       }else{
         p.rfx <- anu.ACUP[p[, "slope"] > 0,]
         pmax.line <- which.max(px[, "R^2.Value"])
         p.suma <- px[pmax.line,]
         panu.ARF <- ts(p.rfx[pmax.line, ], start=c(yst, mst), frequency = 1)
+        # browser()
+        namestr.af <- rownames(p.rfx)[pmax.line]
+        nmsplit.af <- strsplit(namestr.af, "\\-")[[1]]
+        osp.af <- as.numeric(nmsplit[1])
+        acp.af <- as.numeric(nmsplit[2])
       }
       summ <- c(suma, p.suma)
-      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))
+      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF, osp.b4 = osp.b4,
+                            acp.b4 = acp.b4, osp.af = osp.af, acp.af = acp.af)))
+      # return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF)))
 
     }
 

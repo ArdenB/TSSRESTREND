@@ -15,3 +15,4 @@ contains raw monthly precipitation
 \code{\link{stdRESTREND}} for the annual values for the same pixel
 }
 \keyword{datasets}
+

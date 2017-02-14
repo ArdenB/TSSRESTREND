@@ -153,8 +153,9 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
                          residual.p = R3.pval, VPRbreak.p = bp.pval, bp.year=bkp)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=segVPR.fit)
   ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+  acum.df <- FALSE
 
   return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
-                        TSSRmodels=models), class = "TSSRESTREND"))
+                        TSSRmodels=models, acum.df=acum.df), class = "TSSRESTREND"))
 
 }

@@ -44,3 +44,4 @@ data(rabbitACPtable)
 ACPres <- ACP.calculator(CTSR.VI, rabbitACPtable)
 print(ACPres$summary)
 }
+
