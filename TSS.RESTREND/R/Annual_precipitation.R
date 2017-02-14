@@ -23,6 +23,10 @@
 #'        The optimal acumulated rainfall before the Breakpoint
 #' @return \bold{rf.af}
 #'        The Optimally accumulated rainfall after the Breakpoint
+#' @return \bold{osp}
+#'        The offest period for the annual max time series rainfall
+#' @return \bold{acp}
+#'        The accumulation period for the annual max time series rainfall
 #' @export
 #'
 #' @examples
@@ -164,7 +168,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       osp.af <- as.numeric(nmsplit[1])
       acp.af <- as.numeric(nmsplit[2])
 
-      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF, osp.b4 = ops.b4, acp.b4 = acp.b4, osp.af = osp.af, acp.af = acp.af)))
+      return(structure(list(summary=suma, rf.b4 = anu.ARF, rf.af= panu.ARF, osp.b4 = osp.b4, acp.b4 = acp.b4, osp.af = osp.af, acp.af = acp.af)))
     }else{
       mx <- matrix(m[m[, "slope"] >= 0,],  ncol=6)
       colnames(mx)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")

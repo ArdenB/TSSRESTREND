@@ -82,6 +82,6 @@ ACP.calculator <- function(CTSR.VI, ACP.table){
     nmsplit <- strsplit(namestr, "\\-")[[1]]
     osp <- as.numeric(nmsplit[1])
     acp <- as.numeric(nmsplit[2])
-    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.ops = osp, CTSR.acp = acp)))
+    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.osp = osp, CTSR.acp = acp)))
   }
 }

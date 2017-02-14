@@ -36,6 +36,12 @@ ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
 
 \bold{rf.af}
        The Optimally accumulated rainfall after the Breakpoint
+
+\bold{osp}
+       The offest period for the annual max time series rainfall
+
+\bold{acp}
+       The accumulation period for the annual max time series rainfall
 }
 \description{
 Takes the Annual Max VI Time Series, the VI.index and a table of every possible accumulation period and offset

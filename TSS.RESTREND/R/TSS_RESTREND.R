@@ -198,9 +198,8 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
   bp <- bp[!bp %in% exclude]
-  # browser()
-  acum.df <- data.frame(CTSR.osp= CTSR.osp, CTSR.acp = CTSR.acp, osp = osp, acp = acp, osp.b4 = NaN, acp.b4 = NaN,
-                        osp.af = NaN, acp.af = NaN)
+  acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, osp=osp, acp=acp,
+                        osp.b4=NaN, acp.b4=NaN, osp.af=NaN, acp.af = NaN)
   if (length(bp)==0) {
     bp <- FALSE
   }

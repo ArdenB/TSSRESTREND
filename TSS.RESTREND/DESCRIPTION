@@ -1,7 +1,7 @@
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.1.03
+Version: 0.1.031
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description: TSS.RESTREND This script is a a demonstration of the Segmented
     RESTREND method proposed in Burrell et. al., (2016?). (Paper under review).
