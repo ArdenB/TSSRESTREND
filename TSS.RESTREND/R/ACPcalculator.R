@@ -27,57 +27,67 @@
 #' ACPres <- ACP.calculator(CTSR.VI, rabbitACPtable)
 #' print(ACPres$summary)
 
-ACP.calculator <- function(CTSR.VI, ACP.table){
-
+ACP.calculator <- function(CTSR.VI, ACP.table, allow.negative=FALSE){
+  #Check classes of input data
   if (class(CTSR.VI) != "ts")
     stop("CTSR.VI Not a time series object")
   if (length(CTSR.VI) != dim(ACP.table)[2])
     stop("ACP.table size does not match CTSR.VI")
 
-
+  #Get the start year and start month of the data
   yst <- start(CTSR.VI)[1]
   mst <-  start(CTSR.VI)[2]
 
+  #Get the dimensions of the data for indexing
   len <- dim(ACP.table)[2]
   lines <- dim(ACP.table)[1]
+  #empy matrix to store lm results
   m<- matrix(nrow=(lines), ncol=6)
 
+  #Pull out the row names
   rownames(m)<- rownames(ACP.table)
   colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
+  # fit a LM to every combination of rainfall and vegetation
   for (n in 1:lines){
+    #get the lm
     fit <- lm(CTSR.VI ~ ACP.table[n, ])
+    #Get the key values [pval, Rsquared, intercept, slope]
     R.pval <- glance(fit)$p.value
     R.Rval <- summary(fit)$r.square
     R.intr <- as.numeric(coef(fit)[1])
     R.slpe <- as.numeric(coef(fit)[2])
     R.BH <- NaN
     R.SC <- NaN
+    # Stack the results in the empyt matryx m
     m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
 
 
   }
+  # Look for the number of combinations the had positive slopes
   mx <- matrix(m[m[, "slope"] > 0,], ncol=6)
   colnames(mx)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
-  #
-  if (dim(mx)[1] == 0){
-    # warning("No positve slopes exist. Returing most significant negative slope")
+
+  if (dim(mx)[1] <= 1||allow.negative){
+    # warning("<2 CTS positve slopes exist. Returing most significant negative slope")
+    # Get the max line and values
     max.line <- which.max(m[, "R^2.Value"])
     suma <- m[max.line,]
+    # Get the values to return
     CTSR.ARF <- ts(ACP.table[max.line, ], start=c(yst, mst), frequency = 12)
-
-    # browser()
-    namestr <- rownames(rfx)[max.line]
+    namestr <- rownames(ACP.table)[max.line]
     nmsplit <- strsplit(namestr, "\\-")[[1]]
     osp <- as.numeric(nmsplit[1])
     acp <- as.numeric(nmsplit[2])
-    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.ops = osp, CTSR.acp = acp)))
+    return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.osp = osp, CTSR.acp = acp)))
   }else{
+    #Filter the negative results out
     rfx <- ACP.table[m[, "slope"] > 0,]
+    # Get the max line and values
     max.line <- which.max(mx[, "R^2.Value"])
     suma <- mx[max.line,]
+    # get the values to return
     CTSR.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 12)
-
     namestr <- rownames(rfx)[max.line]
     nmsplit <- strsplit(namestr, "\\-")[[1]]
     osp <- as.numeric(nmsplit[1])

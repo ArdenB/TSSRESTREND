@@ -4,7 +4,7 @@
 \alias{ACP.calculator}
 \title{Antecedental Rainfall Accumulation calculator for the VI Complete Time Series}
 \usage{
-ACP.calculator(CTSR.VI, ACP.table)
+ACP.calculator(CTSR.VI, ACP.table, allow.negative = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -12,6 +12,8 @@ An object of class \code{'ts'} object without NA's.}
 
 \item{ACP.table}{A table of every combination of offset period and accumulation period.
 ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
+
+\item{allow.negative}{IF true, will not preference positive slope in either CTSR or VI calculations}
 }
 \value{
 A list containing:

@@ -6,7 +6,7 @@
 \usage{
 TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
   acu.RF = FALSE, VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE,
-  sig = 0.05, season = "none", exclude = 0)
+  sig = 0.05, season = "none", exclude = 0, allow.negative = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -41,10 +41,13 @@ be generated using \code{\link{AnnualRF.Cal}}}
 
 \item{sig}{Significance of all the functions. defualt sig=0.05}
 
-\item{season}{See \code{\link[bfast]{bfast}}}
+\item{season}{See \code{\link[bfast]{bfast}}. This season value only applies to bfast done using the CTS
+VPR. if a non VPR adjusted BFAST is performed.a harmonic season is used.}
 
 \item{exclude}{A numberic vector containg months excluded from breakpoint detection.  This was included to
 allow sensor transitions to be masked.}
+
+\item{allow.negative}{IF true, will not preference positive slope in either CTSR or VI calculations}
 }
 \value{
 An object of class \code{'TSSRESTREND'} is a list with the following elements:

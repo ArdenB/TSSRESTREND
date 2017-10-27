@@ -9,7 +9,10 @@
 #' @importFrom bfast bfast
 #'
 #' @inheritParams TSSRESTREND
-#'
+#' @param BFAST.raw
+#'        Defualt = FALSE
+#'        If TRUE will perform a BFAST (season="harmonic") on the CTSR.VI
+#'        If FALSE will perform BFAST on the CTSR VPR residuals
 #' @return List of objects:
 #' @return \bold{bkps}
 #'          The index of the Breakpoints detected. If no breakpoints are detected, bkps = FASLE
@@ -17,13 +20,15 @@
 #'          See \code{\link[bfast]{bfast}}
 #' @return \bold{CTS.lm}
 #'          the \code{\link[stats]{lm}} of CTSR.VI and CTSR.RF
+#' @return \bold{BFAST.type}
+#'          the type of BFAST done (VPR residuals or on the VI timeseris itself)
 #' @export
 #'
 #' @examples
 #' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
 #' print(VPRBFdem)
 
-VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") {
+VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none", BFAST.raw=FALSE) {
   #functions takes the complete time series VI and rainfall (RF)
 
   #Check the objects are Time series
@@ -47,21 +52,24 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none") {
   #Convert to a ts object
   resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f)
   #perform the BFAST
-  bf.fit <- bfast(resid.ts, h=0.15, season=season, max.iter=3, level = 0.05)
+  if (BFAST.raw){
+    bf.fit <- bfast(CTSR.VI, h=0.15, season="harmonic", max.iter=3, level = 0.05)
+    bft <- "raw.VI"
+  }else{
+    bf.fit <- bfast(resid.ts, h=0.15, season=season, max.iter=3, level = 0.05)
+    bft <- "CTSR.VPR"
+  }
+
 
   if (bf.fit$nobp$Vt[[1]] == FALSE) {
+    # Get the number of breakpoints
     numiter <- length(bf.fit$output)
     tmp <- bf.fit$output[[numiter]]$bp.Vt[1]$breakpoints
-    return(structure(list(bkps = tmp, BFAST.obj=bf.fit, CTS.lm = CTS.fit), class = "BFAST.Object"))
-    # if (details){
-    #   return(structure(list(bkps = tmp, BFAST.obj=bf.fit, CTS.lm = CTS.fit), class = "BFAST.Object"))
-    # }else{return(structure(list(bkps = tmp, BFAST.obj=FALSE), class = "BFAST.Object"))
-    }else {
-    return(structure(list(bkps = FALSE, BFAST.obj=bf.fit, CTS.lm = CTS.fit), class = "BFAST.Object"))
-    #
-    # if (details){
-    #   return(structure(list(bkps = FALSE, BFAST.obj=bf.fit), class = "BFAST.Object"))
-    # }else{return(structure(list(bkps = FALSE, BFAST.obj=FALSE), class = "BFAST.Object"))}
-  }
+    # stack and return the data
+    return(structure(list(bkps = tmp, BFAST.obj=bf.fit, CTS.lm = CTS.fit, BFAST.type=bft), class = "BFAST.Object"))
+  } else {
+    # Stack the data
+    return(structure(list(bkps = FALSE, BFAST.obj=bf.fit, CTS.lm = CTS.fit, BFAST.type=bft), class = "BFAST.Object"))
+    }
 }
 

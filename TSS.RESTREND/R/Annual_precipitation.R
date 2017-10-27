@@ -10,8 +10,6 @@
 #' @inheritParams TSSRESTREND
 #' @param Breakpoint
 #'        Used when calcualting rf.bf and rf.af for ts with breakpoints in the VPR.  See \code{\link{CHOW}}
-#' @param allow.negative
-#'        IF true, will not preference positive slope
 #'
 #' @return \bold{summary}
 #'        a Matrix containing "slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change"
@@ -173,7 +171,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       mx <- matrix(m[m[, "slope"] >= 0,],  ncol=6)
       colnames(mx)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
       if (dim(mx)[1] <= 1){
-        warning("Insufficent positve slopes exist before the bp. Returing most significant negative slope")
+        warning("<2 positve slopes exist before the bp. Returing most significant negative slope")
         max.line <- which.max(m[, "R^2.Value"])
         suma <- m[max.line,]
         anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
@@ -196,7 +194,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       px <- matrix(p[p[, "slope"] > 0,],  ncol=6)
       colnames(px)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
       if (dim(px)[1] <= 1){
-        warning("Insufficent positve slopes exist after the bp. Returing most significant negative slope")
+        warning("<2 positve slopes exist after the bp. Returing most significant negative slope")
         pmax.line <- which.max(p[, "R^2.Value"])
         p.suma <- p[pmax.line,]
         panu.ARF <- ts(anu.ACUP[pmax.line, ], start=c(yst, mst), frequency = 1)

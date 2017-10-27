@@ -20,7 +20,7 @@ ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
 
 \item{Breakpoint}{Used when calcualting rf.bf and rf.af for ts with breakpoints in the VPR.  See \code{\link{CHOW}}}
 
-\item{allow.negative}{IF true, will not preference positive slope}
+\item{allow.negative}{IF true, will not preference positive slope in either CTSR or VI calculations}
 }
 \value{
 \bold{summary}

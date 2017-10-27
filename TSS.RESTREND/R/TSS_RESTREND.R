@@ -48,10 +48,13 @@
 #' @param sig
 #'        Significance of all the functions. defualt sig=0.05
 #' @param season
-#'        See \code{\link[bfast]{bfast}}
+#'        See \code{\link[bfast]{bfast}}. This season value only applies to bfast done using the CTS
+#'        VPR. if a non VPR adjusted BFAST is performed.a harmonic season is used.
 #' @param exclude
 #'        A numberic vector containg months excluded from breakpoint detection.  This was included to
 #'        allow sensor transitions to be masked.
+#' @param allow.negative
+#'        IF true, will not preference positive slope in either CTSR or VI calculations
 #' @return
 #' An object of class \code{'TSSRESTREND'} is a list with the following elements:
 #' \describe{
@@ -126,32 +129,42 @@
 #' }
 #'
 TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
-                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0){
+                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE){
 
-  while (TRUE){ #Test the variables
+  while (TRUE){ #Test the variables for consistenty
+    #Each check liiks at a different paramter. If the data fails the check will stop, else, it breaks after all the checks
     if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object. Please check the data")
 
 
     if ((class(ACP.table)=="logical") && (!CTSR.RF || acu.RF))
       stop("Insufficent Rainfall data provided. Provide either a complete ACP.table or both the CTSR.RF & acu.RF")
-    # browser()
     if ((!anu.VI)||(!VI.index)){
+      # Get the annual Max VI values
       max.df <- AnMaxVI(CTSR.VI)
-      anu.VI <- max.df$Max
-      VI.index <- max.df$index
-      Max.Month <- max.df$Max.Month #DETAILS object
+      # Pull the key components from the result
+      anu.VI <- max.df$Max #the VI values
+      VI.index <- max.df$index #the indes values
+      Max.Month <- max.df$Max.Month #month if the year the even occured
     }else{
       if (class(anu.VI) != "ts")
         stop("anu.VI Not a time series object")
     }
     if (!CTSR.RF){
-      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table)
-      # browser()
-      CTSR.RF <- CTS.Str$CTSR.precip
-      details.CTS.VPR <- CTS.Str$summary #DETAILS object
-      CTSR.osp <- CTS.Str$CTSR.osp
-      CTSR.acp <- CTS.Str$CTSR.acp
+      #Calculate the Complete time seties Accumulation (rainfall)
+      # TO ADD: Way of determing the results in the case of non allow negative situation
+      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, allow.negative=allow.negative)
+      # If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
+      #This mod is will impact results comparisons before V0.1.04
+      if ((!allow.negative && as.numeric(CTS.Str$summary)[1] <0)||as.numeric(CTS.Str$summary)[3] >sig){
+        BFraw = TRUE
+      }else{BFraw=FALSE}
+      #Pull out the relevant paramters for use
+      CTSR.RF <- CTS.Str$CTSR.precip #RF values
+      details.CTS.VPR <- CTS.Str$summary #Summay of the FIT between the CTS.VRP
+      CTSR.osp <- CTS.Str$CTSR.osp #CTS Off set period
+      CTSR.acp <- CTS.Str$CTSR.acp #CTS Sccumulation period
+
     }else{
       if (class(CTSR.RF) != "ts")
         stop("CTSR.RF Not a time series object")
@@ -161,43 +174,52 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
       #check the two ts object cover the same time period
       start.ti2 <- time(CTSR.RF)
       freq2 <- frequency(CTSR.RF)
+      #Check the start dates and the frequency are correct
       if (!identical(start.ti, start.ti2))
         stop("ts objects do not have the same time, (CTSR.VI & CTSR.RF)")
       if (!identical(freq, freq2))
         stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")
     }
     if (!acu.RF){
-      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table)
-      # browser()
-      osp <- precip.df$osp
-      acp <- precip.df$acp
-      acu.RF <- precip.df$annual.precip
-      details.VPR<- precip.df$summary
+      # Calculate the Annual Accumulated Rainfall
+      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table, allow.negative=allow.negative)
+      # Pull out and store key values
+      osp <- precip.df$osp # offset period
+      acp <- precip.df$acp # Accumulation period
+      acu.RF <- precip.df$annual.precip # precip values
+      details.VPR<- precip.df$summary # The summary of the lm between rainfall and Vegetation
     }else{
+      # Check the passed accumulated rainfall
       if (class(acu.RF) != "ts")
         stop("acu.RF Not a time series object")
+      # get the time peramaters
       st.ti <- time(anu.VI)
       st.f <- frequency(anu.VI)
-      #check the two ts object cover the same time period
       st.ti2 <- time(acu.RF)
       st.f2 <- frequency(acu.RF)
+      #check the two ts object cover the same time period and frequency
       if (!identical(st.ti, st.ti2))
         stop("ts object do not have the same time, (acu.RF & anu.VI)")
       if (!identical(st.f, st.f2))
         stop("ts object do not have the same frequency, (acu.RF & anu.VI)")
     }
+    # Check passed breakpoint rainfall results
     if (class(rf.b4) != "logical"){
       if (length(rf.b4) != (length(rf.af)))
           stop("rf.b4 and rf.af are different shapes. They must be the same size and be th same lenths as acu.VI")
     }
     break
   }
+  # Pass the infomation about the VI and RF as well as the nfast method to the VPR.BFAST script
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, season=season, BFAST.raw = BFraw)
 
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, season=season)
+
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
-  bp <- bp[!bp %in% exclude]
+  bp <- bp[!bp %in% exclude] #remove breakpoints in the exclude list (Sensor transitions)
+  BFT <-  bkp$BFAST.type #Type of BFAST used
+  # browser()
   acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, osp=osp, acp=acp,
                         osp.b4=NaN, acp.b4=NaN, osp.af=NaN, acp.af = NaN)
   if (length(bp)==0) {
@@ -263,6 +285,8 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }
   result$acum.df <- acum.df
-  return(result) #add CTSR
+  #add the bfast method to the results summary
+  result$summary$BFAST.Method <- BFT
+  return(result)
 }
 
