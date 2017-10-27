@@ -3,6 +3,17 @@
 This script is a a demonstration of the Segmented RESTREND method proposed in Burrell et. al., (2016?????). 
 
 *Disclaimer. This code has been tested with the data provided int the `./demo_data` folder. Use caution when testing other dataset.*
+## To install from Github
+```R
+install.packages("devtools")
+library(devtools)
+install_github("ArdenB/TSS.RESTREND")
+
+```
+## to install from local package
+...
+R CMD INSTALL TSS.RESTREND_0.1.031.tar.gz 
+...
 
 ## Dependencies 
 
