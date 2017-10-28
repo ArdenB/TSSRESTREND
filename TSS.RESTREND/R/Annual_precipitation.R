@@ -109,7 +109,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       if (sd(anu.ACUP[n, (Breakpoint+1):len])==0) {
         #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
         # All values are bad
-        m[n, ] <- c(-1, -1, 1, 0, NaN, NaN)
+        p[n, ] <- c(-1, -1, 1, 0, NaN, NaN)
       }else{
         #get the fit after the breakpoint
         fit2 <- lm(anu.VI[(Breakpoint+1):len] ~ anu.ACUP[n, (Breakpoint+1):len])
@@ -218,6 +218,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         osp.b4 <- as.numeric(nmsplit[1])
         acp.b4 <- as.numeric(nmsplit[2])
       }
+
       px <- matrix(p[p[, "slope"] > 0,],  ncol=6)
       colnames(px)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
       if (dim(px)[1] <= 1){
