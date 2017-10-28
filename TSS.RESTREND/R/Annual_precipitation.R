@@ -130,6 +130,11 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
     if (allow.negative){
 
       max.line <- which.max(m[, "R^2.Value"])
+      #Catch failures
+      if (max(m[, "R^2.Value"])==0){
+        #Means that all the values after the breakpoint are the same
+        warning("There is no variance (SD=0). Precipitation data failure")
+      }
       suma <- m[max.line,]
       anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
 
@@ -202,7 +207,6 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         max.line <- which.max(m[, "R^2.Value"])
         suma <- m[max.line,]
         anu.ARF <- ts(anu.ACUP[max.line, ], start=c(yst, mst), frequency = 1)
-        # browser()
         namestr <- rownames(m)[max.line]
         nmsplit <- strsplit(namestr, "\\-")[[1]]
         osp.b4 <- as.numeric(nmsplit[1])
@@ -210,9 +214,14 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       }else{
         rfx <- anu.ACUP[m[, "slope"] > 0,]
         max.line <- which.max(mx[, "R^2.Value"])
+        #Catch failures
+        if (max(m[, "R^2.Value"])==0){
+          #Means that all the values after the breakpoint are the same
+          warning("There is no variance (SD=0) before the breakpoint. Precipitation data failure")
+        }
+
         suma <- mx[max.line,]
         anu.ARF <- ts(rfx[max.line, ], start=c(yst, mst), frequency = 1)
-        # browser()
         namestr <- rownames(rfx)[max.line]
         nmsplit <- strsplit(namestr, "\\-")[[1]]
         osp.b4 <- as.numeric(nmsplit[1])
@@ -224,6 +233,11 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
       if (dim(px)[1] <= 1){
         warning("<2 positve slopes exist after the bp. Returing most significant negative slope")
         pmax.line <- which.max(p[, "R^2.Value"])
+        # catch failures past the breakpoint
+        if (max(p[, "R^2.Value"])==0){
+          #Means that all the values after the breakpoint are the same
+          warning("There is no variance (SD=0) after the breakpoint. Precipitation data failure")
+        }
         p.suma <- p[pmax.line,]
         panu.ARF <- ts(anu.ACUP[pmax.line, ], start=c(yst, mst), frequency = 1)
         namestr.af <- rownames(p)[pmax.line]

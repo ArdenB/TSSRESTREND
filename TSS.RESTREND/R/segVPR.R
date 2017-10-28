@@ -77,6 +77,24 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   adj.rfaf <- array((rf.af-mean(rf.af)))
   sd.adjaf <- adj.rfaf/sd(rf.af)
 
+  #Check and see if there is any problems with the precipitation data
+  if (sd(sd.adjaf[(breakpoint+1):len])==0 || sd(sd.adjb4[1:breakpoint]) == 0){
+
+    print("Segmented VPR failure. No variance in on segement of the precipitation data")
+    tot.ch<- FALSE
+    change<- FALSE
+
+    overview <- data.frame(Method = "ind-rfsegFail", Total.Change=tot.ch,
+                           Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
+                           residual.p = FALSE, VPRbreak.p = FALSE, bp.year=FALSE)
+    models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=FALSE)
+    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+    ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+
+    return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
+                          TSSRmodels=models), class = "TSSRESTREND"))
+  }
+
   #Build a single adjusted
   adj.RF <- c(sd.adjb4[1:breakpoint], sd.adjaf[(breakpoint+1):len])
 

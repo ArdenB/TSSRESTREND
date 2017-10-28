@@ -21,7 +21,7 @@ ACP.table
 A matrix with ever possible accumuated rainfall combination
 }
 \description{
-Takes the time series of rainfall and resturns a rainfall accumulation table of every possible combination
+Takes the time series of rainfall and returns a rainfall accumulation table of every possible combination
 of the max accumulation period and the max offset period.
 }
 \examples{
@@ -31,4 +31,3 @@ acp <- 12
 osp <- 4
 rftable <- rainfall.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
 }
-

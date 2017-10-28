@@ -19,4 +19,3 @@ impacted by reduced rabbit predation after the release of RHD.
 data(rabbitACPtable)
 }
 \keyword{datasets}
-
