@@ -51,18 +51,22 @@ ACP.calculator <- function(CTSR.VI, ACP.table, allow.negative=FALSE){
   # fit a LM to every combination of rainfall and vegetation
   for (n in 1:lines){
     #get the lm
-    fit <- lm(CTSR.VI ~ ACP.table[n, ])
-    #Get the key values [pval, Rsquared, intercept, slope]
-    R.pval <- glance(fit)$p.value
-    R.Rval <- summary(fit)$r.square
-    R.intr <- as.numeric(coef(fit)[1])
-    R.slpe <- as.numeric(coef(fit)[2])
-    R.BH <- NaN
-    R.SC <- NaN
-    # Stack the results in the empyt matryx m
-    m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
-
-
+    if (sd(ACP.table[n, ])== 0 ){
+      #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
+      # All values are bad
+      m[n, ] <- c(-1, -1, 1, 0, NaN, NaN)
+    }else{
+      fit <- lm(CTSR.VI ~ ACP.table[n, ])
+      #Get the key values [pval, Rsquared, intercept, slope]
+      R.pval <- glance(fit)$p.value
+      R.Rval <- summary(fit)$r.square
+      R.intr <- as.numeric(coef(fit)[1])
+      R.slpe <- as.numeric(coef(fit)[2])
+      R.BH <- NaN
+      R.SC <- NaN
+      # Stack the results in the empyt matryx m
+      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+    }
   }
   # Look for the number of combinations the had positive slopes
   mx <- matrix(m[m[, "slope"] > 0,], ncol=6)
