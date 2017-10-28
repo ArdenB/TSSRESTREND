@@ -1,7 +1,7 @@
 #' @title Rainfall Accumulator
 #'
 #' @description
-#' Takes the time series of rainfall and resturns a rainfall accumulation table of every possible combination
+#' Takes the time series of rainfall and returns a rainfall accumulation table of every possible combination
 #' of the max accumulation period and the max offset period.
 #' @importFrom RcppRoll roll_sum
 #' @param CTSR.VI
@@ -32,12 +32,16 @@ rainfall.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
     stop("CTSR.VI Not a time series object")
   if (class(rf.data) != "ts")
     stop("rf.data Not a time series object")
+  if (sd(rf.data)==0)
+    stop("The precipitation data has identical values (SD=0)")
+  # Get the start and end dates of the precip and the VI
   yst <- start(CTSR.VI)[1]
   mst <-  start(CTSR.VI)[2]
   y.en <- end(CTSR.VI)[1]
   m.en <- end(CTSR.VI)[2]
   rf.yend <- end(rf.data)[1]
   rf.mend <-  end(rf.data)[2]
+  #Check to make sure they have no issues
   if ((y.en != rf.yend) || rf.mend != m.en)
     stop("rf.data does not end at the same time as CTSR.VI")
   if (length(rf.data)<(length(CTSR.VI)+max.acp+max.osp))
@@ -81,5 +85,6 @@ rainfall.accumulator <- function(CTSR.VI, rf.data, max.acp, max.osp){
     m[ind:(ind+max.acp-1),] <- m4
 
   }
+  # Return the table
   return(m)
 }

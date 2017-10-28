@@ -43,61 +43,89 @@
 #' print(ARCseg)
 #' }
 AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.negative=FALSE){
+  #Perform the basic sanity checks
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
   if (length(VI.index) != length(anu.VI))
     stop("acu.VI and VI.index are not of the same length")
 
-
+  #Get the start year and month
   yst <- start(anu.VI)[1]
   mst <- start(anu.VI)[2]
 
+  # Subset the complete ACP.table using the indexs of the an mav values and get dims
   anu.ACUP <- ACP.table[, VI.index]
   lines <- dim(anu.ACUP)[1]
   len <- dim(anu.ACUP)[2]
 
+  #create a blank matrix and assign it colum headings
   m<- matrix(nrow=(lines), ncol=6)
   rownames(m)<- rownames(ACP.table)
   colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
-
+  # Second matrix in case of breakpoint in the VPR
   p <- matrix(nrow=(lines), ncol=6)
   rownames(p)<- rownames(ACP.table)
   colnames(p)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
-  # n <- 1
+  # For each line of the accumulation table calculate the coefficents from a lm
   for (n in 1:lines){
-    # print(n)
-    if (!Breakpoint){
-      fit <- lm(anu.VI ~ anu.ACUP[n, ])
-      # fit <- lm(anu.VI ~ segVPRD$acc.precip)
-      R.pval <- glance(fit)$p.value
-      R.Rval <- summary(fit)$r.square
-      R.intr <- as.numeric(coef(fit)[1])
-      R.slpe <- as.numeric(coef(fit)[2])
-      R.BH <- NaN
-      R.SC <- NaN
-      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
-    }else{
-      # print("Breakpoint")
-      fit <- lm(anu.VI[1:Breakpoint] ~ anu.ACUP[n, 1:Breakpoint])
-      R.pval <- glance(fit)$p.value
-      R.Rval <- summary(fit)$r.square
-      R.intr <- as.numeric(coef(fit)[1])
-      R.slpe <- as.numeric(coef(fit)[2])
-      R.BH <- NaN
-      R.SC <- NaN
-      m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+    if (!Breakpoint){ #No Breakpoint
+      if (sd(anu.ACUP[n, ])== 0 ){
+        #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
+        # All values are bad
+        m[n, ] <- c(-1, -1, 1, 0, NaN, NaN)
+      }else{
+        #Get the lm between VI and the precip on line n of the table
+        fit <- lm(anu.VI ~ anu.ACUP[n, ])
+        #Pull out key infomation
+        R.pval <- glance(fit)$p.value
+        R.Rval <- summary(fit)$r.square
+        R.intr <- as.numeric(coef(fit)[1])
+        R.slpe <- as.numeric(coef(fit)[2])
+        R.BH <- NaN
+        R.SC <- NaN
+        #add the infomation the the m data table
+        m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+      }
 
-      fit2 <- lm(anu.VI[Breakpoint:len] ~ anu.ACUP[n, Breakpoint:len])
-      R.pval2 <- glance(fit2)$p.value
-      R.Rval2 <- summary(fit2)$r.square
-      R.intr2 <- as.numeric(coef(fit2)[1])
-      R.slpe2 <- as.numeric(coef(fit2)[2])
-      R.BH <- NaN
-      R.SC <- NaN
-      p[n, ] <- c(R.slpe2, R.intr2,R.pval2, R.Rval2, R.BH, R.SC)
+    }else{
+      # Before the breakpoint
+      if (sd(anu.ACUP[n, 1:Breakpoint]) ==0){
+        #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
+        # All values are bad
+        m[n, ] <- c(-1, -1, 1, 0, NaN, NaN)
+      }else{
+        #get the fit before the breakpoint
+        fit <- lm(anu.VI[1:Breakpoint] ~ anu.ACUP[n, 1:Breakpoint])
+        #Pull out key infomation before the bp
+        R.pval <- glance(fit)$p.value
+        R.Rval <- summary(fit)$r.square
+        R.intr <- as.numeric(coef(fit)[1])
+        R.slpe <- as.numeric(coef(fit)[2])
+        R.BH <- NaN
+        R.SC <- NaN
+        m[n, ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+      }
+      if (sd(anu.ACUP[n, (Breakpoint+1):len])==0) {
+        #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
+        # All values are bad
+        m[n, ] <- c(-1, -1, 1, 0, NaN, NaN)
+      }else{
+        #get the fit after the breakpoint
+        fit2 <- lm(anu.VI[(Breakpoint+1):len] ~ anu.ACUP[n, (Breakpoint+1):len])
+        #Pull out key infomation after the bp
+        R.pval2 <- glance(fit2)$p.value
+        R.Rval2 <- summary(fit2)$r.square
+        R.intr2 <- as.numeric(coef(fit2)[1])
+        R.slpe2 <- as.numeric(coef(fit2)[2])
+        R.BH <- NaN
+        R.SC <- NaN
+        p[n, ] <- c(R.slpe2, R.intr2,R.pval2, R.Rval2, R.BH, R.SC)
+      }
     }
   }
+
+  # Figure out which acp&osp to use
   if (!Breakpoint){
     if (allow.negative){
 
@@ -116,7 +144,6 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
 
       mx <- matrix(m[m[, "slope"] >= 0,],  ncol=6)
       colnames(mx) <- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
-      # browser()
       if (dim(mx)[1] <= 1){
         warning("Insufficent positve slopes exist. Returing most significant negative slope")
         max.line <- which.max(m[, "R^2.Value"])
@@ -198,7 +225,6 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         pmax.line <- which.max(p[, "R^2.Value"])
         p.suma <- p[pmax.line,]
         panu.ARF <- ts(anu.ACUP[pmax.line, ], start=c(yst, mst), frequency = 1)
-        # browser()
         namestr.af <- rownames(p)[pmax.line]
         nmsplit.af <- strsplit(namestr.af, "\\-")[[1]]
         osp.af <- as.numeric(nmsplit[1])
@@ -208,7 +234,6 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, Breakpoint = FALSE, allow.
         pmax.line <- which.max(px[, "R^2.Value"])
         p.suma <- px[pmax.line,]
         panu.ARF <- ts(p.rfx[pmax.line, ], start=c(yst, mst), frequency = 1)
-        # browser()
         namestr.af <- rownames(p.rfx)[pmax.line]
         nmsplit.af <- strsplit(namestr.af, "\\-")[[1]]
         osp.af <- as.numeric(nmsplit[1])

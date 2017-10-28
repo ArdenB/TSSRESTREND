@@ -13,14 +13,14 @@ rf.data <- stdRES.CTSRrf.TS$precip
 # CTSR.VI <- segRESTREND.CTSR$cts.NDVI
 # rf.data <- segRES.CTSRrf.TS$precip
 # # #
-# load("./demo_data/segVPRD.Rda")
+# # load("./demo_data/segVPRD.Rda")
 # load("./demo_data/segVPRD_CTSR.Rda")
 # load("./demo_data/segVPRD_RF.Rda")
 # CTSR.VI <- segVPRD.CTSR$cts.NDVI
 # rf.data <- segVPRD.CTSRrf.TS$precip
+#
 
-
-
+#
 # load("./demo_data/segVPRI.Rda")
 # load("./demo_data/segVPRI_CTSR.Rda")
 # load("./demo_data/segVPRI_RF.Rda")
@@ -63,6 +63,11 @@ print(dim(ACP.table))
 # exc = c(125:127)
 results <- TSSRESTREND(CTSR.VI, ACP.table)
 plot(results)
+ctsresid<- results$TSSRmodels$CTS.fit$residuals
+ctsresid.ts <- ts(ctsresid, start=c(1982, 1), end=c(2013,12), frequency = 12)
+plot(ctsresid.ts, col="deeppink1", lwd = 2, pch=16, xlab="Year", ylab="CTS Residuals")
+grid()
+
 # stdRESTRENDctRF <- stdRES.CTSRrf.TS
 # stdRESTRENDCTSR <- stdRESTREND.CTSR
 # save(stdRESTREND, file = "./TSS.RESTREND/data/stdRESTREND.rda")

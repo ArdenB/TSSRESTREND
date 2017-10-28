@@ -63,8 +63,10 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   empty.1 <- NaN
   empty.2 <- NaN
   empty.3 <- NaN
+  # Empty data frames to stor infomation
   ind.df <- data.frame(abs.index=breakpoints, yr.index = empty.1, reg.sig=empty.2, VPR.bpsig = empty.3)
   bp.ind <-data.frame(abs.index=breakpoints, yr.index=NaN)
+  #Get the year indexs of the breakpoints
   for (bp in 1:length(breakpoints)){
     bpv = ind.df$abs.index[bp]
     for (n in 1:length(VI.index)){

@@ -294,8 +294,8 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       end = as.integer(end(ti)[1])
       RES <- x$TSSRmodels$resid.fit
       m.range = 2*max(abs(RES$fitted.values))
-      plot(c(start(ti)[1]:end(ti)[1]), x$TSSRmodels$VPR.fit$residuals, pch=16,xlab="Accumulated Rainfall",
-           ylab="Annual VI", col="orange",main="RESTREND", ylim = c(-m.range, m.range))
+      plot(c(start(ti)[1]:end(ti)[1]), x$TSSRmodels$VPR.fit$residuals, pch=16,xlab="Year",
+           ylab="Residuals", col="orange",main="RESTREND", ylim = c(-m.range, m.range))
       par(new=T)
       plot(c(start(ti)[1]:end(ti)[1]), RES$fitted.values, type = "l", lwd = 2, lty = "dashed", pch=16,
            xlab="", ylab="", col="red", main="", ylim = c(-m.range, m.range))

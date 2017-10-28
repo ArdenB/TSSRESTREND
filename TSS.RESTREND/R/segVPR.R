@@ -54,13 +54,14 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   }
   len <- length(anu.VI)
 
+  #Get the non segmented VPR
   VPR.fit <- lm(anu.VI ~ acu.RF)
-
+  #Set up a blank table
   m<- matrix(nrow=(4), ncol=6)
   m[]<-NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
   colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
-
+  # Pull out key values from VPR
   R.pval <- glance(VPR.fit)$p.value
   R.Rval <- summary(VPR.fit)$r.square
   R.intr <- as.numeric(coef(VPR.fit)[1])
@@ -75,6 +76,8 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
 
   adj.rfaf <- array((rf.af-mean(rf.af)))
   sd.adjaf <- adj.rfaf/sd(rf.af)
+
+  #Build a single adjusted
   adj.RF <- c(sd.adjb4[1:breakpoint], sd.adjaf[(breakpoint+1):len])
 
   #Create the dummy variable
@@ -140,6 +143,7 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=adj.RF)
   #May ad a total residual change
   tc <- c(0, 0)
+
   if (R3.pval<0.10){
     tc[1] = change
   }

@@ -224,14 +224,10 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
                         osp.b4=NaN, acp.b4=NaN, osp.af=NaN, acp.af = NaN)
   if (length(bp)==0) {
     bp <- FALSE
-  }
-
-  # browser()
-  if (bp==FALSE){# no breakpoints detected by the BFAST
+    # no breakpoints detected by the BFAST
     test.Method = "RESTREND"
     chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)
     chow.bpi <- FALSE
-
   }else{
     bp<-as.numeric(bkp$bkps)
     res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig)
