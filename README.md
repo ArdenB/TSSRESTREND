@@ -1,6 +1,8 @@
 # Segmented RESTREND
 
-This script is a a demonstration of the Segmented RESTREND method proposed in Burrell et. al., (2016?????). 
+This script is a a demonstration of the Segmented RESTREND method proposed in Burrell et. al., (2017). 
+
+The current build (0.1.4) is under active development and has not been fully tested.  Version 0.1.32 is stable but doen't handle some errors well.  
 
 *Disclaimer. This code has been tested with the data provided int the `./demo_data` folder. Use caution when testing other dataset.*
 ## To install from Github
