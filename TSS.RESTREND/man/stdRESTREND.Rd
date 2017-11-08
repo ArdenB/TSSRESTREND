@@ -15,3 +15,4 @@ stdRESTREND
 contains anu.VI, acu.RF and VI.index. Range 1982 - 2013
 }
 \keyword{datasets}
+

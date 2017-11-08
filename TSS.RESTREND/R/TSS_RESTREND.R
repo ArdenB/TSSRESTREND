@@ -213,7 +213,6 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   # Pass the infomation about the VI and RF as well as the nfast method to the VPR.BFAST script
   bkp = VPR.BFAST(CTSR.VI, CTSR.RF, season=season, BFAST.raw = BFraw)
 
-
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
@@ -222,7 +221,8 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
   # browser()
   acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, osp=osp, acp=acp,
                         osp.b4=NaN, acp.b4=NaN, osp.af=NaN, acp.af = NaN)
-  if (length(bp)==0) {
+
+  if (class(bp)=="logical"|length(bp)==0) { #Should catch both the false and the no breakpoints
     bp <- FALSE
     # no breakpoints detected by the BFAST
     test.Method = "RESTREND"
