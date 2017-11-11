@@ -1,12 +1,15 @@
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.1.04
+Version: 0.2.00
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
-Description: TSS.RESTREND This script is a a demonstration of the Segmented
+Description: 
+    This branch is a development branch where i'm attempint to include multiple
+    Climate variable, (Temperature and precipitation).
+    TSS.RESTREND This script is a a demonstration of the Segmented
     RESTREND method proposed in Burrell et. al., (2017).  TSS.RESTREND is a
     modification of the RESTREND method originally proposed by
-    Evans and Geerke (2006). It incoperates BFAST breakpoint detection to
+    Evans and Geerken (2006). It incoperates BFAST breakpoint detection to
     look for major ecosystem changes. The version in development and additional
     documentation, data and example scripts can be can be found at \url{https://
     github.com/ArdenB/TSSRESTREND}.
@@ -16,7 +19,7 @@ Description: TSS.RESTREND This script is a a demonstration of the Segmented
     In Remote Sensing of Environment, Volume 197, 2017, Pages 43-57,
     ISSN 0034-4257, \url{https://doi.org/10.1016/j.rse.2017.05.018.}
     (\url{http://www.sciencedirect.com/science/article/pii/S0034425717302171})
-    Version 0.1.04 is in test phase and is not stable. Use 0.1.031
+    Version 0.1.04 is stable. 
 License: GPL-3
 LazyData: TRUE
 Imports:

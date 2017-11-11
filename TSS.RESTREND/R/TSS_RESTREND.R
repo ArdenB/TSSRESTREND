@@ -17,10 +17,13 @@
 #'        Complete Monthly Time Series of Vegetation Index values.
 #'        An object of class \code{'ts'} object without NA's.
 #' @param ACP.table
-#'        A table of every combination of offset period and accumulation period.
-#'        ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.
+#'        A table of every combination of offset period and accumulation period.for precipitation
+#'        ACP.table can be calculated using the \code{\link{climate.accumulator}}.
 #' @note  if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
 #'        rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.
+#'        @param ACT.table
+#'        A table of every combination of offset period and accumulation period.for temperature
+#'        ACP.table can be calculated using the \code{\link{climate.accumulator}}.
 #' @param CTSR.RF
 #'        Complete Time Series of Rainfall. An object of class 'ts' object without NA's
 #'        and be the same length and cover the same time range as CTSR.VI.
@@ -128,7 +131,7 @@
 #' plot(results, verbose=TRUE)
 #' }
 #'
-TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
+TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, ACT.table=NULL, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
                          rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE){
 
   while (TRUE){ #Test the variables for consistenty
@@ -152,8 +155,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, anu.VI=FALSE, a
     }
     if (!CTSR.RF){
       #Calculate the Complete time seties Accumulation (rainfall)
-      # TO ADD: Way of determing the results in the case of non allow negative situation
-      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, allow.negative=allow.negative)
+      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, CTSR.TM, allow.negative=allow.negative)
       # If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
       #This mod is will impact results comparisons before V0.1.04
       if ((!allow.negative && as.numeric(CTS.Str$summary)[1] <0)||as.numeric(CTS.Str$summary)[3] >sig){
