@@ -4,7 +4,7 @@
 \alias{seg.RESTREND}
 \title{Segmented RESTREND (RESidual TREND)}
 \usage{
-seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint, sig = 0.05)
+seg.RESTREND(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, sig = 0.05)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
@@ -13,6 +13,10 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 \item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
 calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
+
+\item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
+calculated from ACT.table usingthe \code{\link{AnnualRF.Cal}}}
 
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.

@@ -22,7 +22,7 @@
 #' brkp <-  as.integer(11)
 #' resu <- seg.RESTREND(segRESTREND$max.NDVI, segRESTREND$acc.precip, segRESTREND$index, brkp)
 
-seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
+seg.RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint,  sig=0.05){
 
   while (TRUE){
     if (class(anu.VI) != "ts")
@@ -44,28 +44,36 @@ seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
       stop("Breakpoint must be an interger of length 1")
     break
   }
-
   #Get the VPR
-  VPR.fit <- lm(anu.VI ~ acu.RF)
-
-  m<- matrix(nrow=(4), ncol=6)
+  if (is.null(acu.TM)){# No Temp
+    VPR.fit <- lm(anu.VI ~ acu.RF)
+  }else{ # temp
+    VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
+  }
+  # Setup empty matrix to hold paramaters or the linear models
+  m<- matrix(nrow=(4), ncol=7)
   m[]<-NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
-  colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
   R.pval <- glance(VPR.fit)$p.value
   R.Rval <- summary(VPR.fit)$r.square
+  if (is.null(acu.TM)){
+    R.tcoef <- NaN
+  }else{
+    R.tcoef <- as.numeric(coef(VPR.fit)[3])
+  }
   R.intr <- as.numeric(coef(VPR.fit)[1])
   R.slpe <- as.numeric(coef(VPR.fit)[2])
   R.BH <- NaN
   R.SC <- NaN
-  m["VPR.fit", ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC)
 
 
   ####### may wat to add a nonparametric trend test here
 
   #Critical threshold test
-  if (summary(VPR.fit)$coefficients[,4][2] > sig)
+  if (R.pval > sig)
     stop("VPR significance below critical threshold. Variables should not be passed to this function")
 
   VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
@@ -80,12 +88,13 @@ seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint,  sig=0.05){
 
   bpanalysis<-lm(VPR.residuals~I(year-(bkp+0.5))*dummy.var,segRES.df)
   R2.pval <- glance(bpanalysis)$p.value
+  R2.tcoef <- NaN
   R2.Rval <- summary(bpanalysis)$r.square
   R2.intr <- bpanalysis$coefficients[[1]]
   R2.slpe <- bpanalysis$coefficients[[2]]
   R2.BH <- bpanalysis$coefficients[[3]]
   R2.SC <- bpanalysis$coefficients[[4]]
-  m["RESTREND.fit", ] <- c(R2.slpe, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
+  m["RESTREND.fit", ] <- c(R2.slpe,R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
 
 
   init <- bpanalysis$fitted.values[1]

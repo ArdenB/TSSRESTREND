@@ -23,7 +23,7 @@
 #' VPRres <- seg.VPR(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, brkp, segVPR$RFB4, segVPR$RFAF)
 #' print(VPRres)
 
-seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05){
+seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,tm.b4=NULL, tm.af=NULL, sig=0.05){
   while (TRUE){
     if (class(anu.VI) != "ts")
       stop("anu.VI Not a time series object")
@@ -55,7 +55,11 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
   len <- length(anu.VI)
 
   #Get the non segmented VPR
-  VPR.fit <- lm(anu.VI ~ acu.RF)
+  if (is.null(acu.TM)){# No Temp
+    VPR.fit <- lm(anu.VI ~ acu.RF)
+  }else{ # temp
+    VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
+  }
   #Set up a blank table
   m<- matrix(nrow=(4), ncol=6)
   m[]<-NaN
@@ -76,6 +80,15 @@ seg.VPR <- function(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, sig=0.05
 
   adj.rfaf <- array((rf.af-mean(rf.af)))
   sd.adjaf <- adj.rfaf/sd(rf.af)
+   if (!is.null(acu.TM)){# has temperature data
+    browser()
+    #calculate the standard Variance before and after the breakpoint
+    adj.tmb4 <- array((tm.b4-mean(tm.b4)))
+    sd.adjtmb4 <- adj.tmb4/sd(tm.b4)
+
+    adj.tmaf <- array((tm.af-mean(tm.af)))
+    sd.adjtmaf <- adj.tmaf/sd(tm.af)
+   }
 
   #Check and see if there is any problems with the precipitation data
   if (sd(sd.adjaf[(breakpoint+1):len])==0 || sd(sd.adjb4[1:breakpoint]) == 0){

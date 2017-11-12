@@ -1,14 +1,17 @@
 #' @title BFAST Breakpoint Detector
 #'
 #' @description
-#'      Uses the Complete VI and Rainfall time series, calculates a \code{\link[stats]{lm}} between them
-#'      And then performs a \code{\link[bfast]{bfast}}
+#'      takes the Complete VI and optimally accumulated Rainfall (and tmperature if included), calculates a \code{\link[stats]{lm}} between them
+#'      And then performs a \code{\link[bfast]{bfast}}.in the residuals.  If BFAST.raw=TRUE, it will perform bfast on the Complete VI ts
 #'
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
 #' @importFrom bfast bfast
 #'
 #' @inheritParams TSSRESTREND
+#' @param CTSR.TM
+#'        Complete Time Series of temperature. An object of class 'ts' object without NA's
+#'        and be the same length and cover the same time range as CTSR.VI.  Default (CTSR.TM=NULL).
 #' @param BFAST.raw
 #'        Defualt = FALSE
 #'        If TRUE will perform a BFAST (season="harmonic") on the CTSR.VI
@@ -28,7 +31,7 @@
 #' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
 #' print(VPRBFdem)
 
-VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none", BFAST.raw=FALSE) {
+VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=FALSE) {
   #functions takes the complete time series VI and rainfall (RF)
 
   #Check the objects are Time series
@@ -48,7 +51,11 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none", BFAST.raw=FALSE) {
     stop("ts object do not have the same frequency")
 
   # Fit the two lines
-  CTS.fit <- lm(CTSR.VI ~ CTSR.RF)
+  if (is.null(CTSR.TM)) { # no temperature data
+    CTS.fit <- lm(CTSR.VI ~ CTSR.RF)
+  }else{
+    CTS.fit <- lm(CTSR.VI ~ CTSR.RF + CTSR.TM)
+  }
   #Convert to a ts object
   resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f)
   #perform the BFAST
@@ -59,7 +66,6 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, season="none", BFAST.raw=FALSE) {
     bf.fit <- bfast(resid.ts, h=0.15, season=season, max.iter=3, level = 0.05)
     bft <- "CTSR.VPR"
   }
-
 
   if (bf.fit$nobp$Vt[[1]] == FALSE) {
     # Get the number of breakpoints

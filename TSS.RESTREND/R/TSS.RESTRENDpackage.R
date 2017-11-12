@@ -1,7 +1,7 @@
 #' @title TSS.RESTREND: Time Series Segmented RESidual TREND
 #' @docType package
 #' @details
-#' Version 0.1.03
+#' Version 0.2.00
 #'
 #' @description
 #' TSS.RESTREND This script is a a demonstration of the Segmented RESTREND method proposed in Burrell et. al., (2016?).

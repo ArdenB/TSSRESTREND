@@ -7,6 +7,7 @@ setwd(this.dir)
 # install.packages("devtools")
 
 # library("devtools")
+library("lineprof")
 
 # install_github("ArdenB/SegmentedRESTREND_pub", subdir="TSS.RESTREND")
 # library(TSS.RESTREND)
@@ -47,7 +48,7 @@ max.acp <- 12
 max.osp <- 4
 
 #Create a table of every possible precipitation value given the max.acp and max.osp
-ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
+ACP.table <- climate.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 
 #save this data out
 # rabbitACPtable <- ACP.table
@@ -60,5 +61,5 @@ ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 #Pass the ACP.table and the CTSR.VI to the TSS.RESTREND
 results <- TSSRESTREND(CTSR.VI, ACP.table)
 print(results$summary)
-plot(results, verbose=TRUE)
+# plot(results, verbose=TRUE)
 

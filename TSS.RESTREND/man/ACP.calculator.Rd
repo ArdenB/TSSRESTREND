@@ -2,16 +2,19 @@
 % Please edit documentation in R/ACPcalculator.R
 \name{ACP.calculator}
 \alias{ACP.calculator}
-\title{Antecedental Rainfall Accumulation calculator for the VI Complete Time Series}
+\title{Antecedental Rainfall (and temperature) Accumulation calculator for the VI Complete Time Series}
 \usage{
-ACP.calculator(CTSR.VI, ACP.table, allow.negative = FALSE)
+ACP.calculator(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
 An object of class \code{'ts'} object without NA's.}
 
-\item{ACP.table}{A table of every combination of offset period and accumulation period.
-ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
+\item{ACP.table}{A table of every combination of offset period and accumulation period.for precipitation
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
+
+\item{ACT.table}{A table of every combination of offset period and accumulation period.for temperature
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
 \item{allow.negative}{IF true, will not preference positive slope in either CTSR or VI calculations}
 }
@@ -30,12 +33,24 @@ A list containing:
 
 \bold{CTSR.acp}
        The accumulation period for the complete time series rainfall
+
+\bold{CTSR.tmp}
+       The optimally accumulated CTS temperature
+
+\bold{CTSR.tosp}
+       The offest period for the complete time series temperature
+
+\bold{CTSR.tacp}
+       The accumulation period for the complete time series temperature
 }
 \description{
 Takes the Complete Time Series Vegetation Index and a table of every possible accumulation period and offset
-period.  A OLS is calculated \code{\link{lm}} for every combination of VI ~ rainfall.  This Function preferences those results where
-slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation that has the highest R-squared
-and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.
+period for precipitation and temperature(optional).  A OLS is calculated \code{\link{lm}} for every combination
+of VI ~ rainfall (and temperature if that is included).
+if only the VPR is being calculated, this Function preferences those results where slope>0
+(increase in rainfall causes an increase in vegetation),returning the rainfall accumulation
+that has the highest R-squared and a positive slope. If no combinationsproduce a
+positive slope then the one with the highest Rsquared is returned.
 }
 \examples{
 #Find the data

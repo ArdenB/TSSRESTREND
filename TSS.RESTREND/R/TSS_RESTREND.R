@@ -21,13 +21,18 @@
 #'        ACP.table can be calculated using the \code{\link{climate.accumulator}}.
 #' @note  if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as
 #'        rf.b4 and rf.af for \code{'ts'} with a breakpoint in the VPR.
-#'        @param ACT.table
+#' @param ACT.table
 #'        A table of every combination of offset period and accumulation period.for temperature
 #'        ACP.table can be calculated using the \code{\link{climate.accumulator}}.
 #' @param CTSR.RF
 #'        Complete Time Series of Rainfall. An object of class 'ts' object without NA's
 #'        and be the same length and cover the same time range as CTSR.VI.
-#'        If ACU.table is provided, CTSR.RF will be automitaclly calculated using the
+#'        If ACP.table is provided, CTSR.RF will be automitaclly calculated using the
+#'        \code{\link{ACP.calculator}}
+#' @param CTSR.TM
+#'        Complete Time Series of temperature. An object of class 'ts' object without NA's
+#'        and be the same length and cover the same time range as CTSR.VI.  Default (CTSR.TM=NULL).
+#'        If ACT.table is provided, CTSR.RF will be automitaclly calculated using the
 #'        \code{\link{ACP.calculator}}
 #' @param anu.VI
 #'        The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
@@ -36,6 +41,10 @@
 #'        The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 #'        NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
 #'        calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}
+#' @param acu.TM
+#'        The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
+#'        NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
+#'        calculated from ACT.table usingthe \code{\link{AnnualRF.Cal}}
 #' @param VI.index
 #'        the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 #'        as anu.VI. NOTE. R indexs from 1 rather than 0.
@@ -131,7 +140,7 @@
 #' plot(results, verbose=TRUE)
 #' }
 #'
-TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, ACT.table=NULL, anu.VI=FALSE, acu.RF=FALSE, VI.index=FALSE,
+TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, ACT.table=NULL, anu.VI=FALSE, acu.RF=FALSE, acu.TM=NULL, VI.index=FALSE,
                          rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE){
 
   while (TRUE){ #Test the variables for consistenty
@@ -153,19 +162,27 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, ACT.table=NULL,
       if (class(anu.VI) != "ts")
         stop("anu.VI Not a time series object")
     }
+    # Change the allow.negative for multivariate regression
+    if (!is.null(ACT.table)){allow.negative=TRUE}
+
     if (!CTSR.RF){
       #Calculate the Complete time seties Accumulation (rainfall)
-      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, CTSR.TM, allow.negative=allow.negative)
+      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, ACT.table, allow.negative=allow.negative)
       # If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
       #This mod is will impact results comparisons before V0.1.04
-      if ((!allow.negative && as.numeric(CTS.Str$summary)[1] <0)||as.numeric(CTS.Str$summary)[3] >sig){
+      if ((!allow.negative && as.numeric(CTS.Str$summary)[1] <0)||as.numeric(CTS.Str$summary)[4] >sig){
         BFraw = TRUE
       }else{BFraw=FALSE}
       #Pull out the relevant paramters for use
       CTSR.RF <- CTS.Str$CTSR.precip #RF values
+      if (is.null(CTSR.TM)){
+        CTSR.TM <- CTS.Str$CTSR.tmp #Temperature values, null if temp is not considered
+      }
       details.CTS.VPR <- CTS.Str$summary #Summay of the FIT between the CTS.VRP
       CTSR.osp <- CTS.Str$CTSR.osp #CTS Off set period
       CTSR.acp <- CTS.Str$CTSR.acp #CTS Sccumulation period
+      CTSR.tosp <- CTS.Str$CTSR.tosp #CTS Off set period
+      CTSR.tacp <- CTS.Str$CTSR.tacp #CTS Sccumulation period
 
     }else{
       if (class(CTSR.RF) != "ts")
@@ -184,11 +201,14 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, ACT.table=NULL,
     }
     if (!acu.RF){
       # Calculate the Annual Accumulated Rainfall
-      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table, allow.negative=allow.negative)
+      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table, ACT.table, allow.negative=allow.negative)
       # Pull out and store key values
       osp <- precip.df$osp # offset period
       acp <- precip.df$acp # Accumulation period
+      tosp <- precip.df$tosp # offset period
+      tacp <- precip.df$tacp # Accumulation period
       acu.RF <- precip.df$annual.precip # precip values
+      acu.TM <- precip.df$annual.temp # precip values
       details.VPR<- precip.df$summary # The summary of the lm between rainfall and Vegetation
     }else{
       # Check the passed accumulated rainfall
@@ -213,16 +233,16 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, ACT.table=NULL,
     break
   }
   # Pass the infomation about the VI and RF as well as the nfast method to the VPR.BFAST script
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, season=season, BFAST.raw = BFraw)
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM, season=season, BFAST.raw = BFraw)
 
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
   bp <- bp[!bp %in% exclude] #remove breakpoints in the exclude list (Sensor transitions)
   BFT <-  bkp$BFAST.type #Type of BFAST used
-  # browser()
-  acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, osp=osp, acp=acp,
-                        osp.b4=NaN, acp.b4=NaN, osp.af=NaN, acp.af = NaN)
+  acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, CTSR.tosp=CTSR.tosp, CTSR.tacp=CTSR.tacp,
+                        osp=osp, acp=acp, tosp=tosp, tacp=tacp,  osp.b4=NaN, acp.b4=NaN, tosp.b4=NaN, tacp.b4=NaN,
+                        osp.af=NaN, acp.af = NaN, tosp.af=NaN, tacp.af = NaN)
 
   if (class(bp)=="logical"|length(bp)==0) { #Should catch both the false and the no breakpoints
     bp <- FALSE
@@ -240,7 +260,8 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, ACT.table=NULL,
   }
 
   if (test.Method == "RESTREND"){
-    result <- RESTREND(anu.VI, acu.RF, VI.index, sig=sig)
+    # browser()
+    result <- RESTREND(anu.VI, acu.RF, acu.TM,  VI.index, sig=sig)
     result$TSSRmodels$CTS.fit <- CTS.lm
     result$TSSRmodels$BFAST <- BFAST.obj
     result$ts.data$CTSR.VI <- CTSR.VI

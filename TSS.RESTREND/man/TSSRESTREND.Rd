@@ -4,21 +4,30 @@
 \alias{TSSRESTREND}
 \title{Time Series Segmentation of Residual Trends (MAIN FUNCTION)}
 \usage{
-TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, anu.VI = FALSE,
-  acu.RF = FALSE, VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE,
-  sig = 0.05, season = "none", exclude = 0, allow.negative = FALSE)
+TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, CTSR.TM = NULL,
+  ACT.table = NULL, anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL,
+  VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE, sig = 0.05,
+  season = "none", exclude = 0, allow.negative = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
 An object of class \code{'ts'} object without NA's.}
 
-\item{ACP.table}{A table of every combination of offset period and accumulation period.
-ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
+\item{ACP.table}{A table of every combination of offset period and accumulation period.for precipitation
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
 \item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' object without NA's
 and be the same length and cover the same time range as CTSR.VI.
-If ACU.table is provided, CTSR.RF will be automitaclly calculated using the
+If ACP.table is provided, CTSR.RF will be automitaclly calculated using the
 \code{\link{ACP.calculator}}}
+
+\item{CTSR.TM}{Complete Time Series of temperature. An object of class 'ts' object without NA's
+and be the same length and cover the same time range as CTSR.VI.  Default (CTSR.TM=NULL).
+If ACT.table is provided, CTSR.RF will be automitaclly calculated using the
+\code{\link{ACP.calculator}}}
+
+\item{ACT.table}{A table of every combination of offset period and accumulation period.for temperature
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
 if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
@@ -26,6 +35,10 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 \item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
 calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
+
+\item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
+calculated from ACT.table usingthe \code{\link{AnnualRF.Cal}}}
 
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.

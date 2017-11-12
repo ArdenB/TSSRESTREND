@@ -4,8 +4,8 @@
 \alias{AnnualRF.Cal}
 \title{Antecedental Accumulation calculator for the Annual Max VI Time Series}
 \usage{
-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = FALSE,
-  allow.negative = FALSE)
+AnnualRF.Cal(anu.VI, VI.index, ACP.table, ACT.table = NULL,
+  Breakpoint = FALSE, allow.negative = FALSE)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
@@ -15,8 +15,11 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 as anu.VI. NOTE. R indexs from 1 rather than 0.
 if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
 
-\item{ACP.table}{A table of every combination of offset period and accumulation period.
-ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
+\item{ACP.table}{A table of every combination of offset period and accumulation period.for precipitation
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
+
+\item{ACT.table}{A table of every combination of offset period and accumulation period.for temperature
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
 \item{Breakpoint}{Used when calcualting rf.bf and rf.af for ts with breakpoints in the VPR.  See \code{\link{CHOW}}}
 
@@ -28,8 +31,12 @@ ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
        of the \code{\link[stats]{lm}} of VI ~ rainfall. If Breakpoint, summary covers both rf.b4 and rf.af.
 
 \bold{acu.RF}
-       The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. IT is caculated
+       (aka. annual.precip)The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. It is caculated
        from the ACP.table by finding the acp and osp that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall)
+
+\bold{acu.TM}
+       (aka, annual.temp) The optimal accumulated rainfall for anu.T<. Mut be a object of class 'ts' and of equal length to anu.VI. It is caculated
+       from the ACT.table by finding the tacp and tosp that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall+temperature)
 
 \bold{rf.b4}
        The optimal acumulated rainfall before the Breakpoint
@@ -37,18 +44,33 @@ ACP.table can be calculated using the \code{\link{rainfall.accumulator}}.}
 \bold{rf.af}
        The Optimally accumulated rainfall after the Breakpoint
 
+\bold{tm.b4}
+       The optimal acumulated temperature before the Breakpoint
+
+\bold{tm.af}
+       The Optimally accumulated temperature after the Breakpoint
+
 \bold{osp}
        The offest period for the annual max time series rainfall
 
 \bold{acp}
        The accumulation period for the annual max time series rainfall
+
+\bold{tosp}
+       The offest period for the annual max time series temperature
+
+\bold{tacp}
+       The accumulation period for the annual max time series temperature
 }
 \description{
-Takes the Annual Max VI Time Series, the VI.index and a table of every possible accumulation period and offset
-period.  A OLS is calculated \code{\link[stats]{lm}} for every combination of VI ~ rainfall.  This Function preferences those results where
-slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation that has the highest R-squared
-and a positive slope. If no combinations produce a positive slope then the one with the highest Rsquared is returned.MISSING non
-peramtric and other variables
+Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation 
+period and offset period for preciptation and Temperature (optional).  A OLS is calculated 
+\code{\link[stats]{lm}} for every combination of VI ~ rainfall.If temperature is provided
+The formula is (VI ~ rainfall +temperature).  This Function preferences those results where
+slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation
+that has the highest R-squared and a positive slope. If no combinations produce a positive slope then the
+one with the highest Rsquared is returned. .
+TO DO: non peramtric and other variables
 }
 \examples{
 ARC <- AnnualRF.Cal(stdRESTREND$max.NDVI, stdRESTREND$index, stdRESTRENDrfTab)

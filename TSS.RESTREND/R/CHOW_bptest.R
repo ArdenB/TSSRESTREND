@@ -35,7 +35,7 @@
 #' print(reschow)
 #'
 
-CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
+CHOW <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoints, sig=0.05){
   #test the data to make sure its valid
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
@@ -79,16 +79,23 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
   }
   #create the lm for the VPR and test is significance,
   #split VPR sig from VPR insignificant
-  VPR.fit <- lm(anu.VI ~ acu.RF)
+  if (is.null(acu.TM)){ #no temp data
+    VPR.fit <- lm(anu.VI ~ acu.RF)
+  }else{# temp data
+    VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
+  }
+  browser("I need to check the coeficents, Remove later")
   if (summary(VPR.fit)$coefficients[,4][2] > sig){
-    print("VPR significance below critical threshold, Testing breakpoints in the VPR")
+    # print("VPR significance below critical threshold, Testing breakpoints in the VPR")
     ind <- acu.RF #independent variable
     dep <- anu.VI #dependent variable
     Method = "seg.VPR"
+    if (is.null(acu.TM)){ind2 <- acu.TM}else{ind2=NULL}
   } else {
     ind <- ti
     dep <- VPR.fit$residuals
     Method = "seg.RESTREND"
+    ind2 = NULL
   }
   #Iterate over each of the breakpoints
   while (TRUE){
@@ -110,23 +117,32 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
       #perform the chow test
       bkp = bp - (bp.start-1)
       # print(bkp)
-      chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end], type = "Chow", point = bkp)
+      if (is.null(ind2)){ # no temp
+        chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end], type = "Chow", point = bkp)
+        }else{
+          browser("This needs more research")
+          chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end]+ind2[bp.start:bp.end], type = "Chow", point = bkp)
+        }
 
 
       ind.df$reg.sig[bp.num] = chow$p.value
 
     }
     # browser()
-    if (nrow(ind.df)>1){ #*****This needs to be tested with mutiple breakpoints*****
+    if (nrow(ind.df)>1){ 
       #delete breakpoint with the largest p values (lowest significance)
       ind.df <- ind.df[!(1:nrow(ind.df) %in% (which.max(ind.df$reg.sig))),]
     }else if (nrow(ind.df)==1){
-      # if (print){
-      #   print(chow)
-      # }
-      VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
+      # last breakpoint standing
+      if (is.null(acu.TM)){
+        VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])  
+      }else{
+        browser("This needs more research")
+        VPR.chow <- sctest(anu.VI ~ acu.RF+acu.TM, type = "Chow", point = bkp)  
+      }
+      
+      
       ind.df$VPR.bpsig[1] = VPR.chow$p.value
-      # browser()
 
       if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig){ # cant chow non-sig residulas (bpRESID.chow = FALSE)
         ind.df$reg.sig[1] = NaN
@@ -153,7 +169,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, sig=0.05){
         return(FALSE)
       }
     }else{
-      print("ind.df shape is wrong, exited to avoid infinit loop, exit point 2")
+      print("ind.df shape is wrong, exited to avoid infinite loop, exit point 2")
       return(FALSE)
     }
   }

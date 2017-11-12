@@ -4,7 +4,8 @@
 \alias{VPR.BFAST}
 \title{BFAST Breakpoint Detector}
 \usage{
-VPR.BFAST(CTSR.VI, CTSR.RF, season = "none", BFAST.raw = FALSE)
+VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM = NULL, season = "none",
+  BFAST.raw = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -12,8 +13,11 @@ An object of class \code{'ts'} object without NA's.}
 
 \item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' object without NA's
 and be the same length and cover the same time range as CTSR.VI.
-If ACU.table is provided, CTSR.RF will be automitaclly calculated using the
+If ACP.table is provided, CTSR.RF will be automitaclly calculated using the
 \code{\link{ACP.calculator}}}
+
+\item{CTSR.TM}{Complete Time Series of temperature. An object of class 'ts' object without NA's
+and be the same length and cover the same time range as CTSR.VI.  Default (CTSR.TM=NULL).}
 
 \item{season}{See \code{\link[bfast]{bfast}}. This season value only applies to bfast done using the CTS
 VPR. if a non VPR adjusted BFAST is performed.a harmonic season is used.}
@@ -38,8 +42,8 @@ List of objects:
          the type of BFAST done (VPR residuals or on the VI timeseris itself)
 }
 \description{
-Uses the Complete VI and Rainfall time series, calculates a \code{\link[stats]{lm}} between them
-     And then performs a \code{\link[bfast]{bfast}}
+takes the Complete VI and optimally accumulated Rainfall (and tmperature if included), calculates a \code{\link[stats]{lm}} between them
+     And then performs a \code{\link[bfast]{bfast}}.in the residuals.  If BFAST.raw=TRUE, it will perform bfast on the Complete VI ts
 }
 \examples{
 VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)

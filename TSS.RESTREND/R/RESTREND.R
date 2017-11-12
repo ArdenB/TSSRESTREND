@@ -20,7 +20,7 @@
 #' restrend <- RESTREND(stdRESTREND$max.NDVI, stdRESTREND$acc.precip, stdRESTREND$index)
 #' print(restrend)
 
-RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
+RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
   #check the data
   while (TRUE){
     if (class(anu.VI) != "ts")
@@ -40,25 +40,34 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
   }
 
   #Get the VPR
-  VPR.fit <- lm(anu.VI ~ acu.RF)
+  if (is.null(acu.TM)){# No Temp
+    VPR.fit <- lm(anu.VI ~ acu.RF)
+  }else{ # temp
+    VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
+  }
 
-  m<- matrix(nrow=(4), ncol=6)
+  # Setup empty matrix to hold paramaters or the linear models
+  m<- matrix(nrow=(4), ncol=7)
   m[]<-NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
-  colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
 
   R.pval <- glance(VPR.fit)$p.value
   R.Rval <- summary(VPR.fit)$r.square
+  if (is.null(acu.TM)){
+    R.tcoef <- NaN
+  }else{
+    R.tcoef <- as.numeric(coef(VPR.fit)[3])
+  }
   R.intr <- as.numeric(coef(VPR.fit)[1])
   R.slpe <- as.numeric(coef(VPR.fit)[2])
   R.BH <- NaN
   R.SC <- NaN
-  m["VPR.fit", ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC)
 
   #may wat to add a nonparametric trend test here
-
-  #Critical threshold test TO BE FIXED
-  if (summary(VPR.fit)$coefficients[,4][2] > sig){
+  #Critical threshold test. Uses the p values of the model
+  if (R.pval > sig){
 
     print("VPR significance below critical threshold")
     tot.ch<- FALSE
@@ -73,7 +82,7 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
 
     return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
                           TSSRmodels=models), class = "TSSRESTREND"))
-  }else if (R.slpe < 0){
+  }else if ((R.slpe < 0)&&(is.null(acu.TM))){
     print("VPR slope is negative")
     tot.ch<- FALSE
     change<- FALSE
@@ -92,12 +101,13 @@ RESTREND <- function(anu.VI, acu.RF, VI.index, sig=0.05) {
   VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
   RES <- lm(VPR.resid ~ ti)
   R2.pval <- glance(RES)$p.value
+  R2.tcoef <- NaN
   R2.Rval <- summary(RES)$r.square
   R2.intr <- RES$coefficients[[1]]
   R2.slpe <- RES$coefficients[[2]]
-  R2.BH <- FALSE
-  R2.SC <- FALSE
-  m["RESTREND.fit", ] <- c(R2.slpe, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
+  R2.BH <- NaN
+  R2.SC <- NaN
+  m["RESTREND.fit", ] <- c(R2.slpe,R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
 
   init <- RES$fitted.values[1]
   fin <- RES$fitted.values[end(RES$fitted.values)[1]]

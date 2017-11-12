@@ -24,12 +24,12 @@
 AnMaxVI <- function(CTSR.VI){
   if (class(CTSR.VI) != "ts")
     stop("CTSR.VI Not a time series object")
-
+  #Work out the start and end dates
   sty <- start(CTSR.VI)[1]
   stm <-  start(CTSR.VI)[2]
   eny <- end(CTSR.VI)[1]
   enm <- end(CTSR.VI)[2]
-
+  #Sort by year so its easier to find the annual max values
   m<- matrix(nrow=(eny-sty+1), ncol=12)
   rownames(m)<- c(sty:eny)
   colnames(m)<- c(month.abb[1:12])
