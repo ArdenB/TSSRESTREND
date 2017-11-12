@@ -147,8 +147,6 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, A
     #Each check liiks at a different paramter. If the data fails the check will stop, else, it breaks after all the checks
     if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object. Please check the data")
-
-
     if ((class(ACP.table)=="logical") && (!CTSR.RF || acu.RF))
       stop("Insufficent Rainfall data provided. Provide either a complete ACP.table or both the CTSR.RF & acu.RF")
     if ((!anu.VI)||(!VI.index)){
@@ -252,7 +250,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, A
     chow.bpi <- FALSE
   }else{
     bp<-as.numeric(bkp$bkps)
-    res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, sig=sig)
+    res.chow <- CHOW(anu.VI, acu.RF, acu.TM, VI.index, bp, sig=sig)
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
     chow.sum <-res.chow$bp.summary
     chow.bpi <- res.chow$allbp.index
@@ -272,7 +270,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, A
 
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp,  sig=sig)
+    result <- seg.RESTREND(anu.VI, acu.RF, acu.TM, VI.index, brkp,  sig=sig)
     result$TSSRmodels$CTS.fit <- CTS.lm
     result$TSSRmodels$BFAST <- BFAST.obj
     result$ts.data$CTSR.VI <- CTSR.VI
@@ -283,7 +281,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, A
 
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
-      VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, Breakpoint = brkp)
+      VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
       # browser()
@@ -294,7 +292,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, A
     }
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, sig=sig)
+    result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, sig=sig)
     result$TSSRmodels$CTS.fit <- CTS.lm
     result$TSSRmodels$BFAST <- BFAST.obj
     result$ts.data$CTSR.VI <- CTSR.VI

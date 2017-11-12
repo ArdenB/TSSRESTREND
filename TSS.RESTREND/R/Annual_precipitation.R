@@ -1,8 +1,8 @@
 #' @title Antecedental Accumulation calculator for the Annual Max VI Time Series
 #'
 #' @description
-#' Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation 
-#' period and offset period for preciptation and Temperature (optional).  A OLS is calculated 
+#' Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation
+#' period and offset period for preciptation and Temperature (optional).  A OLS is calculated
 #' \code{\link[stats]{lm}} for every combination of VI ~ rainfall.If temperature is provided
 #' The formula is (VI ~ rainfall +temperature).  This Function preferences those results where
 #' slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation
@@ -59,6 +59,7 @@
 #' print(ARCseg)
 #' }
 AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint = FALSE, allow.negative=FALSE){
+  browser("The M part of this script is broken")
   #Perform the basic sanity checks
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
@@ -210,7 +211,6 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint
   }
 
   # depending on the breakpoints and the allow.negative state do things
-
   if (!Breakpoint){ # No Breakpoint
     if (allow.negative){ # all values are considered
       if (is.null(ACT.table)){ # no temperature data
@@ -242,7 +242,7 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint
       }
     }
   }else{ # has a breakpoint
-
+    browser()
     if (allow.negative){ # all values are considered
       if (is.null(ACT.table)){ # no temperature data
         results.b4 <- exporter(m, anu.VI, anu.ACUP[, 1:Breakpoint])

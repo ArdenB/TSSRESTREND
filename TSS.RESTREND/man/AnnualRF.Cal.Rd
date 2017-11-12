@@ -63,8 +63,8 @@ ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
        The accumulation period for the annual max time series temperature
 }
 \description{
-Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation 
-period and offset period for preciptation and Temperature (optional).  A OLS is calculated 
+Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation
+period and offset period for preciptation and Temperature (optional).  A OLS is calculated
 \code{\link[stats]{lm}} for every combination of VI ~ rainfall.If temperature is provided
 The formula is (VI ~ rainfall +temperature).  This Function preferences those results where
 slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation

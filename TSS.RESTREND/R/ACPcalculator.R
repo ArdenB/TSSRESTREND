@@ -128,7 +128,6 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table=NULL, allow.negative=FA
         m[rn.loop, ] <- linreg(CTSR.VI, ACP.table[n, ], ACT.table[nx,])
       }}
   }
-
   # figure out if i need to be checking positive slopes
   if (allow.negative) {
     #To avoild memory duplication

@@ -7,6 +7,7 @@
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
 #' @importFrom strucchange sctest
+#' @importFrom broom glance
 #'
 #' @inheritParams TSSRESTREND
 #'
@@ -84,8 +85,7 @@ CHOW <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoints, sig=0.05){
   }else{# temp data
     VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
   }
-  browser("I need to check the coeficents, Remove later")
-  if (summary(VPR.fit)$coefficients[,4][2] > sig){
+  if (glance(VPR.fit)$p.value > sig){
     # print("VPR significance below critical threshold, Testing breakpoints in the VPR")
     ind <- acu.RF #independent variable
     dep <- anu.VI #dependent variable
@@ -129,19 +129,18 @@ CHOW <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoints, sig=0.05){
 
     }
     # browser()
-    if (nrow(ind.df)>1){ 
+    if (nrow(ind.df)>1){
       #delete breakpoint with the largest p values (lowest significance)
       ind.df <- ind.df[!(1:nrow(ind.df) %in% (which.max(ind.df$reg.sig))),]
     }else if (nrow(ind.df)==1){
       # last breakpoint standing
       if (is.null(acu.TM)){
-        VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])  
+        VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
       }else{
-        browser("This needs more research")
-        VPR.chow <- sctest(anu.VI ~ acu.RF+acu.TM, type = "Chow", point = bkp)  
+        VPR.chow <- sctest(anu.VI ~ acu.RF+acu.TM, type = "Chow", point = bkp)
       }
-      
-      
+
+
       ind.df$VPR.bpsig[1] = VPR.chow$p.value
 
       if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig){ # cant chow non-sig residulas (bpRESID.chow = FALSE)
