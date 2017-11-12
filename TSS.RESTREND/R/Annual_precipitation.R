@@ -59,7 +59,7 @@
 #' print(ARCseg)
 #' }
 AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint = FALSE, allow.negative=FALSE){
-  browser("The M part of this script is broken")
+  # browser("The M part of this script is broken")
   #Perform the basic sanity checks
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
@@ -140,8 +140,9 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint
 
       R.BH <- NaN
       R.SC <- NaN
+      R.SCT <- NaN
       #Return the results
-      return(c(R.slpe, R.Tcoef, R.intr, R.pval, R.Rval, R.BH, R.SC))
+      return(c(R.slpe, R.Tcoef, R.intr, R.pval, R.Rval, R.BH, R.SC, R.SCT))
     }}
   # For loops to call the linreg function and fit a LM to every combination of rainfall and vegetation
   for (n in 1:dim(ACP.table)[1]){
@@ -163,8 +164,8 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint
         rn.loop <- paste(rownames(ACP.table)[n], rownames(ACT.table)[nx], sep = ":")
         # Stack the results in the empyt matryx m
         if (class(Breakpoint)!="logical"){ #Means breakpoint is a number (not logical)
-          m[rn.loop, ] <- linreg(anu.VI[1:Breakpoint], anu.ACUP[n, 1:Breakpoint], anu.ACUT[n, 1:Breakpoint])
-          p[rn.loop, ] <- linreg(anu.VI[(Breakpoint+1):len], anu.ACUP[n, (Breakpoint+1):len], anu.ACUT[n, (Breakpoint+1):len])
+          m[rn.loop, ] <- linreg(anu.VI[1:Breakpoint], anu.ACUP[n, 1:Breakpoint], anu.ACUT[nx, 1:Breakpoint])
+          p[rn.loop, ] <- linreg(anu.VI[(Breakpoint+1):len], anu.ACUP[n, (Breakpoint+1):len], anu.ACUT[nx, (Breakpoint+1):len])
         }else{
           m[rn.loop, ] <- linreg(anu.VI, anu.ACUP[n, ], anu.ACUT[nx,])
         }
@@ -242,18 +243,16 @@ AnnualRF.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint
       }
     }
   }else{ # has a breakpoint
-    browser()
     if (allow.negative){ # all values are considered
       if (is.null(ACT.table)){ # no temperature data
-        results.b4 <- exporter(m, anu.VI, anu.ACUP[, 1:Breakpoint])
-        results.af <- exporter(p, anu.VI, anu.ACUP[, (Breakpoint+1):len])
+        results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
+        results.af <- exporter(p, anu.VI[(Breakpoint+1):len], anu.ACUP[, (Breakpoint+1):len])
       }else{ # considereing temperature
-        results.b4 <- exporter(m, anu.VI, anu.ACUP[, 1:Breakpoint], anu.ACUT[, 1:Breakpoint])
-        results.af <- exporter(p, anu.VI, anu.ACUP[, (Breakpoint+1):len], anu.ACUT[, (Breakpoint+1):len])
+        results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint], anu.ACUT[, 1:Breakpoint])
+        results.af <- exporter(p, anu.VI[(Breakpoint+1):len], anu.ACUP[, (Breakpoint+1):len], anu.ACUT[, (Breakpoint+1):len])
       }
       #Bind the summary together
       summ <- rbind(results.b4$summary, results.af$summary)
-      browser()
       return(structure(list(summary=summ, rf.b4 = results.b4$annual.precip, rf.af= results.af$annual.precip,
                             tm.b4 = results.b4$annual.temp, tm.af= results.af$annual.temp,
                             osp.b4 = results.b4$osp, acp.b4 = results.b4$acp, tosp.b4 = results.b4$tosp,

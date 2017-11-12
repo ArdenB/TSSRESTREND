@@ -51,10 +51,10 @@ seg.RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint,  sig=0.05
     VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
   }
   # Setup empty matrix to hold paramaters or the linear models
-  m<- matrix(nrow=(4), ncol=7)
+  m<- matrix(nrow=(4), ncol=8)
   m[]<-NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
-  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change", "Slope.ChangeTmp")
 
   R.pval <- glance(VPR.fit)$p.value
   R.Rval <- summary(VPR.fit)$r.square
@@ -67,7 +67,8 @@ seg.RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint,  sig=0.05
   R.slpe <- as.numeric(coef(VPR.fit)[2])
   R.BH <- NaN
   R.SC <- NaN
-  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC)
+  R.SCT <- NaN
+  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC, R.SCT)
 
 
   ####### may wat to add a nonparametric trend test here
@@ -94,7 +95,8 @@ seg.RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint,  sig=0.05
   R2.slpe <- bpanalysis$coefficients[[2]]
   R2.BH <- bpanalysis$coefficients[[3]]
   R2.SC <- bpanalysis$coefficients[[4]]
-  m["RESTREND.fit", ] <- c(R2.slpe,R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
+  R2.SCT <- NaN
+  m["RESTREND.fit", ] <- c(R2.slpe, R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC, R2.SCT)
 
 
   init <- bpanalysis$fitted.values[1]
@@ -111,7 +113,8 @@ seg.RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint,  sig=0.05
                          Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
                          residual.p = glance(bpanalysis)$p.value, VPRbreak.p = FALSE, bp.year=bkp)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=FALSE)
-  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF=FALSE, StdVar.TM=FALSE)
+  # ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
   ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
   acum.df <- FALSE
   return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,

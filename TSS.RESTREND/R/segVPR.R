@@ -57,14 +57,16 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   #Get the non segmented VPR
   if (is.null(acu.TM)){# No Temp
     VPR.fit <- lm(anu.VI ~ acu.RF)
+    R.tcoef <- NaN
   }else{ # temp
     VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
+    R.tcoef <- as.numeric(coef(VPR.fit)[3])
   }
   #Set up a blank table
-  m<- matrix(nrow=(4), ncol=6)
+  m<- matrix(nrow=(4), ncol=8)
   m[]<-NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
-  colnames(m)<- c("slope", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change", "Slope.ChangeTmp")
   # Pull out key values from VPR
   R.pval <- glance(VPR.fit)$p.value
   R.Rval <- summary(VPR.fit)$r.square
@@ -72,7 +74,8 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   R.slpe <- as.numeric(coef(VPR.fit)[2])
   R.BH <- NaN
   R.SC <- NaN
-  m["VPR.fit", ] <- c(R.slpe, R.intr,R.pval, R.Rval, R.BH, R.SC)
+  R.SCT <- NaN
+  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC, R.SCT)
 
   #calculate the standard Variance before and after the breakpoint
   adj.rfb4 <- array((rf.b4-mean(rf.b4)))
@@ -81,7 +84,6 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   adj.rfaf <- array((rf.af-mean(rf.af)))
   sd.adjaf <- adj.rfaf/sd(rf.af)
    if (!is.null(acu.TM)){# has temperature data
-    browser()
     #calculate the standard Variance before and after the breakpoint
     adj.tmb4 <- array((tm.b4-mean(tm.b4)))
     sd.adjtmb4 <- adj.tmb4/sd(tm.b4)
@@ -101,35 +103,53 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
                            Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
                            residual.p = FALSE, VPRbreak.p = FALSE, bp.year=FALSE)
     models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=FALSE)
-    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+    # ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF=adj.RF, StdVar.TM=FALSE)
     ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
 
     return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
                           TSSRmodels=models), class = "TSSRESTREND"))
   }
-
-  #Build a single adjusted
+  #Build a single adjusted precip vector
   adj.RF <- c(sd.adjb4[1:breakpoint], sd.adjaf[(breakpoint+1):len])
-
   #Create the dummy variable
   dummy <- rep(0, len)
   dummy[(breakpoint+1):len] = 1
+  # If needed create the temperature data, then build the dataframe and perform tthe regression
+  if (!is.null(acu.TM)){
+    # has temperature data
+    adj.tm <- c(sd.adjtmb4[1:breakpoint], sd.adjtmaf[(breakpoint+1):len])
+    segRES.df = data.frame(year=ti, VI=anu.VI, sv.RF=adj.RF, sv.TM=adj.tm, breakpoint.var=dummy)
+    #perform the regression
+    segVPR.fit <-  lm(VI~(sv.RF+sv.TM)*breakpoint.var, segRES.df)
+    #Get the changeable coefficents
+    R2.intr <- segVPR.fit$coefficients[[1]]
+    R2.slpe <- segVPR.fit$coefficients[[2]]
+    R2.tcoef <- segVPR.fit$coefficients[[3]]
+    R2.BH <- segVPR.fit$coefficients[[4]]
+    R2.SC <- segVPR.fit$coefficients[[5]]
+    R2.SCT <- segVPR.fit$coefficients[[6]]
+  }else{
+    # no temperature data
+    segRES.df = data.frame(year=ti, VI=anu.VI, sv.RF=adj.RF, breakpoint.var=dummy)
+    #perform the regression
+    segVPR.fit <-  lm(VI~sv.RF*breakpoint.var, segRES.df)
+    # Get the coeeficents
+    R2.intr <- segVPR.fit$coefficients[[1]]
+    R2.slpe <- segVPR.fit$coefficients[[2]]
+    R2.tcoef <- NaN
+    R2.BH <- segVPR.fit$coefficients[[3]]
+    R2.SC <- segVPR.fit$coefficients[[4]]
+    R2.SCT <- NaN
+  }
 
-  segRES.df = data.frame(year=ti, VI=anu.VI, sv.RF=adj.RF,   breakpoint.var=dummy)
-
+  #Get the common infomation
   start = as.integer(start(ti)[1])
   bkp = breakpoint + start-1
-
-  #perform the regression
-  segVPR.fit <-  lm(VI~sv.RF*breakpoint.var, segRES.df)
   R2.pval <- glance(segVPR.fit)$p.value
   R2.Rval <- summary(segVPR.fit)$r.square
-  R2.intr <- segVPR.fit$coefficients[[1]]
-  R2.slpe <- segVPR.fit$coefficients[[2]]
-  R2.BH <- segVPR.fit$coefficients[[3]]
-  R2.SC <- segVPR.fit$coefficients[[4]]
-  m["segVPR.fit", ] <- c(R2.slpe, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
-  # browser()
+  # add to the summary
+  m["segVPR.fit", ] <- c(R2.slpe, R2.tcoef, R2.intr, R2.pval, R2.Rval, R2.BH, R2.SC, R2.SCT)
 
   #Added new section for creating a total height
   resid.raw <- segVPR.fit$residuals
@@ -156,25 +176,32 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   R3.pval <- glance(bpanalysis)$p.value
   R3.Rval <- summary(bpanalysis)$r.square
   R3.intr <- bpanalysis$coefficients[[1]]
+  R3.tcoef <- NaN
   R3.slpe <- bpanalysis$coefficients[[2]]
   R3.BH <- bpanalysis$coefficients[[3]]
   R3.SC <- bpanalysis$coefficients[[4]]
-  m["RESTREND.fit", ] <- c(R3.slpe, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC)
+  R3.SCT <- NaN
+  m["RESTREND.fit", ] <- c(R3.slpe, R3.tcoef, R3.intr, R3.pval, R3.Rval, R3.BH, R3.SC, R3.SCT)
 
 
 
-  breakheight <- segVPR.fit$coefficients[[3]]
-  bp.pval <- coef(summary(segVPR.fit))[15]
+  breakheight <- m["segVPR.fit", "Break.Height"]
+  bp.pval <- coef(summary(segVPR.fit))["breakpoint.var","Pr(>|t|)"]
 
   #from the residual change
   init <- bpanalysis$fitted.values[1]
   fin <- bpanalysis$fitted.values[end(bpanalysis$fitted.values)[1]]
   change <- as.numeric(fin - init)
+  if (!is.null(acu.TM)){
+    # has temperature data
+    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF=adj.RF, StdVar.TM=adj.tm)
+  }else{
+    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = FALSE, StdVar.RF=adj.RF, StdVar.TM=FALSE)
+  }
 
-  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=adj.RF)
+
   #May ad a total residual change
   tc <- c(0, 0)
-
   if (R3.pval<0.10){
     tc[1] = change
   }

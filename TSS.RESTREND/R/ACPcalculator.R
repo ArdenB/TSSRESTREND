@@ -110,8 +110,9 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table=NULL, allow.negative=FA
 
       R.BH <- NaN
       R.SC <- NaN
+      R.SCT <- NaN
       #Return the results when simple = FALSE
-      return(c(R.slpe, R.Tcoef, R.intr, R.pval, R.Rval, R.BH, R.SC))
+      return(c(R.slpe, R.Tcoef, R.intr, R.pval, R.Rval, R.BH, R.SC, R.SCT))
     }}
 
   # For loops to call the linreg function and fit a LM to every combination of rainfall and vegetation

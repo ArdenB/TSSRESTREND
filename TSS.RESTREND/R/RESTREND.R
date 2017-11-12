@@ -47,10 +47,10 @@ RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
   }
 
   # Setup empty matrix to hold paramaters or the linear models
-  m<- matrix(nrow=(4), ncol=7)
+  m<- matrix(nrow=(4), ncol=8)
   m[]<-NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
-  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change")
+  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change", "Slope.ChangeTmp")
 
   R.pval <- glance(VPR.fit)$p.value
   R.Rval <- summary(VPR.fit)$r.square
@@ -63,7 +63,8 @@ RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
   R.slpe <- as.numeric(coef(VPR.fit)[2])
   R.BH <- NaN
   R.SC <- NaN
-  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC)
+  R.SCT <- NaN
+  m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC, R.SCT)
 
   #may wat to add a nonparametric trend test here
   #Critical threshold test. Uses the p values of the model
@@ -107,7 +108,8 @@ RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
   R2.slpe <- RES$coefficients[[2]]
   R2.BH <- NaN
   R2.SC <- NaN
-  m["RESTREND.fit", ] <- c(R2.slpe,R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC)
+  R2.SCT <- NaN
+  m["RESTREND.fit", ] <- c(R2.slpe,R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC, R2.SCT)
 
   init <- RES$fitted.values[1]
   fin <- RES$fitted.values[end(RES$fitted.values)[1]]
@@ -123,7 +125,7 @@ RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
                          Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
                          residual.p = glance(RES)$p.value, VPRbreak.p = FALSE, bp.year=FALSE)
   models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = RES, segVPR.fit=FALSE)
-  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
+  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF=FALSE, StdVar.TM=FALSE)
   ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
   acum.df <- FALSE
 

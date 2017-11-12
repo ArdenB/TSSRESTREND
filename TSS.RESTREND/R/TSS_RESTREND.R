@@ -284,15 +284,20 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, A
       VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
-      # browser()
+      tm.b4 <- VPRbp.df$tm.b4
+      tm.af <- VPRbp.df$tm.af
       acum.df$osp.b4 <- VPRbp.df$osp.b4
       acum.df$acp.b4 <- VPRbp.df$acp.b4
+      acum.df$tosp.b4 <- VPRbp.df$tosp.b4
+      acum.df$tacp.b4 <- VPRbp.df$tacp.b4
       acum.df$osp.af <- VPRbp.df$osp.af
       acum.df$acp.af <- VPRbp.df$acp.af
+      acum.df$tosp.af <- VPRbp.df$tosp.af
+      acum.df$tacp.af <- VPRbp.df$tacp.af
     }
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, sig=sig)
+    result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, tm.b4, tm.af, sig=sig)
     result$TSSRmodels$CTS.fit <- CTS.lm
     result$TSSRmodels$BFAST <- BFAST.obj
     result$ts.data$CTSR.VI <- CTSR.VI
