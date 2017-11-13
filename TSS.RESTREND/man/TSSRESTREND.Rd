@@ -4,8 +4,8 @@
 \alias{TSSRESTREND}
 \title{Time Series Segmentation of Residual Trends (MAIN FUNCTION)}
 \usage{
-TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, CTSR.TM = NULL,
-  ACT.table = NULL, anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL,
+TSSRESTREND(CTSR.VI, ACP.table = FALSE, ACT.table = NULL, CTSR.RF = FALSE,
+  CTSR.TM = NULL, anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL,
   VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE, sig = 0.05,
   season = "none", exclude = 0, allow.negative = FALSE)
 }
@@ -14,6 +14,9 @@ TSSRESTREND(CTSR.VI, ACP.table = FALSE, CTSR.RF = FALSE, CTSR.TM = NULL,
 An object of class \code{'ts'} object without NA's.}
 
 \item{ACP.table}{A table of every combination of offset period and accumulation period.for precipitation
+ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
+
+\item{ACT.table}{A table of every combination of offset period and accumulation period.for temperature
 ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
 \item{CTSR.RF}{Complete Time Series of Rainfall. An object of class 'ts' object without NA's
@@ -25,9 +28,6 @@ If ACP.table is provided, CTSR.RF will be automitaclly calculated using the
 and be the same length and cover the same time range as CTSR.VI.  Default (CTSR.TM=NULL).
 If ACT.table is provided, CTSR.RF will be automitaclly calculated using the
 \code{\link{ACP.calculator}}}
-
-\item{ACT.table}{A table of every combination of offset period and accumulation period.for temperature
-ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
 if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}

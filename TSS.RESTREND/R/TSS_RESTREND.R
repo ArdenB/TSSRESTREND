@@ -140,7 +140,7 @@
 #' plot(results, verbose=TRUE)
 #' }
 #'
-TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, CTSR.RF=FALSE, CTSR.TM=NULL, ACT.table=NULL, anu.VI=FALSE, acu.RF=FALSE, acu.TM=NULL, VI.index=FALSE,
+TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE, CTSR.TM=NULL,  anu.VI=FALSE, acu.RF=FALSE, acu.TM=NULL, VI.index=FALSE,
                          rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE){
 
   while (TRUE){ #Test the variables for consistenty
