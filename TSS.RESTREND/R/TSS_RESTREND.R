@@ -66,7 +66,12 @@
 #'        A numberic vector containg months excluded from breakpoint detection.  This was included to
 #'        allow sensor transitions to be masked.
 #' @param allow.negative
-#'        IF true, will not preference positive slope in either CTSR or VI calculations
+#'        If true, will not preference positive slope in either CTSR or VI calculations. default=FALSE is set
+#'        because negative associations between rainfall and vegetation in water limited ecosystems is unexpected 
+#'        If temperature data is included then this paramter is forced to TRUE.  
+#' @param allowneg.retest default=FALSE
+#'        If temperature data is provided but found to not be significant then a retest is performed.  
+#'        This paramter is to allow negative on re-test.  
 #' @return
 #' An object of class \code{'TSSRESTREND'} is a list with the following elements:
 #' \describe{
@@ -141,7 +146,7 @@
 #' }
 #'
 TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE, CTSR.TM=NULL,  anu.VI=FALSE, acu.RF=FALSE, acu.TM=NULL, VI.index=FALSE,
-                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE){
+                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE, allowneg.retest=FALSE){
 
   while (TRUE){ #Test the variables for consistenty
     #Each check liiks at a different paramter. If the data fails the check will stop, else, it breaks after all the checks
@@ -161,11 +166,13 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
         stop("anu.VI Not a time series object")
     }
     # Change the allow.negative for multivariate regression
-    if (!is.null(ACT.table)){allow.negative=TRUE}
+    if (!is.null(ACT.table)){
+      allow.negative=TRUE
+    }
 
     if (!CTSR.RF){
       #Calculate the Complete time seties Accumulation (rainfall)
-      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, ACT.table, allow.negative=allow.negative)
+      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, ACT.table, allow.negative=allow.negative, allowneg.retest=allowneg.retest)
       # If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
       #This mod is will impact results comparisons before V0.1.04
       if ((!allow.negative && as.numeric(CTS.Str$summary)[1] <0)||as.numeric(CTS.Str$summary)[4] >sig){
