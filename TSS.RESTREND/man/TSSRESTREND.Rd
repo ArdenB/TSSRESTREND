@@ -7,7 +7,8 @@
 TSSRESTREND(CTSR.VI, ACP.table = FALSE, ACT.table = NULL, CTSR.RF = FALSE,
   CTSR.TM = NULL, anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL,
   VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE, sig = 0.05,
-  season = "none", exclude = 0, allow.negative = FALSE)
+  season = "none", exclude = 0, allow.negative = FALSE,
+  allowneg.retest = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -34,11 +35,11 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 
 \item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
-calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
+calculated from ACP.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
-calculated from ACT.table usingthe \code{\link{AnnualRF.Cal}}}
+calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.
@@ -46,11 +47,11 @@ if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMa
 
 \item{rf.b4}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
-be generated using \code{\link{AnnualRF.Cal}}}
+be generated using \code{\link{AnnualClim.Cal}}}
 
 \item{rf.af}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
-be generated using \code{\link{AnnualRF.Cal}}}
+be generated using \code{\link{AnnualClim.Cal}}}
 
 \item{sig}{Significance of all the functions. defualt sig=0.05}
 
@@ -60,7 +61,13 @@ VPR. if a non VPR adjusted BFAST is performed.a harmonic season is used.}
 \item{exclude}{A numberic vector containg months excluded from breakpoint detection.  This was included to
 allow sensor transitions to be masked.}
 
-\item{allow.negative}{IF true, will not preference positive slope in either CTSR or VI calculations}
+\item{allow.negative}{If true, will not preference positive slope in either CTSR or VI calculations. default=FALSE is set
+because negative associations between rainfall and vegetation in water limited ecosystems is unexpected
+If temperature data is included then this paramter is forced to TRUE.}
+
+\item{allowneg.retest}{default=FALSE
+If temperature data is provided but found to not be significant then a retest is performed.
+This paramter is to allow negative on re-test.}
 }
 \value{
 An object of class \code{'TSSRESTREND'} is a list with the following elements:

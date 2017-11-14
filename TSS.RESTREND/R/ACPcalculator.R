@@ -181,7 +181,6 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table=NULL, allow.negative=FA
         nmsplit <- strsplit(precip.nm, "\\-")[[1]]
         osp <- as.numeric(nmsplit[1])
         acp <- as.numeric(nmsplit[2])
-        browser()
         return(structure(list(summary=suma, CTSR.precip = CTSR.ARF, CTSR.tmp=CTSR.ATM,
                               CTSR.osp = osp, CTSR.acp = acp, CTSR.tosp = t.osp, CTSR.tacp = t.acp)))
       }

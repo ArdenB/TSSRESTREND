@@ -40,11 +40,11 @@
 #' @param acu.RF
 #'        The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 #'        NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
-#'        calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}
+#'        calculated from ACP.table usingthe \code{\link{AnnualClim.Cal}}
 #' @param acu.TM
 #'        The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
 #'        NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
-#'        calculated from ACT.table usingthe \code{\link{AnnualRF.Cal}}
+#'        calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}
 #' @param VI.index
 #'        the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 #'        as anu.VI. NOTE. R indexs from 1 rather than 0.
@@ -52,11 +52,11 @@
 #' @param rf.b4
 #'        If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
 #'        the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
-#'        be generated using \code{\link{AnnualRF.Cal}}
+#'        be generated using \code{\link{AnnualClim.Cal}}
 #' @param rf.af
 #'        If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
 #'        the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
-#'        be generated using \code{\link{AnnualRF.Cal}}
+#'        be generated using \code{\link{AnnualClim.Cal}}
 #' @param sig
 #'        Significance of all the functions. defualt sig=0.05
 #' @param season
@@ -67,11 +67,11 @@
 #'        allow sensor transitions to be masked.
 #' @param allow.negative
 #'        If true, will not preference positive slope in either CTSR or VI calculations. default=FALSE is set
-#'        because negative associations between rainfall and vegetation in water limited ecosystems is unexpected 
-#'        If temperature data is included then this paramter is forced to TRUE.  
+#'        because negative associations between rainfall and vegetation in water limited ecosystems is unexpected
+#'        If temperature data is included then this paramter is forced to TRUE.
 #' @param allowneg.retest default=FALSE
-#'        If temperature data is provided but found to not be significant then a retest is performed.  
-#'        This paramter is to allow negative on re-test.  
+#'        If temperature data is provided but found to not be significant then a retest is performed.
+#'        This paramter is to allow negative on re-test.
 #' @return
 #' An object of class \code{'TSSRESTREND'} is a list with the following elements:
 #' \describe{
@@ -206,7 +206,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
     }
     if (!acu.RF){
       # Calculate the Annual Accumulated Rainfall
-      precip.df <- AnnualRF.Cal(anu.VI, VI.index, ACP.table, ACT.table, allow.negative=allow.negative)
+      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, allow.negative=allow.negative)
       # Pull out and store key values
       osp <- precip.df$osp # offset period
       acp <- precip.df$acp # Accumulation period
@@ -288,11 +288,14 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
 
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
-      VPRbp.df <-AnnualRF.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
+      VPRbp.df <-AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
       tm.b4 <- VPRbp.df$tm.b4
       tm.af <- VPRbp.df$tm.af
+      # Check if temp is insignificant either side of the breakpoint in the VPR,
+        # if yes, remove temp from segmented VPR
+      if (is.null(tm.b4)&&is.null(tm.af)){acu.TM=NULL}
       acum.df$osp.b4 <- VPRbp.df$osp.b4
       acum.df$acp.b4 <- VPRbp.df$acp.b4
       acum.df$tosp.b4 <- VPRbp.df$tosp.b4

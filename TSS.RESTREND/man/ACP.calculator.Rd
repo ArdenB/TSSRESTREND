@@ -4,7 +4,8 @@
 \alias{ACP.calculator}
 \title{Antecedental Rainfall (and temperature) Accumulation calculator for the VI Complete Time Series}
 \usage{
-ACP.calculator(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative = FALSE)
+ACP.calculator(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative = FALSE,
+  allowneg.retest = FALSE)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -16,7 +17,13 @@ ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 \item{ACT.table}{A table of every combination of offset period and accumulation period.for temperature
 ACP.table can be calculated using the \code{\link{climate.accumulator}}.}
 
-\item{allow.negative}{IF true, will not preference positive slope in either CTSR or VI calculations}
+\item{allow.negative}{If true, will not preference positive slope in either CTSR or VI calculations. default=FALSE is set
+because negative associations between rainfall and vegetation in water limited ecosystems is unexpected
+If temperature data is included then this paramter is forced to TRUE.}
+
+\item{allowneg.retest}{default=FALSE
+If temperature data is provided but found to not be significant then a retest is performed.
+This paramter is to allow negative on re-test.}
 }
 \value{
 A list containing:

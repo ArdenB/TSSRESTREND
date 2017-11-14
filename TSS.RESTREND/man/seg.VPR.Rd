@@ -13,11 +13,11 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 
 \item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
-calculated from ACP.table usingthe \code{\link{AnnualRF.Cal}}}
+calculated from ACP.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
-calculated from ACT.table usingthe \code{\link{AnnualRF.Cal}}}
+calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.
@@ -27,11 +27,11 @@ if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMa
 
 \item{rf.b4}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall before
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
-be generated using \code{\link{AnnualRF.Cal}}}
+be generated using \code{\link{AnnualClim.Cal}}}
 
 \item{rf.af}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
-be generated using \code{\link{AnnualRF.Cal}}}
+be generated using \code{\link{AnnualClim.Cal}}}
 
 \item{sig}{Significance of all the functions. defualt sig=0.05}
 }
