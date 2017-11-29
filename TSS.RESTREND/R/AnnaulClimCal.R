@@ -254,8 +254,6 @@ AnnualClim.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoi
             #upll out the significance then remove it
             tsig <- results$tsig
             results$tsig = NULL
-
-            browser()
           }else{stop("There shold be no tmp data here (V1)")}
           return(results)
         }else{ # only looking at positive slopes
