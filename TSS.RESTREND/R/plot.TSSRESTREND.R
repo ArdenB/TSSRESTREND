@@ -33,26 +33,49 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       stop("Incomplete TSSRESTREND object passed, Can not produce the requested plot.")
     }
   }else{breakpoint <- x$ols.summary$chow.sum$yr.index}
+  #pull out the annual max VI data
   anu.VI <- x$ts.data$anu.VI
+  # Get the time and length
   len <- length(anu.VI)
   ti <- time(anu.VI)
-  #Add a plot for VERBOSE (ctsr.vi vs VTSR.RF)
-  if (plots=="all"||plots=="bfast"){
-    plot(x$TSSRmodels$BFAST)
-  # browser()
+  # Start plot. If statements allow for the creation of a single plot
+  #BFAST
+  #=========================================================================================================
+  if (plots=="all"||plots=="bfast"){ #Plot the Bfast object
+    plot(x$TSSRmodels$BFAST) #Uses defualt bfast plot
+  }
+  # Complete Time Series plot
+  #=========================================================================================================
   if (plots=="all"||plots=="CTS"){
-    par(mar=c(5,4,4,4))
-    plot(x$ts.data$CTSR.VI, col="olivedrab", lwd = 2, pch=16, xlab="Year", ylab="")
+    # set the shape of the plot
+    if (!is.null(x$ts.data$CTSR.TMraw)){
+      #+++++ ADD THe Temperature data
+      par(mar=c(5,4,4,6))
+      plot(x$ts.data$CTSR.TMraw, axes=F, col="red2", lwd = 2, pch=16, xlab="", ylab="", lty=3)
+      axis(side=4, col="red1", col.axis = 'red2')
+      mtext("Temperature", side=4, line=2, col="red2")
+      par(new=T)
+      ofset = 2
+    }else{
+      par(mar=c(5,4,4,4))
+      ofset = 0
+    }
+    #+++++ plot the Vegetation data
+    plot(x$ts.data$CTSR.VI, col="olivedrab3", lwd = 2, pch=16, xlab="Year", ylab="",
+         ylim=c((floor(range(x$ts.data$CTSR.VI)[1]*10)/10), (ceiling(range(x$ts.data$CTSR.VI)[2]*10)/10)))
     grid()
-    mtext("VI",side=2,line=2,col="olivedrab")
+    mtext("VI",side=2,line=2,col="olivedrab3")
     title("Complete Time Series of the VI and Rainfall")
+    #++++++ Plot the precipitation
     par(new=T)
-    plot(x$ts.data$CTSR.RF, axes=F, col="steelblue2", lwd = 1, pch=16, xlab="", ylab="")
-    axis(side=4)
-    mtext("Accumulated Rainfall", side=4, line=2, col="steelblue2")
+    plot(x$ts.data$CTSR.RF, axes=F, col="royalblue2", lwd = 1.5, pch=16, xlab="", ylab="")
+    axis(side=4, col="steelblue3", col.axis="royalblue2", line=(ofset+1))
+    mtext("Accumulated Rainfall", side=4, line=ofset+3, col="royalblue2")
   }
-  }
-
+  # Chow plot
+  #=========================================================================================================
+  # To do:
+  # Add additional comments so this is easier to read
   if (verbose==TRUE||plots=="chow"){
     # chowbp <- x$TSSRmodels$BFAST
     VI.index <- x$ts.data$VI.index
@@ -137,9 +160,12 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
 
     }
   }
-
+  # Annual Max VI plot
+  #=========================================================================================================
   if (plots=="all"||plots=="anu.VI") {
     if (!breakpoint){
+      #++++ Plot with no breakpoints
+      # get the dates and build the time component
       yst <- start(anu.VI)[1]
       ynd <- end(anu.VI)[1]
       t = c(yst:ynd)
@@ -148,25 +174,40 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
       grid()
 
     }else{
+      #++++ Plot with a breakpoint
+      # get the dates and build the time component
       yst <- start(anu.VI)[1]
       ynd <- end(anu.VI)[1]
-
       t = c(yst:ynd)
+
+      # plot before the breakpoint
       plot(t[1:breakpoint], anu.VI[1:(breakpoint)], pch=16,xlab="Year",
            ylab="Annual max VI", col="orange", xlim=c(yst, ynd),
            ylim=c(min(anu.VI), max(anu.VI)) )
       grid()
+      # plot after the breakpoint
       par(new=T)
       plot(t[(breakpoint+1):len], anu.VI[(breakpoint+1):len], pch=16,
            xlab="", ylab="", col="purple",main="", xlim=c(yst, ynd),
            ylim=c(min(anu.VI), max(anu.VI)))
       title("Annual VI max")
+      # Add a line at the breakpoint
       abline(v=(breakpoint-0.5+yst), col="red", lty = "dashed")
     }
   }
 
+  # Plot the VCR
+  #=========================================================================================================
+  # TO DO:
+    # Change titles to VCR
+    # Add in temperpature plot
+    # ADd a dual fit
+    # Add a temperature plot as well
+    # ?? Add a 3D plot
   if (plots=="all"||plots=="VPR"){
     if (x$summary$Method=="segmented.VPR"){
+      #++++ Plot a VPR/VCRwith a breakpoint (SEMGEMTED VPR)
+      browser()
       StdVar.RF<-x$ts.data$StdVar.RF
       fit0 <- lm(anu.VI[1:breakpoint] ~ StdVar.RF[1:breakpoint])
       fit1 <- lm(anu.VI[(breakpoint+1):len] ~ StdVar.RF[(breakpoint+1):len])
@@ -210,10 +251,19 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
 
       legend('topleft', legend = rp, bty = 'n')
     }else{
+      #++++ Plot a VPR/VCR
+      browser()
       plot(as.numeric(x$ts.data$anu.VI) ~ as.numeric(x$ts.data$acu.RF), pch=16, xlab="Accumulated Rainfall (mm)",
            ylab="Annual VImax",  col="orange")
-      title("VPR fit")
-      abline(x$TSSRmodels$VPR.fit, col = "red",lwd = 2, lty = "dashed")
+      if (!is.na(x$ols.summary$OLS.table["segVPR.fit", "temp.coef"])){
+        stop("THis is not built yet")
+        title("Vegetation Climate Relationship")
+        abline(lm(as.numeric(x$ts.data$anu.VI) ~ as.numeric(x$ts.data$acu.RF)), col = "blue",lwd = 2, lty = "dashed")
+        abline(x$TSSRmodels$VPR.fit$coefficients[1:2], col = "red",lwd = 2, lty = "dashed")
+      }else{
+        title("VPR fit")
+        abline(x$TSSRmodels$VPR.fit, col = "red",lwd = 2, lty = "dashed")
+      }
       grid()
       R.pval = glance(x$TSSRmodels$VPR.fit)$p.value
       R.Rval = summary(x$TSSRmodels$VPR.fit)$r.squared

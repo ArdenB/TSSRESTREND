@@ -180,6 +180,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
       }else{BFraw=FALSE}
       #Pull out the relevant paramters for use
       CTSR.RF <- CTS.Str$CTSR.precip #RF values
+      CTSR.TMraw <- CTS.Str$CTSR.rawtemp
       if (is.null(CTSR.TM)){
         CTSR.TM <- CTS.Str$CTSR.tmp #Temperature values, null if temp is not considered
       }
@@ -245,6 +246,8 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
   CTS.lm <- bkp$CTS.lm #For the Models Bin
   bp <- bp[!bp %in% exclude] #remove breakpoints in the exclude list (Sensor transitions)
   BFT <-  bkp$BFAST.type #Type of BFAST used
+  
+  # dataframe containing the offset periods and accumulation periods
   acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, CTSR.tosp=CTSR.tosp, CTSR.tacp=CTSR.tacp,
                         osp=osp, acp=acp, tosp=tosp, tacp=tacp,  osp.b4=NaN, acp.b4=NaN, tosp.b4=NaN, tacp.b4=NaN,
                         osp.af=NaN, acp.af = NaN, tosp.af=NaN, tacp.af = NaN)
@@ -265,26 +268,11 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
   }
 
   if (test.Method == "RESTREND"){
-    # browser()
     result <- RESTREND(anu.VI, acu.RF, acu.TM,  VI.index, sig=sig)
-    result$TSSRmodels$CTS.fit <- CTS.lm
-    result$TSSRmodels$BFAST <- BFAST.obj
-    result$ts.data$CTSR.VI <- CTSR.VI
-    result$ts.data$CTSR.RF <- CTSR.RF
-    result$ols.summary$chow.sum <- chow.sum
-    result$ols.summary$chow.ind <- chow.bpi
-    result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
 
   }else if (test.Method == "seg.RESTREND"){
     breakpoint = as.integer(res.chow$bp.summary[2])
     result <- seg.RESTREND(anu.VI, acu.RF, acu.TM, VI.index, brkp,  sig=sig)
-    result$TSSRmodels$CTS.fit <- CTS.lm
-    result$TSSRmodels$BFAST <- BFAST.obj
-    result$ts.data$CTSR.VI <- CTSR.VI
-    result$ts.data$CTSR.RF <- CTSR.RF
-    result$ols.summary$chow.sum <- chow.sum
-    result$ols.summary$chow.ind <- chow.bpi
-    result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
 
   }else if (test.Method == "seg.VPR"){
     if ((!rf.b4)||(!rf.af)){
@@ -296,6 +284,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
       # Check if temp is insignificant either side of the breakpoint in the VPR,
         # if yes, remove temp from segmented VPR
       if (is.null(tm.b4)&&is.null(tm.af)){acu.TM=NULL}
+      #Add the segmented offset periods and accumulation periods
       acum.df$osp.b4 <- VPRbp.df$osp.b4
       acum.df$acp.b4 <- VPRbp.df$acp.b4
       acum.df$tosp.b4 <- VPRbp.df$tosp.b4
@@ -308,17 +297,33 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
     result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, tm.b4, tm.af, sig=sig)
-    result$TSSRmodels$CTS.fit <- CTS.lm
-    result$TSSRmodels$BFAST <- BFAST.obj
-    result$ts.data$CTSR.VI <- CTSR.VI
-    result$ts.data$CTSR.RF <- CTSR.RF
-    result$ols.summary$chow.sum <- chow.sum
-    result$ols.summary$chow.ind <- chow.bpi
-    result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
   }
+  # add the common variable to the results list
+  #=====================================================================================
+  # the fitted models
+  result$TSSRmodels$CTS.fit <- CTS.lm
+  result$TSSRmodels$BFAST <- BFAST.obj
+  # Complete Time series values
+  result$ts.data$CTSR.VI <- CTSR.VI
+  result$ts.data$CTSR.RF <- CTSR.RF
+  if (!is.null(ACT.table)){
+    result$ts.data$CTSR.TMraw <- ts(ACT.table[1, ], start=c(start(CTSR.VI)[1], start(CTSR.VI)[2]), frequency = 12)
+    result$ts.data$CTSR.TM <- CTSR.TM
+    }else{
+      result$ts.data$CTSR.TM <- CTSR.TM
+      result$ts.data$CTSR.TMraw <- CTSR.TM
+    }
+  
+  # add to the ols summary table
+  result$ols.summary$chow.sum <- chow.sum
+  result$ols.summary$chow.ind <- chow.bpi
+  result$ols.summary$OLS.table["CTS.fit",] <- details.CTS.VPR
+  # Add the accumulation and offset periods
   result$acum.df <- acum.df
   #add the bfast method to the results summary
   result$summary$BFAST.Method <- BFT
+
+  #return the results
   return(result)
 }
 
