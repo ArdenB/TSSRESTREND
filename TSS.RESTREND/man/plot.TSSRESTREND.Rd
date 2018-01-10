@@ -2,15 +2,12 @@
 % Please edit documentation in R/plot.TSSRESTREND.R
 \name{plot.TSSRESTREND}
 \alias{plot.TSSRESTREND}
-\title{Plot function for class TSSRESTREND class}
+\title{Plot Function for ojects of the TSSRESTREND class}
 \usage{
-\method{plot}{TSSRESTREND}(x, verbose = FALSE, plots = "all", sig = 0.05,
-  ...)
+\method{plot}{TSSRESTREND}(x, plots = "all", sig = 0.05, ...)
 }
 \arguments{
 \item{x}{Object of class TSSRESTREND}
-
-\item{verbose}{Will produce extra plots. CUrrently only adds the chow plot}
 
 \item{plots}{Defualts to "all", will produce the standard plots, plots can be called individually,
 "bfast", "chow", "VPR", "anu.VI", "final".}

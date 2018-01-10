@@ -1,8 +1,9 @@
-#' @title  Plot function for class TSSRESTREND class
+#' @title  Plot Function for ojects of the TSSRESTREND class
 #'
 #' @description Produces plots for class TSSRESTREND
 #'
-#' @import  bfast
+#' @import bfast
+#' @import ggplot2
 #' @importFrom  graphics axis grid lines mtext title
 #' @importFrom stats predict
 #'
@@ -12,8 +13,6 @@
 #' @param plots
 #'        Defualts to "all", will produce the standard plots, plots can be called individually,
 #'        "bfast", "chow", "VPR", "anu.VI", "final".
-#' @param verbose
-#'        Will produce extra plots. CUrrently only adds the chow plot
 #' @param sig
 #'        Significance
 #' @param ...
@@ -21,7 +20,7 @@
 #'
 #' @export
 
-plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
+plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
   #May add annual max VI vs RF
   #Plotting params
   if (class(x$ols.summary$chow.sum)=="logical"){
@@ -63,41 +62,58 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
     #+++++ plot the Vegetation data
     plot(x$ts.data$CTSR.VI, col="olivedrab3", lwd = 2, pch=16, xlab="Year", ylab="",
          ylim=c((floor(range(x$ts.data$CTSR.VI)[1]*10)/10), (ceiling(range(x$ts.data$CTSR.VI)[2]*10)/10)))
+    # Add a grid
     grid()
+    # add Title and Grids
     mtext("VI",side=2,line=2,col="olivedrab3")
     title("Complete Time Series of the VI and Rainfall")
     #++++++ Plot the precipitation
     par(new=T)
     plot(x$ts.data$CTSR.RF, axes=F, col="royalblue2", lwd = 1.5, pch=16, xlab="", ylab="")
     axis(side=4, col="steelblue3", col.axis="royalblue2", line=(ofset+1))
+    # add the axis title
     mtext("Accumulated Rainfall", side=4, line=ofset+3, col="royalblue2")
   }
-  # Chow plot
+  # Mulitbreak Chow plot
   #=========================================================================================================
+  # Description
+  # For pixels with multiple breakpoints detected in the VCR-residuals
+  # this creates a plot of the residuals with all of the breakpoints.
   # To do:
   # Add additional comments so this is easier to read
-  if (verbose==TRUE||plots=="chow"){
+  # Change the fit, maybe use the one saved in the result
+  if (plots=="all"||plots=="chow"){
     # chowbp <- x$TSSRmodels$BFAST
     VI.index <- x$ts.data$VI.index
-
+    #Check and see if there is something that needs to be plotted
     if (class(x$ols.summary$chow.ind) == "logical"){
       print("No Breakpoints to plot")
     }else if (dim(x$ols.summary$chow.ind)[1]<2){
-      print("Insufficent Breakpoints to produce a chow plot")
+      print("Insufficent (<2) Breakpoints to produce a chow plot")
     }else{
+      #Set the segment colours
       colour <- c("orange", "purple", "olivedrab", "steelblue2", "lightslategrey", "hotpink1",
                   "lightgoldenrod3", "seagreen3", "sienna2")
+      # Get a fit for the entire dataset
+      browser() #This fit will not work if there is Temperature data
       fit <- lm(x$ts.data$anu.VI ~ x$ts.data$acu.RF)
+      # Get the length of the data and the breakpoint indexes
       len <- length(x$ts.data$anu.VI)
       ind <- c(0, x$ols.summary$chow.ind[,"yr.index"], len)
+      #Setup the X axis
+      #Create a time series of dates for the x axis
       t = seq(start(ti)[1], end(ti)[1])
       xlim <- c(start(ti)[1], end(ti)[1])
+      #Setup the values for the y axis
       m.range <- 1.5*max(abs(fit$residuals))
       ylim <- c(-m.range, m.range)
+      # Get the fit of the residuals as a function of time
       R.fit <- lm(fit$residuals ~ t)
+      #Start the plot
       plot(t, R.fit$fitted.values, xlab="Year", ylab="Residuals", main = "Chow Test on all Breakpoints",
            col="red", type = "l", lty="dashed", lwd=2, xlim=xlim, ylim = ylim)
-      grid()
+      grid() # add grid
+      # Get the number of breakpoints
       bpn <- length(x$ols.summary$chow.ind[,"yr.index"])
       rp = vector('expression',bpn)
       for (n in 2:length(ind)){
@@ -162,6 +178,10 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
   }
   # Annual Max VI plot
   #=========================================================================================================
+  # Description
+  # Plots the Annual Maximum VI values with the Breakpoints marked
+  # and colorcoded
+
   if (plots=="all"||plots=="anu.VI") {
     if (!breakpoint){
       #++++ Plot with no breakpoints
@@ -199,6 +219,7 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
   # Plot the VCR
   #=========================================================================================================
   # TO DO:
+    # Add a Description
     # Change titles to VCR
     # Add in temperpature plot
     # ADd a dual fit
@@ -250,32 +271,66 @@ plot.TSSRESTREND <- function(x, verbose=FALSE, plots="all", sig=0.05, ...){
                          list(R.Rval = format(R.Rval,dig=3)))[2]
 
       legend('topleft', legend = rp, bty = 'n')
-    }else{
-      #++++ Plot a VPR/VCR
-      browser()
-      plot(as.numeric(x$ts.data$anu.VI) ~ as.numeric(x$ts.data$acu.RF), pch=16, xlab="Accumulated Rainfall (mm)",
-           ylab="Annual VImax",  col="orange")
-      if (!is.na(x$ols.summary$OLS.table["segVPR.fit", "temp.coef"])){
-        stop("THis is not built yet")
-        title("Vegetation Climate Relationship")
-        abline(lm(as.numeric(x$ts.data$anu.VI) ~ as.numeric(x$ts.data$acu.RF)), col = "blue",lwd = 2, lty = "dashed")
-        abline(x$TSSRmodels$VPR.fit$coefficients[1:2], col = "red",lwd = 2, lty = "dashed")
-      }else{
-        title("VPR fit")
+    }else{ # No breakpoin the the VPR or VCR
+      # Sort and see if i need to plot VPR or VCR (Is temperature a variable)
+      if (is.null(x$ts.data$acu.TM)) { # no accumulated temperature data (may not be sig)
+        # Plot the VPR
+        plot(as.numeric(x$ts.data$anu.VI) ~ as.numeric(x$ts.data$acu.RF), pch=16, xlab="Accumulated Rainfall (mm)",
+             ylab="Annual VImax",  col="orange")
+        # Add a fit line for the VPR
         abline(x$TSSRmodels$VPR.fit, col = "red",lwd = 2, lty = "dashed")
+        #Add title and Grid
+        title("VPR fit")
+        grid()
+        #Get the Rsquared and pvalues and add them to the plot
+        R.pval = glance(x$TSSRmodels$VPR.fit)$p.value
+        R.Rval = summary(x$TSSRmodels$VPR.fit)$r.squared
+        rp = vector('expression', 2)
+        rp[1] = substitute(expression(italic(p) == R.pval),
+                           list(R.pval  = format(R.pval, digits = 3)))[2]
+        rp[2] = substitute(expression(italic(R^2) == R.Rval),
+                           list(R.Rval = format(R.Rval,dig=3)))[2]
+        # Set the location of the Rsquared an p values
+        legend('topleft', legend = rp, bty = 'n')
+
+      }else{ #Has temperature
+        # Scatter plot with precip and Temperature as the x an y variables.
+        # The VI values are expressed by the color of the points
+
+        # Color points by the mpg variable
+        # Put the relevant variables in a dataframe
+        #Try a 3d version
+
+        dfX <- data.frame(Precip=as.numeric(x$ts.data$acu.RF),
+                          Temp=as.numeric(x$ts.data$acu.TM)/x$acum.df$tacp,
+                          VI=as.numeric(x$ts.data$anu.VI))
+        # Check if rgl is installed and openable
+        if ((requireNamespace("rgl", quietly = TRUE)) && requireNamespace("car", quietly = TRUE)) {
+          browser()
+          # Build a 3d plot
+          car::scatter3d(
+            x=dfX$Precip,  y=dfX$VI, z=dfX$Temp, xlab="Accumulated Precipitation",
+            ylab="Annual Max VI" , zlab = "Mean Monthly Accumulated Temperature",
+            point.col="orange", sphere.size=0.5, surface.col="orange",
+            neg.res.col="grey", pos.res.col="grey",
+            axis.col=c("royalblue2", "olivedrab3", "red2")
+            )
+          #The
+          browser()
+          # pkg::f()
+        } else {
+          browser()
+        }
+
+        # the 2d version is a bit terrible
+        # sp1<-ggplot(mtcars, aes(x=wt, y=mpg, color=mpg)) + geom_point()
+        sp1<-ggplot(dfX, aes(x=Precip, y=Temp, color=VI)) + geom_point()
+        sp1
+        # Gradient between n colors
+        sp1+scale_color_gradientn(colours = rainbow(5))
       }
-      grid()
-      R.pval = glance(x$TSSRmodels$VPR.fit)$p.value
-      R.Rval = summary(x$TSSRmodels$VPR.fit)$r.squared
-      rp = vector('expression', 2)
-      rp[1] = substitute(expression(italic(p) == R.pval),
-                         list(R.pval  = format(R.pval, digits = 3)))[2]
-      rp[2] = substitute(expression(italic(R^2) == R.Rval),
-                         list(R.Rval = format(R.Rval,dig=3)))[2]
-      legend('topleft', legend = rp, bty = 'n')
     }
   }
-
 
 
   if(plots=="all"||plots=="final") {
