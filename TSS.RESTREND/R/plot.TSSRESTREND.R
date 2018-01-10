@@ -311,7 +311,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
           car::scatter3d(
             x=dfX$Precip,  y=dfX$VI, z=dfX$Temp, xlab="Accumulated Precipitation",
             ylab="Annual Max VI" , zlab = "Mean Monthly Accumulated Temperature",
-            point.col="orange", sphere.size=0.5, surface.col="orange",
+            point.col="orange", sphere.size=0.5, surface.col="orange", axis.ticks=TRUE,
             neg.res.col="grey", pos.res.col="grey",
             axis.col=c("royalblue2", "olivedrab3", "red2")
             )
