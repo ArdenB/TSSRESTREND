@@ -432,8 +432,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
   # TSS-RESTREND Result
   #=========================================================================================================
   # Description:
-  #   Plot the TSS-RESTREND total change (VCR residuals ~ time )
-
+  #   Plot the TSS-RESTREND total change (VCR/VPR residuals ~ time )
 
 
   if (plots == "all" || plots == "final") {
@@ -441,7 +440,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
     if (x$summary$Method == "segmented.RESTREND") {
       # =====++++++ Create a segmented.RESTREND TSS-RESTREND plot +++++=====
       # Has a breakpoint in the residuals
-      # extract key values
+      # +++++ Extract key values (Length & dates) +++++
       VPR.residuals <- x$TSSRmodels$VPR.fit$residuals
       len <- length(VPR.residuals)
       start = as.integer(start(ti)[1])
@@ -451,47 +450,50 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       R.fit <- lm(VPR.residuals ~ year)
       R.fit0 <- lm(VPR.residuals[1:breakpoint] ~ year[1:breakpoint])
       R.fit1 <- lm(VPR.residuals[breakpoint+1:len] ~ year[breakpoint+1:len])
-
-
-      xlim = c(start, end)
-      m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values))
-
       RESchow <- sctest(VPR.residuals ~ year, type = "Chow", point = breakpoint)
+      # set the range for the plot
+      xlim = c(start, end)
+      m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values)) 
+
+      # +++++ Seg.RES plot the values before and after the breakpoint +++++
+      # Before the breakpoint 
       plot(
         year[1:breakpoint], VPR.residuals[1:breakpoint], pch = 16,xlab = "time",
         ylab = "Residuals", col = "orange", xlim = xlim, ylim = c(-m.range, m.range)
         )
       title("Segmented RESTREND")
       par(new = T)
+      # After the breakpoint 
       plot(
         year[breakpoint + 1:len], VPR.residuals[breakpoint + 1:len], pch = 16,
         xlab = "", ylab = "", col = "purple", main = "", xlim = c(start, end),
         ylim = c(-m.range, m.range)
         )
+      # a trend line as if there was no breakpoint 
       abline(R.fit, col = "darkgrey", lwd = 2, lty = "dashed")
 
-
+      # +++++ Add the trendlines +++++
       par(new = T)
+      # pul out the coefficents for the lines 
       bpa.fitts <- ts(x$TSSRmodels$resid.fit$fitted.values, start = ti[1], end = tail(ti, 1), frequency = 1)
       b4.bp = x$TSSRmodels$resid.fit$coefficients[[1]]
       af.bp = x$TSSRmodels$resid.fit$coefficients[[1]] + x$TSSRmodels$resid.fit$coefficients[[3]]
       bpats2 <- append(bpa.fitts, c(b4.bp, af.bp), after = breakpoint)
       t2 <- append(ti, c(start + breakpoint - 0.50001, start + breakpoint - 0.49999), after = breakpoint)
+      # Add the lines to the plot
       plot(
         t2, bpats2, pch = 16, type = "l", lty = "dashed", lwd = 2,
         xlab = "", ylab = "", col = "red", main = "",xlim = c(start, end),
         ylim = c(-m.range, m.range)
         )
       grid()
-      #add a breakpoint band
-      abline(v = (breakpoint - 0.5 + start), col = "white", lwd = 3)#, lty = "dotted")
-      #Need to change the stastics that is shows here
-
+      # +++++ add a breakpoint lines +++++
+      abline(v = (breakpoint - 0.5 + start), col = "white", lwd = 3)
+      # Pull out the stats to add to the figure 
       R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$resid.fit)$p.value
       R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
-      # rp = vector('expression',3)
-
+      # +++++ Add a bar for the Total Change +++++
       top <- x$TSSRmodels$resid.fit$fitted.values[len]
       bot <- x$TSSRmodels$resid.fit$fitted.values[1]
       r.c <- top - bot
@@ -499,6 +501,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
         (end + 0.5), bot, x1 = (end + 0.5), y1 = top,
         length = 0.075,  angle = 90, code = 3, col = "red", lwd = 2)
 
+      # +++++ Create the stats legend +++++
       rp = vector('expression', 3)
       rp[1] = substitute(expression(italic(rc) == r.c),
                          list(r.c  = format(r.c, digits = 3)))[2]
@@ -507,28 +510,37 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       rp[3] = substitute(expression(italic(p) == R.pval),
                          list(R.pval  = format(R.pval, digits = 3)))[2]
       legend('topleft', legend = rp, bty = 'n')
+
     } else if (x$summary$Method == "RESTREND") {
+      
+      # =====+++++ A standard RESTREND plot +++++=====
+      # +++++ Extract key values (Length & dates) +++++
       start = as.integer(start(ti)[1])
       end = as.integer(end(ti)[1])
       RES <- x$TSSRmodels$resid.fit
       m.range = 2*max(abs(RES$fitted.values))
+
+       # +++++ Create the plot and trend line +++++
       plot(
         c(start(ti)[1]:end(ti)[1]), x$TSSRmodels$VPR.fit$residuals,
         pch = 16,xlab = "Year",ylab = "Residuals", col = "orange",
         main = "RESTREND", ylim = c(-m.range, m.range)
         )
       par(new = T)
+      # trend line
       plot(
         c(start(ti)[1]:end(ti)[1]), RES$fitted.values, type = "l",
         lwd = 2, lty = "dashed", pch = 16,xlab = "", ylab = "",
         col = "red", main = "", ylim = c(-m.range, m.range)
         )
-      # Add the grants
+      # Add the grid
       grid()
+      # Pull out the stats to add to the figure 
       R.Fval = summary(RES)$f[[1]]
       R.Rval = summary(RES)$r.squared
       R.pval = glance(RES)$p.value
-      # # lines(x=c(0, 0), y=c(top, bot), col="red", lwd=2, pch=0)
+      # +++++ Add a bar for the Total Change +++++
+
       top <- x$TSSRmodels$resid.fit$fitted.values[len]
       bot <- x$TSSRmodels$resid.fit$fitted.values[1]
       r.c <- top - bot
@@ -537,6 +549,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
         length = 0.075, angle = 90, code = 3, col = "red", lwd = 2
         )
 
+      # +++++ Create the stats legend +++++
       rp = vector('expression', 3)
       rp[1] = substitute(expression(italic(rc) == r.c),
                          list(r.c  = format(r.c, digits = 3)))[2]
@@ -545,42 +558,50 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       rp[3] = substitute(expression(italic(p) == R.pval),
                          list(R.pval = format(R.pval, digits = 3)))[2]
       legend('topleft', legend = rp, bty = 'n')
+
     } else if (x$summary$Method == "segmented.VPR") {
+
+      # =====+++++ A segmented VPR plot +++++=====
+      # +++++ Extract key values (Length & dates) +++++
       R2.BH <- x$summary$VPR.HeightChange
-      # c(resid.raw[1:breakpoint], resid.raw[(breakpoint+1):len] + R2.BH)
       VPR.residuals <- x$TSSRmodels$segVPR.fit$residuals
       len <- length(VPR.residuals)
       start = as.integer(start(ti)[1])
       end = as.integer(end(ti)[1])
       year = c(start:end)
       RESchow <- sctest(VPR.residuals ~ year, type = "Chow", point = breakpoint)
-
+      # Get the regression fit lines to add to the plot  
       R.fit <- lm(VPR.residuals ~ year)
       R.fit0 <- lm(VPR.residuals[1:breakpoint] ~ year[1:breakpoint])
       R.fit1 <- lm(VPR.residuals[breakpoint+1:len] ~ year[breakpoint+1:len])
 
-
+      # Get the range of the plot
       xlim = c(start, end)
       m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values))
 
-
+      # +++++ Seg.RES VPR plot the values before and after the breakpoint +++++
+      # Before the breakpoint 
       plot(
         year[1:breakpoint], VPR.residuals[1:breakpoint], pch = 16,xlab = "time",
         ylab = "Residuals", col = "orange", xlim = xlim, ylim = c(-m.range, m.range))
       grid()
       title("Segmented VPR RESTREND")
       par(new = T)
+      # After the breakpoint
       plot(
         year[breakpoint + 1:len], VPR.residuals[breakpoint + 1:len], pch = 16,
         xlab = "", ylab = "", col = "purple", main = "", xlim = c(start, end),
         ylim = c(-m.range, m.range))
-
+       
+      # +++++ Add the trendlines +++++
       par(new = T)
+      # pul out the coefficents for the lines 
       bpa.fitts <- ts(x$TSSRmodels$resid.fit$fitted.values, start = ti[1], end = tail(ti, 1), frequency = 1)
       b4.bp = x$TSSRmodels$resid.fit$coefficients[[1]]
       af.bp = x$TSSRmodels$resid.fit$coefficients[[1]] + x$TSSRmodels$resid.fit$coefficients[[3]]
       bpats2 <- append(bpa.fitts, c(b4.bp, af.bp), after = breakpoint)
       t2 <- append(ti, c(start + breakpoint - 0.50001, start + breakpoint - 0.49999), after = breakpoint)
+      # plot the regression lines
       plot(
         t2, bpats2, pch = 16, type = "l", lwd = 2, xlab = "",
         ylab = "", col = "red", main = "", lty = "dashed",
@@ -588,6 +609,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       #add a breakpoint line
       abline(v = (breakpoint - 0.5 + start), col = "white", lwd = 3)
 
+      # +++++ Add a bar for the Total Change +++++
       top <- x$TSSRmodels$resid.fit$fitted.values[len]
       bot <- x$TSSRmodels$resid.fit$fitted.values[1]
       r.c <- top - bot
@@ -596,10 +618,12 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
         (end + 0.5), bot, x1 = (end + 0.5), y1 = top, length = 0.075,
         angle = 90, code = 3, col = "red", lwd = 2
         )
-
+      # +++++ Create the stats legend +++++
+      # Pull out the stats to add to the figure 
       R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$resid.fit)$p.value
       R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
+      # Add the values to the legend 
       rp = vector('expression',4)
       rp[1] = substitute(expression(italic(rc) == r.c),
                          list(r.c  = format(r.c, digits = 3)))[2]
@@ -611,8 +635,6 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       rp[4] = substitute(expression(italic(p) == R.pval),
                          list(R.pval  = format(R.pval, digits = 3)))[2]
       legend('topleft', legend = rp, bty = 'n')
-
-
     }
   }
 }

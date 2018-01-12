@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.TSSRESTREND.R
 \name{print.TSSRESTREND}
 \alias{print.TSSRESTREND}
-\title{Print function for class TSSRESTREND class}
+\title{Print function for class TSSRESTREND}
 \usage{
 \method{print}{TSSRESTREND}(x, ...)
 }
@@ -12,6 +12,6 @@
 \item{...}{further arguments passed to the function.}
 }
 \description{
-print function for class TSSRESTREND
+print function for objects of class TSSRESTREND
 }
 

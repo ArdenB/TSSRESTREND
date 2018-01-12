@@ -7,9 +7,9 @@
 #'
 #' @description
 #' Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly
-#' time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
-#' look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
-#' and the VPR is assessed using a chow test an then the total time series change is calculated.
+#' time series of a VI and its corrosponding precipitation (and temperature). It then looks looks
+#' for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
+#' and the VPR is assessed using a Chow test, then, the total time series change is calculated.
 #'
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
@@ -148,13 +148,19 @@
 TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE, CTSR.TM=NULL,  anu.VI=FALSE, acu.RF=FALSE, acu.TM=NULL, VI.index=FALSE,
                          rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE, allowneg.retest=FALSE){
 
-  while (TRUE){ #Test the variables for consistenty
-    #Each check liiks at a different paramter. If the data fails the check will stop, else, it breaks after all the checks
+  # ==============================================================================================
+  # ========== Sanity check the input data ==========
+  # Description:
+  #   Each check liiks at a different paramter. If the data fails
+  #   the check will stop, else, it breaks after all the checks
+
+  while (TRUE) { #Test the variables for consistenty
+    # check the class, type and tempora range of provided data
     if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object. Please check the data")
-    if ((class(ACP.table)=="logical") && (!CTSR.RF || acu.RF))
+    if ((class(ACP.table) == "logical") && (!CTSR.RF || acu.RF))
       stop("Insufficent Rainfall data provided. Provide either a complete ACP.table or both the CTSR.RF & acu.RF")
-    if ((!anu.VI)||(!VI.index)){
+    if ((!anu.VI) || (!VI.index)) {
       # Get the annual Max VI values
       max.df <- AnMaxVI(CTSR.VI)
       # Pull the key components from the result
@@ -162,26 +168,36 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
       VI.index <- max.df$index #the indes values
       Max.Month <- max.df$Max.Month #month if the year the even occured
     }else{
-      if (class(anu.VI) != "ts")
+      if (class(anu.VI) != "ts") {
         stop("anu.VI Not a time series object")
+        }
     }
-    # Change the allow.negative for multivariate regression
-    if (!is.null(ACT.table)){
-      allow.negative=TRUE
+    # Change the allow.negative for multivariate regression with temperature
+    # (Temperature can have a negative or positive impact on veg in drylands)
+    if (!is.null(ACT.table)) {
+      allow.negative = TRUE
     }
 
-    if (!CTSR.RF){
-      #Calculate the Complete time seties Accumulation (rainfall)
-      CTS.Str <- ACP.calculator(CTSR.VI, ACP.table, ACT.table, allow.negative=allow.negative, allowneg.retest=allowneg.retest)
-      # If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
-      #This mod is will impact results comparisons before V0.1.04
-      if ((!allow.negative && as.numeric(CTS.Str$summary)[1] <0)||as.numeric(CTS.Str$summary)[4] >sig){
+    if (!CTSR.RF) {
+      # ==============================================================================================
+      # ===== Calculate the Complete time seties Accumulation using ACP.calculator =====
+      CTS.Str <- ACP.calculator(
+        CTSR.VI, ACP.table, ACT.table, allow.negative = allow.negative,
+        allowneg.retest = allowneg.retest
+        )
+      # ==============================================================================================
+      # ===== Determine of BFAST is applied to the CTS residuals or the raw VI time series =====
+      #   If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
+      #   This mod is will impact results comparisons before V0.1.04
+      if ((!allow.negative && as.numeric(CTS.Str$summary)[1] < 0) || as.numeric(CTS.Str$summary)[4] > sig) {
         BFraw = TRUE
-      }else{BFraw=FALSE}
-      #Pull out the relevant paramters for use
+      } else {BFraw = FALSE}
+
+      # +++++ Pull out the relevant paramters for use from the CTS accumulation  result +++++
       CTSR.RF <- CTS.Str$CTSR.precip #RF values
       CTSR.TMraw <- CTS.Str$CTSR.rawtemp
-      if (is.null(CTSR.TM)){
+      # Check for the presence of temperature data
+      if (is.null(CTSR.TM)) {
         CTSR.TM <- CTS.Str$CTSR.tmp #Temperature values, null if temp is not considered
       }
       details.CTS.VPR <- CTS.Str$summary #Summay of the FIT between the CTS.VRP
@@ -191,32 +207,35 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
       CTSR.tacp <- CTS.Str$CTSR.tacp #CTS Sccumulation period
 
     }else{
-      if (class(CTSR.RF) != "ts")
+      # ===== Check the times of the datasets =====
+      if (class(CTSR.RF) != "ts") {
         stop("CTSR.RF Not a time series object")
-      #get the time data out
+      }
+      # get the time data out
       start.ti <- time(CTSR.VI)
       freq <- frequency(CTSR.VI)
-      #check the two ts object cover the same time period
+      # check the two ts object cover the same time period
       start.ti2 <- time(CTSR.RF)
       freq2 <- frequency(CTSR.RF)
       #Check the start dates and the frequency are correct
-      if (!identical(start.ti, start.ti2))
-        stop("ts objects do not have the same time, (CTSR.VI & CTSR.RF)")
-      if (!identical(freq, freq2))
-        stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")
+      if (!identical(start.ti, start.ti2)) {
+        stop("ts objects do not have the same time, (CTSR.VI & CTSR.RF)")}
+      if (!identical(freq, freq2)) {
+        stop("ts objects do not have the same frequency, (CTSR.VI & CTSR.RF)")}
     }
-    if (!acu.RF){
-      # Calculate the Annual Accumulated Rainfall
-      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, allow.negative=allow.negative)
-      # Pull out and store key values
+    # =================================================================================================================
+    # ===== Calculate the optimal Accumulated Rainfall and temperature for the annual max VI using AnnualClim.Cal =====
+    if (!acu.RF) { #if annual accumulated precipitation in not provided
+      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, allow.negative = allow.negative)
+      # +++++ Pull out and store key values from AnnualClim.Cal result ++++++
       osp <- precip.df$osp # offset period
       acp <- precip.df$acp # Accumulation period
       tosp <- precip.df$tosp # offset period
       tacp <- precip.df$tacp # Accumulation period
       acu.RF <- precip.df$annual.precip # precip values
       acu.TM <- precip.df$annual.temp # precip values
-      details.VPR<- precip.df$summary # The summary of the lm between rainfall and Vegetation
-    }else{
+      details.VPR <- precip.df$summary # The summary of the lm between rainfall and Vegetation
+    } else {# If the anmax vi is passed
       # Check the passed accumulated rainfall
       if (class(acu.RF) != "ts")
         stop("acu.RF Not a time series object")
@@ -231,60 +250,77 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
       if (!identical(st.f, st.f2))
         stop("ts object do not have the same frequency, (acu.RF & anu.VI)")
     }
-    # Check passed breakpoint rainfall results
-    if (class(rf.b4) != "logical"){
+    # ===== Check passed breakpoint rainfall data =====
+    # if breakpoints are used defined rather than determined, test all the data will work
+    if (class(rf.b4) != "logical") {
       if (length(rf.b4) != (length(rf.af)))
           stop("rf.b4 and rf.af are different shapes. They must be the same size and be th same lenths as acu.VI")
     }
     break
   }
-  # Pass the infomation about the VI and RF as well as the nfast method to the VPR.BFAST script
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM, season=season, BFAST.raw = BFraw)
-
+  # ==============================================================================================
+  # ===== Perform BFAST to look for potential breakpoints using VPR.BFAST =====
+  # Pass the infomation about the VI and RF as well as the BFAST method to the VPR.BFAST script
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM, season = season, BFAST.raw = BFraw)
+  # Extract the key values from the BFAST result
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
   CTS.lm <- bkp$CTS.lm #For the Models Bin
   bp <- bp[!bp %in% exclude] #remove breakpoints in the exclude list (Sensor transitions)
   BFT <-  bkp$BFAST.type #Type of BFAST used
-  
-  # dataframe containing the offset periods and accumulation periods
-  acum.df <- data.frame(CTSR.osp=CTSR.osp, CTSR.acp=CTSR.acp, CTSR.tosp=CTSR.tosp, CTSR.tacp=CTSR.tacp,
-                        osp=osp, acp=acp, tosp=tosp, tacp=tacp,  osp.b4=NaN, acp.b4=NaN, tosp.b4=NaN, tacp.b4=NaN,
-                        osp.af=NaN, acp.af = NaN, tosp.af=NaN, tacp.af = NaN)
 
-  if (class(bp)=="logical"|length(bp)==0) { #Should catch both the false and the no breakpoints
-    bp <- FALSE
+  # +++++ put all the infomation on the offset periods and accumulation period into a dataframe +++++
+  acum.df <- data.frame(
+    CTSR.osp = CTSR.osp, CTSR.acp = CTSR.acp, CTSR.tosp = CTSR.tosp, CTSR.tacp = CTSR.tacp,
+    osp = osp, acp = acp, tosp = tosp, tacp = tacp,  osp.b4 = NaN, acp.b4 = NaN, tosp.b4 = NaN,
+    tacp.b4 = NaN, osp.af = NaN, acp.af = NaN, tosp.af = NaN, tacp.af = NaN
+    )
+  # ===== Check and see if there are breakpoint that need to be tested =====
+  if (class(bp) == "logical" | length(bp) == 0) {#Should catch both the false and the no breakpoints
     # no breakpoints detected by the BFAST
-    test.Method = "RESTREND"
-    chow.sum <- data.frame(abs.index=FALSE, yr.index = FALSE, reg.sig=FALSE, VPR.bpsig = FALSE)
+    bp <- FALSE
+    test.Method = "RESTREND" # MEthod set to determine further testing
+    # Chow summary populated with false
+    chow.sum <- data.frame(abs.index = FALSE, yr.index = FALSE, reg.sig = FALSE, VPR.bpsig = FALSE)
     chow.bpi <- FALSE
-  }else{
-    bp<-as.numeric(bkp$bkps)
-    res.chow <- CHOW(anu.VI, acu.RF, acu.TM, VI.index, bp, sig=sig)
+  }else{# Breakpoints detected by the BFAST
+    # ===== Perform the chow test on the breakpoints using CHOW function =====
+    bp <- as.numeric(bkp$bkps)
+    res.chow <- CHOW(anu.VI, acu.RF, acu.TM, VI.index, bp, sig = sig)
+    # Pull out the key values from the CHOW
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
-    chow.sum <-res.chow$bp.summary
+    chow.sum <- res.chow$bp.summary
     chow.bpi <- res.chow$allbp.index
+    # Use the CHOW results to set the testmethod
     test.Method = res.chow$n.Method
   }
+  # ==============================================================================================
+  # ========== Perform a total change calculation ==========
+  # Note:
+  #   The method is calculated by the CHOW function
 
-  if (test.Method == "RESTREND"){
-    result <- RESTREND(anu.VI, acu.RF, acu.TM,  VI.index, sig=sig)
+  if (test.Method == "RESTREND") {
+    # ===== No breakpoints, Results calculated using the RESTREND function =====
+    result <- RESTREND(anu.VI, acu.RF, acu.TM,  VI.index, sig = sig)
 
-  }else if (test.Method == "seg.RESTREND"){
+  }else if (test.Method == "seg.RESTREND") {
+    # ===== breakpoints in the VPR/VCR residuals, Results calculated using the seg.RESTREND function =====
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.RESTREND(anu.VI, acu.RF, acu.TM, VI.index, brkp,  sig=sig)
+    result <- seg.RESTREND(anu.VI, acu.RF, acu.TM, VI.index, brkp,  sig = sig)
 
-  }else if (test.Method == "seg.VPR"){
-    if ((!rf.b4)||(!rf.af)){
-      VPRbp.df <-AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
+  }else if (test.Method == "seg.VPR") {
+    # ===== breakpoints in the VPR/VCR, Results calculated using the seg.VPR function =====
+    if ((!rf.b4) || (!rf.af)) {
+      # +++++ Calculate the regression coefficents on either side of the breakpoint using AnnualClim.Cal +++++
+      VPRbp.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
       tm.b4 <- VPRbp.df$tm.b4
       tm.af <- VPRbp.df$tm.af
       # Check if temp is insignificant either side of the breakpoint in the VPR,
         # if yes, remove temp from segmented VPR
-      if (is.null(tm.b4)&&is.null(tm.af)){acu.TM=NULL}
-      #Add the segmented offset periods and accumulation periods
+      if (is.null(tm.b4) && is.null(tm.af)) {acu.TM = NULL}
+      #Add the segmented offset periods and accumulation periods to the existing dataframe
       acum.df$osp.b4 <- VPRbp.df$osp.b4
       acum.df$acp.b4 <- VPRbp.df$acp.b4
       acum.df$tosp.b4 <- VPRbp.df$tosp.b4
@@ -294,26 +330,29 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
       acum.df$tosp.af <- VPRbp.df$tosp.af
       acum.df$tacp.af <- VPRbp.df$tacp.af
     }
+    # +++++ Perform segmented VPR/VCR calculation  +++++
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, tm.b4, tm.af, sig=sig)
+    result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, tm.b4, tm.af, sig = sig)
   }
-  # add the common variable to the results list
-  #=====================================================================================
+
+  # ==============================================================================================
+  # ===== Build the results into a list to be returned to user =====
+  # +++++ add the common variable to the results list ++++++
   # the fitted models
   result$TSSRmodels$CTS.fit <- CTS.lm
   result$TSSRmodels$BFAST <- BFAST.obj
   # Complete Time series values
   result$ts.data$CTSR.VI <- CTSR.VI
   result$ts.data$CTSR.RF <- CTSR.RF
-  if (!is.null(ACT.table)){
-    result$ts.data$CTSR.TMraw <- ts(ACT.table[1, ], start=c(start(CTSR.VI)[1], start(CTSR.VI)[2]), frequency = 12)
+  if (!is.null(ACT.table)) {# Add Temperature if present
+    result$ts.data$CTSR.TMraw <- ts(ACT.table[1, ], start = c(start(CTSR.VI)[1], start(CTSR.VI)[2]), frequency = 12)
     result$ts.data$CTSR.TM <- CTSR.TM
     }else{
       result$ts.data$CTSR.TM <- CTSR.TM
       result$ts.data$CTSR.TMraw <- CTSR.TM
     }
-  
+
   # add to the ols summary table
   result$ols.summary$chow.sum <- chow.sum
   result$ols.summary$chow.ind <- chow.bpi
