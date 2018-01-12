@@ -24,7 +24,7 @@
 #' print(VPRres)
 
 seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,tm.b4=NULL, tm.af=NULL, sig=0.05){
-  while (TRUE){
+  while (TRUE) {
     if (class(anu.VI) != "ts")
       stop("anu.VI Not a time series object")
     if (class(acu.RF) != "ts")
@@ -46,7 +46,7 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
       stop("Breakpoint must be an interger")
     if (length(breakpoint) != 1)
       stop("Breakpoint must be an interger of length 1")
-    if (class(rf.b4) != "logical"){
+    if (class(rf.b4) != "logical") {
       if (length(rf.b4) != (length(rf.af)))
         stop("rf.b4 and rf.af are different shapes. They must be the same size and be th same lenths as acu.VI")
     }
@@ -55,16 +55,16 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   len <- length(anu.VI)
 
   #Get the non segmented VPR
-  if (is.null(acu.TM)){# No Temp
+  if (is.null(acu.TM)) {# No Temp
     VPR.fit <- lm(anu.VI ~ acu.RF)
     R.tcoef <- NaN
-  }else{ # temp
-    VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
+  } else {# temp
+    VPR.fit <- lm(anu.VI ~ acu.RF + acu.TM)
     R.tcoef <- as.numeric(coef(VPR.fit)[3])
   }
   #Set up a blank table
-  m<- matrix(nrow=(4), ncol=8)
-  m[]<-NaN
+  m <- matrix(nrow = (4), ncol = 8)
+  m[] <- NaN
   rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
   colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change", "Slope.ChangeTmp")
   # Pull out key values from VPR
@@ -170,9 +170,9 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   segRES.df = data.frame(year=ti, VPR.residuals=VPR.resid,  dummy.var=dummy)
 
   start = as.integer(start(ti)[1])
-  bkp = breakpoint + start-1
+  bkp = breakpoint + start - 1
 
-  bpanalysis<-lm(VPR.residuals~I(year-(bkp+0.5))*dummy.var,segRES.df)
+  bpanalysis <- lm(VPR.residuals~I(year-(bkp + 0.5)) * dummy.var, segRES.df)
   R3.pval <- glance(bpanalysis)$p.value
   R3.Rval <- summary(bpanalysis)$r.square
   R3.intr <- bpanalysis$coefficients[[1]]
@@ -192,32 +192,43 @@ seg.VPR <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,t
   init <- bpanalysis$fitted.values[1]
   fin <- bpanalysis$fitted.values[end(bpanalysis$fitted.values)[1]]
   change <- as.numeric(fin - init)
-  if (!is.null(acu.TM)){
+  if (!is.null(acu.TM)) {
     # has temperature data
-    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF=adj.RF, StdVar.TM=adj.tm)
+    ts.data <- list(
+      CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI, VI.index = VI.index,
+      acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF = adj.RF, StdVar.TM = adj.tm)
   }else{
-    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = FALSE, StdVar.RF=adj.RF, StdVar.TM=FALSE)
+    ts.data <- list(
+      CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI, VI.index = VI.index,
+      acu.RF = acu.RF, acu.TM = NULL, StdVar.RF = adj.RF, StdVar.TM = NULL)
   }
 
 
   #May ad a total residual change
   tc <- c(0, 0)
-  if (R3.pval<0.10){
+  if (R3.pval < 0.10) {
     tc[1] = change
   }
 
-  if (bp.pval<0.10){
+  if (bp.pval < 0.10) {
     tc[2] = breakheight
   }
   tot.ch = sum(tc)
-  overview <- data.frame(Method = "segmented.VPR", Total.Change=tot.ch,
-                         Residual.Change=change, VPR.HeightChange=breakheight, model.p = glance(segVPR.fit)$p.value,
-                         residual.p = R3.pval, VPRbreak.p = bp.pval, bp.year=bkp)
-  models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = bpanalysis, segVPR.fit=segVPR.fit)
-  ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+  overview <- data.frame(
+    Method = "segmented.VPR", Total.Change = tot.ch, Residual.Change = change,
+    VPR.HeightChange = breakheight, model.p = glance(segVPR.fit)$p.value,
+    residual.p = R3.pval,VPRbreak.p = bp.pval, bp.year = bkp
+    )
+  models <- list(
+    CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
+    resid.fit = bpanalysis, segVPR.fit = segVPR.fit
+    )
+  ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
   acum.df <- FALSE
 
-  return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
-                        TSSRmodels=models, acum.df=acum.df), class = "TSSRESTREND"))
+  return(structure(list(
+    summary = overview, ts.data = ts.data, ols.summary = ols.summary,
+    TSSRmodels = models, acum.df = acum.df), class = "TSSRESTREND")
+    )
 
 }
