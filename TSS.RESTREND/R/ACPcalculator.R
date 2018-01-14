@@ -56,7 +56,7 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
   # ========== Linear regression function ==========
   # Define a Function to perform linear regression and get out values
   # DESCRIPTION:
-  #   This script uses OLS many time. THis function allows the usee of
+  #   This script uses OLS many time. This function allows the usee of
   #   apply to spped up the process
 
   linreg <- function(CTSR.VI, ACP.N, ACT.N = NULL, simple = TRUE) {
@@ -68,10 +68,11 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
       #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
       # All values are bad
       if (is.null(ACT.N)) {
-        return(c(0, -1))}else{return(0)}
+        return(c(0, -1))}else{return(0)
+        }
     }else{
       # +++++ Check if temperature needs to be considered +++++
-      if (is.null(ACT.N)) { # No temperature data
+      if (is.null(ACT.N)) {# No temperature data
         # perform the regression between VI and precipitation
         fit <- lm(CTSR.VI ~ ACP.N)
         R.Rval <- summary(fit)$r.square
@@ -92,7 +93,11 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
         # +++++ do the multivariate regression with precip and temperature +++++
         fit <- lm(CTSR.VI ~ ACP.N + ACT.N)
         R.Rval <- summary(fit)$r.square
-        if (simple) {return(R.Rval)}#To speed up looping over all the pixels (simple = TRUE)
+        
+        if (simple) {
+          #To speed up looping over all the pixels (simple = TRUE)
+          return(R.Rval)
+        }
         #  +++++ Pull of the rest of the key values +++++
         R.pval <- glance(fit)$p.value
         R.intr <- as.numeric(coef(fit)[1])

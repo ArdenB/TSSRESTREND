@@ -3,11 +3,11 @@
 #' @description
 #' Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation
 #' period and offset period for preciptation and Temperature (optional).  A OLS is calculated
-#' \code{\link[stats]{lm}} for every combination of VI ~ rainfall.If temperature is provided
-#' The formula is (VI ~ rainfall +temperature).  This Function preferences those results where
+#' \code{\link[stats]{lm}} for every combination of VI ~ rainfall. If temperature is provided
+#' The formula is (VI ~ rainfall + temperature).  By defualt, this function preferences those results where
 #' slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation
 #' that has the highest R-squared and a positive slope. If no combinations produce a positive slope then the
-#' one with the highest Rsquared is returned. .
+#' one with the highest Rsquared is returned. 
 #' TO DO: non peramtric and other variables
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #' @inheritParams TSSRESTREND
@@ -59,49 +59,70 @@
 #' print(ARCseg)
 #' }
 AnnualClim.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoint = FALSE, allow.negative=FALSE, allowneg.retest=FALSE){
-  # browser("The M part of this script is broken")
-  #Perform the basic sanity checks
+  # ==============================================================================================
+  # ========== Sanity check the input data ==========
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
   if (length(VI.index) != length(anu.VI))
     stop("acu.VI and VI.index are not of the same length")
 
-  #Get the start year and month
+  # ==============================================================================================
+  # =========== Organise the data and key variables ==========
+  # +++++ Work out the start and end dates +++++
   yst <- start(anu.VI)[1]
   mst <- start(anu.VI)[2]
 
-  # Function to perform the linear regressions
+  # ==============================================================================================
+  # ========== Linear regression function ==========
+  # Define a Function to perform linear regression and get out values
+  # DESCRIPTION:
+  #   This script uses OLS many time. This function allows the usee of
+  #   apply to spped up the process
   linreg <- function(VI.in, ACP.N, ACT.N = NULL, simple=TRUE){
-    #get the lm
-    # Simple tells me which values to return
+    # +++++ Simple tells function which values to return, if Simple = TRUE,
+    #   only the slope and the R^2 values are returned, if FALSE, all the details
+
+    # +++++ Sanity check the data +++++
     if (sd(ACP.table[n, ])== 0){
       #if a combination of acp and osp leads to SD=0 rainfall, this will catch it
       # All values are bad. Matches the number of columns ss
-      if (is.null(ACT.N)){return(c(0, -1))}else{return(0)}
-      # return(c(-1, -1, 1, 0, NaN, NaN))
+      if (is.null(ACT.N)){
+        return(c(0, -1))}else{return(0)
+        }     
     }else{
-      if (is.null(ACT.N)) {
+      # +++++ Check if temperature needs to be considered +++++
+      if (is.null(ACT.N)) {# No Temperature data 
+        # perform the regression between VI and precipitation
         fit <- lm(VI.in ~ ACP.N)
-        # if (class(fit)=="try-error"){browser()}
         R.Rval <- summary(fit)$r.square
         R.slpe <- as.numeric(coef(fit)[2])
-        if (simple) {return(c(R.Rval, R.slpe))} #To speed up looping over all the pixels
+        
+        if (simple) {
+          #To speed up looping over all the pixels (simple = TRUE)
+          return(c(R.Rval, R.slpe))
+          }
+        #  +++++ Pull of the rest of the key values +++++
         R.pval <- glance(fit)$p.value
         R.intr <- as.numeric(coef(fit)[1])
         R.Tcoef <- NA
         # pass a true value for the tempurature sig test
         t.sig <- TRUE
 
-      }else{
-        # do the multivariate regression with precip and temperature
+      }else{# temperature data
+        # +++++ do the multivariate regression with precip and temperature +++++
         fit <- lm(VI.in ~ ACP.N + ACT.N)
         R.Rval <- summary(fit)$r.square
-        if (simple) {return(R.Rval)}#To speed up looping over all the pixels
+        
+        if (simple) {
+          #To speed up looping over all the pixels
+          return(R.Rval)
+        }
+        #  +++++ Pull of the rest of the key values +++++
         R.pval <- glance(fit)$p.value
         R.intr <- as.numeric(coef(fit)[1])
         R.slpe <- as.numeric(coef(fit)[2]) #precip Coefficent
         R.Tcoef <- as.numeric(coef(fit)[3]) #Temperatur coefficent
-        # test to see if temperature should be left in tegression
+        # +++++ test to see if temperature should be left in tegression +++++
         t.sig <- (coef(summary(fit))["ACT.N","Pr(>|t|)"] < 0.05)
 
       }
@@ -109,7 +130,7 @@ AnnualClim.Cal <- function(anu.VI, VI.index, ACP.table, ACT.table=NULL, Breakpoi
       R.BH <- NaN
       R.SC <- NaN
       R.SCT <- NaN
-      #Return the results
+      # +++++ Return the results +++++
       return(structure(list(lm.sum=c(R.slpe, R.Tcoef, R.intr, R.pval, R.Rval, R.BH, R.SC, R.SCT), temp.sig=t.sig)))
     }}
 

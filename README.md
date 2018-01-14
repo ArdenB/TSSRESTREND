@@ -1,10 +1,13 @@
-# Segmented RESTREND
+# Time Series Segmented Residual Trends (TSS-RESTREND)
 
-This script is a a demonstration of the Segmented RESTREND method proposed in Burrell et. al., (2017). 
+Time Series Segmented Residual Trends (TSS-RESTREND) is a method for the automated detection of land degradation from remotely sensed vegetation and climate datasets. TSS-RESTREND incorporates aspects of two existing degradation detection methods: RESTREND which is used to control for climate variability, and BFAST which is used to look for structural changes in the ecosystem.  
 
-The current build (0.1.4) is under active development and has not been fully tested.  Version 0.1.32 is stable but doesn't handle some errors well.  
+The full details of the testing and justification of the TSS-RESTREND method (version 0.1.02) are published in:
+      
+  Burrell, Arden L., Jason P. Evans, and Yi Liu. 2017. “Detecting Dryland Degradation Using Time Series Segmentation and Residual Trend Analysis (TSS-RESTREND).” Remote Sensing of Environment 197 (August):43–57. \url{https://doi.org/10.1016/j.rse.2017.05.018.} (\url{http://www.sciencedirect.com/science/article/pii/S0034425717302171})
 
-*Disclaimer. This code has been tested with the data provided int the `./demo_data` folder. Use caution when testing other dataset.*
+The changes to the method included in version 0.2.03 focus on the inclusion of temperature as an additional climate variable to allow for land degradation assessment in temperature limited drylands as well and a number of bug fixes and speed improvements. This work is currently under review. 
+
 ## To install from Github
 ```R
 install.packages("devtools")
