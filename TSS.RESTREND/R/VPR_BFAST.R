@@ -31,18 +31,22 @@
 #' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
 #' print(VPRBFdem)
 
-VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=FALSE) {
+VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=FALSE, h = 0.15) {
+
+  # ========== Complete time series breakpoint detection using BFAST ==========
+  # ===========================================================================
   #functions takes the complete time series VI and rainfall (RF)
 
+  # ===== Basic data sanity checks =====
   #Check the objects are Time series
   if (class(CTSR.VI) != "ts")
     stop("CTSR.VI Not a time series object")
   if (class(CTSR.RF) != "ts")
     stop("CTSR.RF Not a time series object")
-  #get the time data out
+  # get the time data out
   ti <- time(CTSR.VI)
   f <- frequency(CTSR.VI)
-  #check the two ts object cover the same time period
+  # check the two ts object cover the same time period
   ti2 <- time(CTSR.RF)
   f2 <- frequency(CTSR.RF)
   if (!identical(ti, ti2))
@@ -50,32 +54,34 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=F
   if (!identical(f, f2))
     stop("ts object do not have the same frequency")
 
-  # Fit the two lines
+  # ===== Get the regression fot the VCR/VPR =====
   if (is.null(CTSR.TM)) { # no temperature data
     CTS.fit <- lm(CTSR.VI ~ CTSR.RF)
   }else{
     CTS.fit <- lm(CTSR.VI ~ CTSR.RF + CTSR.TM)
   }
-  #Convert to a ts object
-  resid.ts<- ts(CTS.fit$residuals, start=ti[1], end=tail(ti, 1), frequency = f)
-  #perform the BFAST
-  if (BFAST.raw){
-    bf.fit <- bfast(CTSR.VI, h=0.15, season="harmonic", max.iter=3, level = 0.05)
+  # Convert to a ts object
+  resid.ts <- ts(CTS.fit$residuals, start = ti[1], end = tail(ti, 1), frequency = f)
+
+  # ===== perform the BFAST =====
+  if (BFAST.raw) {
+    bf.fit <- bfast(CTSR.VI, h = h, season = "harmonic", max.iter = 3, level = 0.05)
     bft <- "raw.VI"
-  }else{
-    bf.fit <- bfast(resid.ts, h=0.15, season=season, max.iter=3, level = 0.05)
+  } else {
+    bf.fit <- bfast(resid.ts, h = h, season = season, max.iter = 3, level = 0.05)
     bft <- "CTSR.VPR"
   }
 
+  # ===== Create and object to return =====
   if (bf.fit$nobp$Vt[[1]] == FALSE) {
     # Get the number of breakpoints
     numiter <- length(bf.fit$output)
     tmp <- bf.fit$output[[numiter]]$bp.Vt[1]$breakpoints
     # stack and return the data
-    return(structure(list(bkps = tmp, BFAST.obj=bf.fit, CTS.lm = CTS.fit, BFAST.type=bft), class = "BFAST.Object"))
+    return(structure(list(bkps = tmp, BFAST.obj = bf.fit, CTS.lm = CTS.fit, BFAST.type = bft), class = "BFAST.Object"))
   } else {
     # Stack the data
-    return(structure(list(bkps = FALSE, BFAST.obj=bf.fit, CTS.lm = CTS.fit, BFAST.type=bft), class = "BFAST.Object"))
+    return(structure(list(bkps = FALSE, BFAST.obj = bf.fit, CTS.lm = CTS.fit, BFAST.type = bft), class = "BFAST.Object"))
     }
 }
 

@@ -358,7 +358,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
           warning("            The 3D plotting function rescales the
             three variables internally to fit in the unit cube;
             this rescaling will affect regression coefficients.
-            This 3D plots is for illustrative puropses only."
+            This 3D plots is for illustrative purposes only."
             )
         } else {
           # ++++++++++ Missing packages ++++++++++
@@ -418,7 +418,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
           warning("            The 3D plotting function rescales the
             three variables internally to fit in the unit cube;
             this rescaling will affect regression coefficients.
-            This 3D plots is for illustrative puropses only."
+            This 3D plots is for illustrative purposes only."
           )
         } else {
           # ++++++++++ Missing packages ++++++++++
@@ -453,28 +453,28 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       RESchow <- sctest(VPR.residuals ~ year, type = "Chow", point = breakpoint)
       # set the range for the plot
       xlim = c(start, end)
-      m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values)) 
+      m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values))
 
       # +++++ Seg.RES plot the values before and after the breakpoint +++++
-      # Before the breakpoint 
+      # Before the breakpoint
       plot(
         year[1:breakpoint], VPR.residuals[1:breakpoint], pch = 16,xlab = "time",
         ylab = "Residuals", col = "orange", xlim = xlim, ylim = c(-m.range, m.range)
         )
       title("Segmented RESTREND")
       par(new = T)
-      # After the breakpoint 
+      # After the breakpoint
       plot(
         year[breakpoint + 1:len], VPR.residuals[breakpoint + 1:len], pch = 16,
         xlab = "", ylab = "", col = "purple", main = "", xlim = c(start, end),
         ylim = c(-m.range, m.range)
         )
-      # a trend line as if there was no breakpoint 
+      # a trend line as if there was no breakpoint
       abline(R.fit, col = "darkgrey", lwd = 2, lty = "dashed")
 
       # +++++ Add the trendlines +++++
       par(new = T)
-      # pul out the coefficents for the lines 
+      # pul out the coefficents for the lines
       bpa.fitts <- ts(x$TSSRmodels$resid.fit$fitted.values, start = ti[1], end = tail(ti, 1), frequency = 1)
       b4.bp = x$TSSRmodels$resid.fit$coefficients[[1]]
       af.bp = x$TSSRmodels$resid.fit$coefficients[[1]] + x$TSSRmodels$resid.fit$coefficients[[3]]
@@ -489,7 +489,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       grid()
       # +++++ add a breakpoint lines +++++
       abline(v = (breakpoint - 0.5 + start), col = "white", lwd = 3)
-      # Pull out the stats to add to the figure 
+      # Pull out the stats to add to the figure
       R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$resid.fit)$p.value
       R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
@@ -512,7 +512,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       legend('topleft', legend = rp, bty = 'n')
 
     } else if (x$summary$Method == "RESTREND") {
-      
+
       # =====+++++ A standard RESTREND plot +++++=====
       # +++++ Extract key values (Length & dates) +++++
       start = as.integer(start(ti)[1])
@@ -535,7 +535,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
         )
       # Add the grid
       grid()
-      # Pull out the stats to add to the figure 
+      # Pull out the stats to add to the figure
       R.Fval = summary(RES)$f[[1]]
       R.Rval = summary(RES)$r.squared
       R.pval = glance(RES)$p.value
@@ -570,7 +570,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       end = as.integer(end(ti)[1])
       year = c(start:end)
       RESchow <- sctest(VPR.residuals ~ year, type = "Chow", point = breakpoint)
-      # Get the regression fit lines to add to the plot  
+      # Get the regression fit lines to add to the plot
       R.fit <- lm(VPR.residuals ~ year)
       R.fit0 <- lm(VPR.residuals[1:breakpoint] ~ year[1:breakpoint])
       R.fit1 <- lm(VPR.residuals[breakpoint+1:len] ~ year[breakpoint+1:len])
@@ -580,7 +580,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       m.range = 2*max(abs(x$TSSRmodels$resid.fit$fitted.values))
 
       # +++++ Seg.RES VPR plot the values before and after the breakpoint +++++
-      # Before the breakpoint 
+      # Before the breakpoint
       plot(
         year[1:breakpoint], VPR.residuals[1:breakpoint], pch = 16,xlab = "time",
         ylab = "Residuals", col = "orange", xlim = xlim, ylim = c(-m.range, m.range))
@@ -592,10 +592,10 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
         year[breakpoint + 1:len], VPR.residuals[breakpoint + 1:len], pch = 16,
         xlab = "", ylab = "", col = "purple", main = "", xlim = c(start, end),
         ylim = c(-m.range, m.range))
-       
+
       # +++++ Add the trendlines +++++
       par(new = T)
-      # pul out the coefficents for the lines 
+      # pul out the coefficents for the lines
       bpa.fitts <- ts(x$TSSRmodels$resid.fit$fitted.values, start = ti[1], end = tail(ti, 1), frequency = 1)
       b4.bp = x$TSSRmodels$resid.fit$coefficients[[1]]
       af.bp = x$TSSRmodels$resid.fit$coefficients[[1]] + x$TSSRmodels$resid.fit$coefficients[[3]]
@@ -619,11 +619,11 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
         angle = 90, code = 3, col = "red", lwd = 2
         )
       # +++++ Create the stats legend +++++
-      # Pull out the stats to add to the figure 
+      # Pull out the stats to add to the figure
       R.Fval = summary(x$TSSRmodels$resid.fit)$f[[1]]
       R.pval = glance(x$TSSRmodels$resid.fit)$p.value
       R.Rval = summary(x$TSSRmodels$resid.fit)$r.squared
-      # Add the values to the legend 
+      # Add the values to the legend
       rp = vector('expression',4)
       rp[1] = substitute(expression(italic(rc) == r.c),
                          list(r.c  = format(r.c, digits = 3)))[2]

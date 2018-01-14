@@ -72,6 +72,10 @@
 #' @param allowneg.retest default=FALSE
 #'        If temperature data is provided but found to not be significant then a retest is performed.
 #'        This paramter is to allow negative on re-test.
+#' @param h
+#'        See \code{\link[bfast]{bfast}}, The.minimal segment size between potentially detected breaks in the trend model
+#'        given as fraction relative to the sample size (i.e. the minimal number of observations in each segment
+#'        divided by the total length of the timeseries. Default h = 0.15.
 #' @return
 #' An object of class \code{'TSSRESTREND'} is a list with the following elements:
 #' \describe{
@@ -145,8 +149,11 @@
 #' plot(results, verbose=TRUE)
 #' }
 #'
-TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE, CTSR.TM=NULL,  anu.VI=FALSE, acu.RF=FALSE, acu.TM=NULL, VI.index=FALSE,
-                         rf.b4=FALSE, rf.af=FALSE, sig=0.05, season="none", exclude=0, allow.negative=FALSE, allowneg.retest=FALSE){
+TSSRESTREND <- function(
+  CTSR.VI, ACP.table = FALSE, ACT.table = NULL, CTSR.RF = FALSE, CTSR.TM = NULL,
+  anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL, VI.index = FALSE, rf.b4 = FALSE,
+  rf.af = FALSE, sig = 0.05, season = "none", exclude = 0, allow.negative = FALSE,
+  allowneg.retest = FALSE, h = 0.15){
 
   # ==============================================================================================
   # ========== Sanity check the input data ==========
@@ -186,7 +193,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
         allowneg.retest = allowneg.retest
         )
       # ==============================================================================================
-      # ===== Determine of BFAST is applied to the CTS residuals or the raw VI time series =====
+      # ===== Determine if BFAST is applied to the CTS residuals or the raw VI time series =====
       #   If the allow negative is on, this is ignored, else perform a negative slope check and perform a significance check
       #   This mod is will impact results comparisons before V0.1.04
       if ((!allow.negative && as.numeric(CTS.Str$summary)[1] < 0) || as.numeric(CTS.Str$summary)[4] > sig) {
@@ -261,7 +268,7 @@ TSSRESTREND <- function(CTSR.VI, ACP.table=FALSE, ACT.table=NULL, CTSR.RF=FALSE,
   # ==============================================================================================
   # ===== Perform BFAST to look for potential breakpoints using VPR.BFAST =====
   # Pass the infomation about the VI and RF as well as the BFAST method to the VPR.BFAST script
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM, season = season, BFAST.raw = BFraw)
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM, season = season, BFAST.raw = BFraw, h = h)
   # Extract the key values from the BFAST result
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
