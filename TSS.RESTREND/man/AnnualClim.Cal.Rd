@@ -37,12 +37,14 @@ This paramter is to allow negative on re-test.}
        of the \code{\link[stats]{lm}} of VI ~ rainfall. If Breakpoint, summary covers both rf.b4 and rf.af.
 
 \bold{acu.RF}
-       (aka. annual.precip)The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts' and of equal length to anu.VI. It is caculated
-       from the ACP.table by finding the acp and osp that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall)
+       (aka. annual.precip)The optimal accumulated rainfall for anu.VI. Mut be a object of class 'ts'
+       and of equal length to anu.VI. It is caculated from the ACP.table by finding the acp and osp
+       that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall)
 
 \bold{acu.TM}
-       (aka, annual.temp) The optimal accumulated rainfall for anu.T<. Mut be a object of class 'ts' and of equal length to anu.VI. It is caculated
-       from the ACT.table by finding the tacp and tosp that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall+temperature)
+       (aka, annual.temp) The optimal accumulated rainfall for anu.T<. Mut be a object of class 'ts'
+       and of equal length to anu.VI. It is caculated from the ACT.table by finding the tacp and tosp
+        that has the largest R^2 value. \code{\link[stats]{lm}}(anu.VI ~ rainfall+temperature)
 
 \bold{rf.b4}
        The optimal acumulated rainfall before the Breakpoint
@@ -71,11 +73,11 @@ This paramter is to allow negative on re-test.}
 \description{
 Takes the Annual Max VI Time Series, the VI.index and tables of every possible accumulation
 period and offset period for preciptation and Temperature (optional).  A OLS is calculated
-\code{\link[stats]{lm}} for every combination of VI ~ rainfall.If temperature is provided
-The formula is (VI ~ rainfall +temperature).  This Function preferences those results where
+\code{\link[stats]{lm}} for every combination of VI ~ rainfall. If temperature is provided
+The formula is (VI ~ rainfall + temperature).  By defualt, this function preferences those results where
 slope>0 (increase in rainfall causes an increase in vegetation), returning the rainfall accumulation
 that has the highest R-squared and a positive slope. If no combinations produce a positive slope then the
-one with the highest Rsquared is returned. .
+one with the highest Rsquared is returned.
 TO DO: non peramtric and other variables
 }
 \examples{

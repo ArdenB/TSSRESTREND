@@ -5,7 +5,7 @@
 \title{BFAST Breakpoint Detector}
 \usage{
 VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM = NULL, season = "none",
-  BFAST.raw = FALSE)
+  BFAST.raw = FALSE, h = 0.15)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -25,6 +25,10 @@ VPR. if a non VPR adjusted BFAST is performed.a harmonic season is used.}
 \item{BFAST.raw}{Defualt = FALSE
 If TRUE will perform a BFAST (season="harmonic") on the CTSR.VI
 If FALSE will perform BFAST on the CTSR VPR residuals}
+
+\item{h}{See \code{\link[bfast]{bfast}}, The.minimal segment size between potentially detected breaks in the trend model
+given as fraction relative to the sample size (i.e. the minimal number of observations in each segment
+divided by the total length of the timeseries. Default h = 0.15.}
 }
 \value{
 List of objects:

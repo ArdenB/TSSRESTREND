@@ -8,7 +8,7 @@ TSSRESTREND(CTSR.VI, ACP.table = FALSE, ACT.table = NULL, CTSR.RF = FALSE,
   CTSR.TM = NULL, anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL,
   VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE, sig = 0.05,
   season = "none", exclude = 0, allow.negative = FALSE,
-  allowneg.retest = FALSE)
+  allowneg.retest = FALSE, h = 0.15)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.
@@ -68,6 +68,10 @@ If temperature data is included then this paramter is forced to TRUE.}
 \item{allowneg.retest}{default=FALSE
 If temperature data is provided but found to not be significant then a retest is performed.
 This paramter is to allow negative on re-test.}
+
+\item{h}{See \code{\link[bfast]{bfast}}, The.minimal segment size between potentially detected breaks in the trend model
+given as fraction relative to the sample size (i.e. the minimal number of observations in each segment
+divided by the total length of the timeseries. Default h = 0.15.}
 }
 \value{
 An object of class \code{'TSSRESTREND'} is a list with the following elements:
@@ -107,9 +111,9 @@ An object of class \code{'TSSRESTREND'} is a list with the following elements:
 }
 \description{
 Time Series Segmented Residual Trend (TSS.RESTREND) methodology.Takes in a complete monthly
-time series of a VI and its corrosponding precipitation. Will caculate missing input varibles,
-look for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
-and the VPR is assessed using a chow test an then the total time series change is calculated.
+time series of a VI and its corrosponding precipitation (and temperature). It then looks looks
+for breakpoints using the BFAST function. The significance of the breakpoin in the residuals
+and the VPR is assessed using a Chow test, then, the total time series change is calculated.
 }
 \note{
 if ACP.table = FALSE, CTSR.RF and acu.RF must be provided as well as

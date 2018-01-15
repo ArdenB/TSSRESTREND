@@ -2,7 +2,7 @@
 % Please edit documentation in R/segVPR.R
 \name{seg.VPR}
 \alias{seg.VPR}
-\title{Segmented Vegetation Precipitation Relationship}
+\title{Segmented Vegetation Climate Relationship}
 \usage{
 seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,
   tm.b4 = NULL, tm.af = NULL, sig = 0.05)
@@ -41,9 +41,10 @@ a list of class TSSRESTREND.
        this list will be incomplete.
 }
 \description{
-For ts with a significant breakpoints in the the VPR. Takes annual VI max, the optimal accumulated precipitation
-bor and after the breakpoint, then caculated the Precipitation Standard Variance, and regresses it with a dummy
-variable that is 0 before the breakpoint and 1 after it. WARNING NEED TO REMOVE acu.RF
+For a ts with a significant breakpoints in the the VPR/VCR. This function takes annual VI max,
+the optimal accumulated precipitation (& temperature) before and after the breakpoint, then
+caculates the Standard Variance of the climate cariables.Theen an OLS is performed with a dummy
+variable to reperesent the breakpoint (0 before the breakpoint and 1 after it)..
 }
 \examples{
 brkp <- as.integer(24) #calculated using th CHOW (DONTRUN) example

@@ -56,8 +56,8 @@ period for precipitation and temperature(optional).  A OLS is calculated \code{\
 of VI ~ rainfall (and temperature if that is included).
 if only the VPR is being calculated, this Function preferences those results where slope>0
 (increase in rainfall causes an increase in vegetation),returning the rainfall accumulation
-that has the highest R-squared and a positive slope. If no combinationsproduce a
-positive slope then the one with the highest Rsquared is returned.
+that has the highest R-squared and a positive slope. If no combination produces a
+positive slope then the one with the highest R-squared is returned.
 }
 \examples{
 #Find the data

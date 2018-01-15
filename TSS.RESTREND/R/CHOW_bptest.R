@@ -36,8 +36,9 @@
 #' print(reschow)
 #'
 
-CHOW <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoints, sig=0.05){
-  #test the data to make sure its valid
+CHOW <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoints, sig = 0.05) {
+  # ==============================================================================================
+  # ========== Sanity check the input data ==========
   if (class(anu.VI) != "ts")
     stop("anu.VI Not a time series object")
   if (class(acu.RF) != "ts")
@@ -55,120 +56,156 @@ CHOW <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoints, sig=0.05){
   if (class(breakpoints) != "numeric")
     stop("Breakpoints are not class numeric")
 
-  #count of all the breakpoints
+  # ==============================================================================================
+  # ========== Look at the breakpoints and set up variables ==========
+
+  # +++++ count of all the breakpoints +++++
   len <- length(breakpoints)
+
   # convert the breakpoints into year posistion
-  #the breakpoint loc will be the last anaual max before the breakpoint
+  # the breakpoint loc will be the last anaual max before the breakpoint
 
   #empty variables to add to a datafram
   empty.1 <- NaN
   empty.2 <- NaN
   empty.3 <- NaN
-  # Empty data frames to stor infomation
-  ind.df <- data.frame(abs.index=breakpoints, yr.index = empty.1, reg.sig=empty.2, VPR.bpsig = empty.3)
-  bp.ind <-data.frame(abs.index=breakpoints, yr.index=NaN)
-  #Get the year indexs of the breakpoints
-  for (bp in 1:length(breakpoints)){
+  # Setup empty data frames to stor infomation
+  ind.df <- data.frame(
+    abs.index = breakpoints, yr.index = empty.1, reg.sig = empty.2, VPR.bpsig = empty.3
+    )
+  bp.ind <- data.frame(abs.index = breakpoints, yr.index = NaN)
+  # ===== Get the year indexs of the breakpoints =====
+  for (bp in 1:length(breakpoints)) {
     bpv = ind.df$abs.index[bp]
-    for (n in 1:length(VI.index)){
-      if (bpv>=VI.index[n] & bpv<=VI.index[n+1]){
-        #print(n)}
+    for (n in 1:length(VI.index)) {
+      if (bpv >= VI.index[n] & bpv <= VI.index[n + 1]) {
         ind.df$yr.index[bp] = n
         bp.ind$yr.index[bp] = n
       }
     }
   }
-  #create the lm for the VPR and test is significance,
-  #split VPR sig from VPR insignificant
-  if (is.null(acu.TM)){ #no temp data
+  # ===== create the lm for the VPR and test is significance, =====
+  #   split VPR sig from VPR insignificant
+  if (is.null(acu.TM)) {# no temp data
     VPR.fit <- lm(anu.VI ~ acu.RF)
   }else{# temp data
     VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
   }
-  if (glance(VPR.fit)$p.value > sig){
-    # print("VPR significance below critical threshold, Testing breakpoints in the VPR")
+  if (glance(VPR.fit)$p.value > sig) {
+    # VPR significance below critical threshold
     ind <- acu.RF #independent variable
     dep <- anu.VI #dependent variable
     Method = "seg.VPR"
-    if (is.null(acu.TM)){ind2 <- acu.TM}else{ind2=NULL}
+    if (!is.null(acu.TM)) {# temperature data
+      ind2 <- acu.TM
+    }else {# No temperature data
+        ind2 = NULL
+    }
   } else {
+    # VPR is significant
     ind <- ti
     dep <- VPR.fit$residuals
     Method = "seg.RESTREND"
     ind2 = NULL
   }
-  #Iterate over each of the breakpoints
-  while (TRUE){
-    for (bp.num in 1:nrow(ind.df)){ #the breakpoints number, first bp is 1,  etc
+  # ========== Iterate over each of the breakpoints ==========
+  # Description:
+  #   Will loop over each breakpoint, removing the least significant each time
+  #   until there is only one. Then testing that in the residuals and the VPR
+
+  while (TRUE) {
+    # ===== loop over the breakpoints. The first bp is 1,etc =====
+    for (bp.num in 1:nrow(ind.df)) {
       bp = ind.df$yr.index[bp.num]
-      # browser()
-      #start and ends
-      if (identical(ind.df$yr.index[bp.num-1], numeric(0))){
+      # +++++ set the start and ends indexes  +++++
+      # Start
+      if (identical(ind.df$yr.index[bp.num - 1], numeric(0))) {
         bp.start = 1
-        #print("here0")
       }else{
-        bp.start = ind.df$yr.index[bp.num-1]
-        #print("here1")
+        bp.start = ind.df$yr.index[bp.num - 1]
       }
-      if (is.na(ind.df$yr.index[bp.num+1])){
+      # End
+      if (is.na(ind.df$yr.index[bp.num + 1])) {
         bp.end = length(dep)
       }else{
-        bp.end = ind.df$yr.index[bp.num+1]}
-      #perform the chow test
-      bkp = bp - (bp.start-1)
-      # print(bkp)
-      if (is.null(ind2)){ # no temp
+        bp.end = ind.df$yr.index[bp.num + 1]}
+      # Locate the tested breakpoint
+      bkp = bp - (bp.start - 1)
+
+      #  =========== Perform the CHOW test on the Residuals  ==========
+      if (is.null(ind2)) { # no temp
         chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end], type = "Chow", point = bkp)
         }else{
-          browser("This needs more research")
+          # This is here to catch VPR fails that have a breakpoint
+          #  Currently this shouldn't be used because when the VCR fails it reverts to a VPR
+          #  This may need to be changes in the future
+          browser("This may need further development")
           chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end]+ind2[bp.start:bp.end], type = "Chow", point = bkp)
         }
-
-
+      # Pull out the Chow results
       ind.df$reg.sig[bp.num] = chow$p.value
 
     }
-    # browser()
-    if (nrow(ind.df)>1){
-      #delete breakpoint with the largest p values (lowest significance)
+    # ========== Test pixels with more than one breakpoints ==========
+    if (nrow(ind.df) > 1) {
+      # ===== More than one BP =====
+      # delete breakpoint with the largest p values (lowest significance)
       ind.df <- ind.df[!(1:nrow(ind.df) %in% (which.max(ind.df$reg.sig))),]
-    }else if (nrow(ind.df)==1){
-      # last breakpoint standing
-      if (is.null(acu.TM)){
-        VPR.chow<- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
+    }else if (nrow(ind.df) == 1) {
+      # ===== last breakpoint standing =====
+      # Check if temperature needs to be testeds
+      if (is.null(acu.TM)) {
+        VPR.chow <- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
       }else{
-        VPR.chow <- sctest(anu.VI ~ acu.RF+acu.TM, type = "Chow", point = bkp)
+        browser()
+        VPR.chow <- sctest(anu.VI ~ acu.RF + acu.TM, type = "Chow", point = bkp)
       }
-
-
+      # Pull out the p value
       ind.df$VPR.bpsig[1] = VPR.chow$p.value
 
-      if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig){ # cant chow non-sig residulas (bpRESID.chow = FALSE)
+      # ========== Set the test method and return chow test results ==========
+
+      if (Method == "seg.VPR" & ind.df$reg.sig[1] > sig) { # cant chow non-sig residulas (bpRESID.chow = FALSE)
         ind.df$reg.sig[1] = NaN
-        # Passing to the RESTREND function to catch broken VPR
-        return(structure(list(n.Method = "RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
-                              bpRESID.chow = FALSE, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
-      }else if (Method == "seg.VPR" & ind.df$reg.sig[1] <= sig){
+        return(structure(list(
+          # +++++ Passing to the RESTREND function to catch broken VPR +++++
+          # VPR failed and significance of breakpoint failed
+          n.Method = "RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
+          bpRESID.chow = FALSE, bpVPR.chow = VPR.chow), class = "CHOW.Object")
+          )
+      } else if (Method == "seg.VPR" & ind.df$reg.sig[1] <= sig) {
+        # VPR failed and breakpoint is significant
         ind.df$reg.sig[1] = NaN
-        return(structure(list(n.Method = "seg.VPR", bp.summary = ind.df, allbp.index = bp.ind,
-                              bpRESID.chow = FALSE, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
-      }else if (Method == "seg.RESTREND" & ind.df$reg.sig[1] > sig){
-        return(structure(list(n.Method = "RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
-                              bpRESID.chow = chow, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
-      }else if (Method == "seg.RESTREND" & ind.df$reg.sig[1] <= sig){
-        if (VPR.chow$p.value>sig){
-          return(structure(list(n.Method = "seg.RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
-                                bpRESID.chow = chow, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
-        }else if(VPR.chow$p.value<=sig){
-          return(structure(list(n.Method = "seg.VPR", bp.summary = ind.df, allbp.index = bp.ind,
-                                bpRESID.chow = chow, bpVPR.chow=VPR.chow), class = "CHOW.Object"))
+        return(structure(list(
+          n.Method = "seg.VPR", bp.summary = ind.df, allbp.index = bp.ind,
+          bpRESID.chow = FALSE, bpVPR.chow = VPR.chow), class = "CHOW.Object")
+          )
+      } else if (Method == "seg.RESTREND" & ind.df$reg.sig[1] > sig) {
+        # Breakpoint not significant in the residuals
+        return(structure(list(
+          n.Method = "RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
+          bpRESID.chow = chow, bpVPR.chow = VPR.chow), class = "CHOW.Object")
+          )
+      } else if (Method == "seg.RESTREND" & ind.df$reg.sig[1] <= sig) {
+        # Breakpoint is significant in the residuals
+        if (VPR.chow$p.value > sig) {
+          # Breakpoint is significant in the residuals not in the VPR/VCR
+          return(structure(list(
+            n.Method = "seg.RESTREND", bp.summary = ind.df, allbp.index = bp.ind,
+            bpRESID.chow = chow, bpVPR.chow = VPR.chow), class = "CHOW.Object")
+            )
+        }else if (VPR.chow$p.value <= sig) {
+          # Breakpoint is significant in the VPR
+          return(structure(list(
+            n.Method = "seg.VPR", bp.summary = ind.df, allbp.index = bp.ind,
+            bpRESID.chow = chow, bpVPR.chow = VPR.chow), class = "CHOW.Object"))
         }
       }else{
-        print("Error in Method and df, exit point 1")
+        warning("Error in Method and df, exit point 1")
         return(FALSE)
       }
     }else{
-      print("ind.df shape is wrong, exited to avoid infinite loop, exit point 2")
+      warning("ind.df shape is wrong, exited to avoid infinite loop, exit point 2")
       return(FALSE)
     }
   }
