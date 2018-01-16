@@ -4,7 +4,7 @@
 \name{segVPRrfTab}
 \alias{segVPRrfTab}
 \title{Precipitation Accumulation Table for the segVPR demonstration pixel}
-\format{A matrix containing the complete time series of every acp and ofp. See \code{\link{rainfall.accumulator}} for details}
+\format{A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details}
 \source{
 Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 }

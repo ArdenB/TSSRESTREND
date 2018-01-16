@@ -11,6 +11,14 @@
 #' @importFrom strucchange sctest
 #'
 #' @inheritParams TSSRESTREND
+#' @param tm.b4
+#'        If a breakpoint in the VCR is detected this is the optimial accumulated temperature before
+#'        the breakpoint. It must be the same length as the anu.VI. If ACT.table is provided it will
+#'        be generated using \code{\link{AnnualClim.Cal}}
+#' @param tm.af
+#'        If a breakpoint in the VCR is detected this is the optimial accumulated temperature after
+#'        the breakpoint. It must be the same length as the anu.VI. If ACT.table is provided it will
+#'        be generated using \code{\link{AnnualClim.Cal}}
 #' @param breakpoint
 #'        The index of the most significant breakpoint as determined using \code{\link{CHOW}}.
 #'

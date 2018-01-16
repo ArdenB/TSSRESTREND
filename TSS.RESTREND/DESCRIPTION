@@ -1,7 +1,7 @@
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.2.02
+Version: 0.2.03
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description:    This branch is a development branch where i'm attemping to include multiple 
     Climate variable,(Temperature and precipitation).Time Series Segmented 

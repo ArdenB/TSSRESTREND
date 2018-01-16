@@ -5,7 +5,7 @@
 #' Rainfall Accumulation Table form a part of the Simpson-sStrzelecki Dunefields bioregion
 #' impacted by reduced rabbit predation after the release of RHD.
 #'
-#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{rainfall.accumulator}} for details
+#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details
 #' @source Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 #' @examples
 #' data(rabbitACPtable)
@@ -49,7 +49,7 @@
 #' @description
 #' Rainfall Accumulation Table
 #'
-#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{rainfall.accumulator}} for details
+#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details
 #' @source Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 "stdRESTRENDrfTab"
 
@@ -92,7 +92,7 @@
 #' @description
 #' Rainfall Accumulation Table
 #'
-#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{rainfall.accumulator}} for details
+#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details
 #' @source Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 "segVPRrfTab"
 
@@ -136,6 +136,6 @@
 #' @description
 #' Rainfall Accumulation Table
 #'
-#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{rainfall.accumulator}} for details
+#' @format A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details
 #' @source Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 "segRESTRENDrfTab"

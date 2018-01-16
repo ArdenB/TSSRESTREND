@@ -33,6 +33,14 @@ be generated using \code{\link{AnnualClim.Cal}}}
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
 be generated using \code{\link{AnnualClim.Cal}}}
 
+\item{tm.b4}{If a breakpoint in the VCR is detected this is the optimial accumulated temperature before
+the breakpoint. It must be the same length as the anu.VI. If ACT.table is provided it will
+be generated using \code{\link{AnnualClim.Cal}}}
+
+\item{tm.af}{If a breakpoint in the VCR is detected this is the optimial accumulated temperature after
+the breakpoint. It must be the same length as the anu.VI. If ACT.table is provided it will
+be generated using \code{\link{AnnualClim.Cal}}}
+
 \item{sig}{Significance of all the functions. defualt sig=0.05}
 }
 \value{

@@ -21,42 +21,50 @@
 #' print(restrend)
 
 RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
-  #check the data
-  while (TRUE){
-    if (class(anu.VI) != "ts")
-      stop("anu.VI Not a time series object")
-    if (class(acu.RF) != "ts")
-      stop("acu.VI Not a time series object")
+  # ==============================================================================================
+  # ========== Sanity check the input data ==========
+  while (TRUE) {
+    if (class(anu.VI) != "ts") {
+      stop("anu.VI Not a time series object")}
+    if (class(acu.RF) != "ts") {
+      stop("acu.VI Not a time series object")}
     ti <- time(anu.VI)
     f <- frequency(anu.VI)
     #check the two ts object cover the same time period
     ti2 <- time(acu.RF)
     f2 <- frequency(acu.RF)
-    if (!identical(ti, ti2))
-      stop("ts object do not have the same time")
-    if (!identical(f, f2))
-      stop("ts object do not have the same frequency")
+    if (!identical(ti, ti2)) {
+      stop("ts object do not have the same time")}
+    if (!identical(f, f2)) {
+      stop("ts object do not have the same frequency")}
     break
   }
 
-  #Get the VPR
-  if (is.null(acu.TM)){# No Temp
+  # ==============================================================================================
+  # ========== Calculate the VPR/VCR ==========
+  # Future plans:
+  #     Add the option for a non parametric version of this
+  #     Add a script that just perform a RESTREND on the raw inputs
+  if (is.null(acu.TM)) {# No Temp
     VPR.fit <- lm(anu.VI ~ acu.RF)
-  }else{ # temp
+  } else {# temp
     VPR.fit <- lm(anu.VI ~ acu.RF+acu.TM)
   }
 
-  # Setup empty matrix to hold paramaters or the linear models
-  m<- matrix(nrow=(4), ncol=8)
-  m[]<-NaN
-  rownames(m)<- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
-  colnames(m)<- c("slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height", "Slope.Change", "Slope.ChangeTmp")
-
-  R.pval <- glance(VPR.fit)$p.value
-  R.Rval <- summary(VPR.fit)$r.square
-  if (is.null(acu.TM)){
+  # ===== Setup empty matrix to hold paramaters or the linear models =====
+  m <- matrix(nrow = (4), ncol = 8)
+  m[] <- NaN
+  rownames(m) <- c("CTS.fit", "VPR.fit", "RESTREND.fit", "segVPR.fit")
+  colnames(m) <- c(
+    "slope", "temp.coef", "intercept", "p.value", "R^2.Value", "Break.Height",
+    "Slope.Change", "Slope.ChangeTmp"
+    )
+  # ========== Pull out the key values ==========
+  R.pval <- glance(VPR.fit)$p.value #Pval
+  R.Rval <- summary(VPR.fit)$r.square #r2val
+  if (is.null(acu.TM)) {# No Temperature data
     R.tcoef <- NaN
-  }else{
+  } else {# Temperature data
     R.tcoef <- as.numeric(coef(VPR.fit)[3])
   }
   R.intr <- as.numeric(coef(VPR.fit)[1])
@@ -66,40 +74,69 @@ RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
   R.SCT <- NaN
   m["VPR.fit", ] <- c(R.slpe, R.tcoef, R.intr,R.pval, R.Rval, R.BH, R.SC, R.SCT)
 
-  #may wat to add a nonparametric trend test here
-  #Critical threshold test. Uses the p values of the model
-  if (R.pval > sig){
+  # ==============================================================================================
+  # ========== Critical threshold and slope tests ==========
+  # Catches inderterminate and agriculture results
 
+  if (R.pval > sig) {
+    # VPR/VCR failed
     print("VPR significance below critical threshold")
-    tot.ch<- FALSE
-    change<- FALSE
+    tot.ch <- FALSE
+    change <- FALSE
+    overview <- data.frame(
+      Method = "indeterminate", Total.Change = tot.ch,
+      Residual.Change = change,VPR.HeightChange = FALSE,
+      model.p = glance(VPR.fit)$p.value, residual.p = FALSE,
+      VPRbreak.p = FALSE, bp.year = FALSE
+      )
+    models <- list(
+      CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
+      resid.fit = FALSE, segVPR.fit = FALSE
+      )
+    ts.data <- list(
+      CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
+      VI.index = VI.index, acu.RF = acu.RF, StdVar.RF = FALSE
+      )
+    ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
 
-    overview <- data.frame(Method = "indeterminate", Total.Change=tot.ch,
-                           Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
-                           residual.p = FALSE, VPRbreak.p = FALSE, bp.year=FALSE)
-    models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=FALSE)
-    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
-    ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+    return(structure(list(
+      summary = overview, ts.data = ts.data, ols.summary = ols.summary,
+      TSSRmodels = models), class = "TSSRESTREND")
+    )
 
-    return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
-                          TSSRmodels=models), class = "TSSRESTREND"))
-  }else if ((R.slpe < 0)&&(is.null(acu.TM))){
+  } else if ((R.slpe < 0) && (is.null(acu.TM))) {
+    # This may need to be changes to accout for allow negatives in the future
+    # VPR/VCR is significant but negative
     print("VPR slope is negative")
-    tot.ch<- FALSE
-    change<- FALSE
+    tot.ch <- FALSE
+    change <- FALSE
 
-    overview <- data.frame(Method = "IND-agr?", Total.Change=tot.ch,
-                           Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
-                           residual.p = FALSE, VPRbreak.p = FALSE, bp.year=FALSE)
-    models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = FALSE, segVPR.fit=FALSE)
-    ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, StdVar.RF=FALSE)
-    ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+    overview <- data.frame(
+      Method = "IND-agr?", Total.Change = tot.ch,
+      Residual.Change = change, VPR.HeightChange = FALSE,
+      model.p = glance(VPR.fit)$p.value, residual.p = FALSE,
+      VPRbreak.p = FALSE, bp.year = FALSE
+      )
+    models <- list(
+      CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
+      resid.fit = FALSE, segVPR.fit = FALSE
+      )
+    ts.data <- list(
+      CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
+      VI.index = VI.index, acu.RF = acu.RF, StdVar.RF = FALSE
+      )
+    ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
 
-    return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
-                          TSSRmodels=models), class = "TSSRESTREND"))
+    return(structure(list(
+      summary = overview, ts.data = ts.data, ols.summary = ols.summary,
+      TSSRmodels = models), class = "TSSRESTREND")
+    )
   }
 
-  VPR.resid<- ts(VPR.fit$residuals, start=start(ti), end=end(ti), frequency = f)
+  # ==============================================================================================
+  # ========== Build results and return them significant VPR/VCR ==========
+  # +++++ Pull out the key values +++++
+  VPR.resid <- ts(VPR.fit$residuals, start = start(ti), end = end(ti), frequency = f)
   RES <- lm(VPR.resid ~ ti)
   R2.pval <- glance(RES)$p.value
   R2.tcoef <- NaN
@@ -111,26 +148,39 @@ RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
   R2.SCT <- NaN
   m["RESTREND.fit", ] <- c(R2.slpe,R2.tcoef, R2.intr,R2.pval, R2.Rval, R2.BH, R2.SC, R2.SCT)
 
+  # Calculate the total change
   init <- RES$fitted.values[1]
   fin <- RES$fitted.values[end(RES$fitted.values)[1]]
   change <- fin - init
-  if (R2.pval<0.10){
+  if (R2.pval < 0.10) {
     tot.ch = change
-  }else{
+  } else {
     tot.ch = 0
   }
 
-
-  overview <- data.frame(Method = "RESTREND", Total.Change=tot.ch,
-                         Residual.Change=change, VPR.HeightChange =FALSE, model.p = glance(VPR.fit)$p.value,
-                         residual.p = glance(RES)$p.value, VPRbreak.p = FALSE, bp.year=FALSE)
-  models <- list(CTS.fit=FALSE, BFAST=FALSE, VPR.fit=VPR.fit, resid.fit = RES, segVPR.fit=FALSE)
-  ts.data <- list(CTSR.VI=FALSE, CTSR.RF=FALSE, anu.VI = anu.VI, VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM, StdVar.RF=FALSE, StdVar.TM=FALSE)
-  ols.summary <- list(chow.sum=FALSE, chow.ind=FALSE, OLS.table=m)
+  # ===== Build and return the results =====
+  overview <- data.frame(
+    Method = "RESTREND", Total.Change = tot.ch,
+    Residual.Change = change, VPR.HeightChange = FALSE,
+    model.p = glance(VPR.fit)$p.value, residual.p = glance(RES)$p.value,
+    VPRbreak.p = FALSE, bp.year = FALSE
+    )
+  models <- list(
+    CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
+    resid.fit = RES, segVPR.fit = FALSE
+    )
+  ts.data <- list(
+    CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
+    VI.index = VI.index, acu.RF = acu.RF, acu.TM = acu.TM,
+    StdVar.RF = FALSE, StdVar.TM = FALSE
+    )
+  ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
   acum.df <- FALSE
 
-  return(structure(list(summary=overview, ts.data = ts.data, ols.summary=ols.summary,
-                        TSSRmodels=models, acum.df=acum.df), class = "TSSRESTREND"))
+  return(structure(list(
+    summary = overview, ts.data = ts.data, ols.summary = ols.summary,
+    TSSRmodels = models, acum.df = acum.df), class = "TSSRESTREND")
+  )
 
 }
 

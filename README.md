@@ -6,7 +6,7 @@ The full details of the testing and justification of the TSS-RESTREND method (ve
       
   Burrell, Arden L., Jason P. Evans, and Yi Liu. 2017. “Detecting Dryland Degradation Using Time Series Segmentation and Residual Trend Analysis (TSS-RESTREND).” Remote Sensing of Environment 197 (August):43–57. \url{https://doi.org/10.1016/j.rse.2017.05.018.} (\url{http://www.sciencedirect.com/science/article/pii/S0034425717302171})
 
-The changes to the method included in version 0.2.03 focus on the inclusion of temperature as an additional climate variable to allow for land degradation assessment in temperature limited drylands as well and a number of bug fixes and speed improvements. This work is currently under review. 
+The changes to the method included in version 0.2.03 focus on the inclusion of temperature as an additional climate variable. This allows for land degradation assessment in temperature limited drylands. A paper that details this work is currently under review. There are also a number of bug fixes and speed improvements.  
 
 ## To install from Github
 ```R
@@ -76,6 +76,3 @@ TSS.RESTREND(CTSR.VI, CTSR.RF, anu.VI, acu.RF, VI.index, rf.b4=FALSE, rf.af=FALS
 
 ######Notes 
 
-
-
-_Note. This is not the script used to produce the results in Burrell et. al., (2016). The code for that paper used both python and R, was designed specifically for the data sets used (can't be used with any dataset), and it was focused on parallelised computing. This code is much simplified and has not been speed-tested._   

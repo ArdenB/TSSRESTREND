@@ -293,7 +293,7 @@ TSSRESTREND <- function(
   }else{# Breakpoints detected by the BFAST
     # ===== Perform the chow test on the breakpoints using CHOW function =====
     bp <- as.numeric(bkp$bkps)
-    res.chow <- CHOW(anu.VI, acu.RF, acu.TM, VI.index, bp, sig = sig)
+    res.chow <- CHOW(anu.VI, acu.RF, VI.index, bp, acu.TM = acu.TM, sig = sig)
     # Pull out the key values from the CHOW
     brkp <- as.integer(res.chow$bp.summary["yr.index"]) #this isn't right
     chow.sum <- res.chow$bp.summary
