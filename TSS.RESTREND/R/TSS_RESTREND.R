@@ -233,7 +233,7 @@ TSSRESTREND <- function(
     # =================================================================================================================
     # ===== Calculate the optimal Accumulated Rainfall and temperature for the annual max VI using AnnualClim.Cal =====
     if (!acu.RF) { #if annual accumulated precipitation in not provided
-      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, allow.negative = allow.negative)
+      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table=ACT.table, allow.negative = allow.negative)
       # +++++ Pull out and store key values from AnnualClim.Cal result ++++++
       osp <- precip.df$osp # offset period
       acp <- precip.df$acp # Accumulation period
@@ -268,7 +268,7 @@ TSSRESTREND <- function(
   # ==============================================================================================
   # ===== Perform BFAST to look for potential breakpoints using VPR.BFAST =====
   # Pass the infomation about the VI and RF as well as the BFAST method to the VPR.BFAST script
-  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM, season = season, BFAST.raw = BFraw, h = h)
+  bkp = VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM=CTSR.TM, season = season, BFAST.raw = BFraw, h = h)
   # Extract the key values from the BFAST result
   bp <- bkp$bkps
   BFAST.obj <- bkp$BFAST.obj #For the models Bin
@@ -308,18 +308,18 @@ TSSRESTREND <- function(
 
   if (test.Method == "RESTREND") {
     # ===== No breakpoints, Results calculated using the RESTREND function =====
-    result <- RESTREND(anu.VI, acu.RF, acu.TM,  VI.index, sig = sig)
+    result <- RESTREND(anu.VI, acu.RF, VI.index, acu.TM=acu.TM, sig = sig)
 
   }else if (test.Method == "seg.RESTREND") {
     # ===== breakpoints in the VPR/VCR residuals, Results calculated using the seg.RESTREND function =====
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.RESTREND(anu.VI, acu.RF, acu.TM, VI.index, brkp,  sig = sig)
+    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp, acu.TM=acu.TM, sig = sig)
 
   }else if (test.Method == "seg.VPR") {
     # ===== breakpoints in the VPR/VCR, Results calculated using the seg.VPR function =====
     if ((!rf.b4) || (!rf.af)) {
       # +++++ Calculate the regression coefficents on either side of the breakpoint using AnnualClim.Cal +++++
-      VPRbp.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
+      VPRbp.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table=ACT.table, Breakpoint = brkp, allow.negative = allow.negative)
       rf.b4 <- VPRbp.df$rf.b4
       rf.af <- VPRbp.df$rf.af
       tm.b4 <- VPRbp.df$tm.b4

@@ -22,7 +22,7 @@
 #' brkp <-  as.integer(11)
 #' resu <- seg.RESTREND(segRESTREND$max.NDVI, segRESTREND$acc.precip, segRESTREND$index, brkp)
 
-seg.RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, breakpoint,  sig=0.05){
+seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, sig=0.05){
   # ==============================================================================================
   # ========== Sanity check the input data ==========
   while (TRUE) {

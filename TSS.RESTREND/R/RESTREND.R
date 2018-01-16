@@ -20,7 +20,7 @@
 #' restrend <- RESTREND(stdRESTREND$max.NDVI, stdRESTREND$acc.precip, stdRESTREND$index)
 #' print(restrend)
 
-RESTREND <- function(anu.VI, acu.RF, acu.TM, VI.index, sig=0.05) {
+RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05) {
   # ==============================================================================================
   # ========== Sanity check the input data ==========
   while (TRUE) {
