@@ -33,7 +33,8 @@
 #' print(VPRres)
 
 seg.VPR <- function(
-  anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,tm.b4=NULL, tm.af=NULL, sig=0.05
+  anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af,
+  acu.TM = NULL,  tm.b4 = NULL, tm.af = NULL, sig = 0.05
   ) {
   # ==============================================================================================
   # ========== Sanity check the input data ==========

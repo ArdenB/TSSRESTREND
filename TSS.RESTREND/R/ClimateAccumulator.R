@@ -25,7 +25,7 @@
 #' acp <- 12
 #' #Define the max offset period
 #' osp <- 4
-#' rftable <- rainfall.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
+#' rftable <- climate.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
 
 climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp){
   # ==============================================================================================

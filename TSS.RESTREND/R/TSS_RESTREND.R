@@ -141,7 +141,7 @@
 #' #Define the max offset period
 #' max.osp <- 4
 #' #Create a table of every possible precipitation value given the max.acp and max.osp
-#' ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
+#' ACP.table <- climate.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 #' results <- TSSRESTREND(CTSR.VI, ACP.table)
 #' print(results)
 #'
@@ -340,7 +340,7 @@ TSSRESTREND <- function(
     # +++++ Perform segmented VPR/VCR calculation  +++++
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, brkp, rf.b4, rf.af, tm.b4, tm.af, sig = sig)
+    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, acu.TM, tm.b4, tm.af, sig = sig)
   }
 
   # ==============================================================================================
