@@ -4,7 +4,7 @@
 \alias{seg.VPR}
 \title{Segmented Vegetation Climate Relationship}
 \usage{
-seg.VPR(anu.VI, acu.RF, acu.TM, VI.index, breakpoint, rf.b4, rf.af,
+seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, acu.TM = NULL,
   tm.b4 = NULL, tm.af = NULL, sig = 0.05)
 }
 \arguments{
@@ -14,10 +14,6 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 \item{acu.RF}{The optimal accumulated rainfall for anu.VI. Must be a object of class \code{'ts'} without
 NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
 calculated from ACP.table usingthe \code{\link{AnnualClim.Cal}}}
-
-\item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
-NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
-calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.
@@ -32,6 +28,10 @@ be generated using \code{\link{AnnualClim.Cal}}}
 \item{rf.af}{If a breakpoint in the VPR is detected this is the optimial accumulated rainfall after
 the breakpoint. must be the same length as the anu.VI. If ACP.table is provided it will
 be generated using \code{\link{AnnualClim.Cal}}}
+
+\item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
+calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{tm.b4}{If a breakpoint in the VCR is detected this is the optimial accumulated temperature before
 the breakpoint. It must be the same length as the anu.VI. If ACT.table is provided it will

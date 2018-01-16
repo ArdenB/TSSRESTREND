@@ -142,7 +142,7 @@ max.acp <- 12
 #Define the max offset period
 max.osp <- 4
 #Create a table of every possible precipitation value given the max.acp and max.osp
-ACP.table <- rainfall.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
+ACP.table <- climate.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 results <- TSSRESTREND(CTSR.VI, ACP.table)
 print(results)
 

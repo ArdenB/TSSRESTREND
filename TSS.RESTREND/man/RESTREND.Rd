@@ -4,7 +4,7 @@
 \alias{RESTREND}
 \title{RESTREND (RESidual TREND)}
 \usage{
-RESTREND(anu.VI, acu.RF, acu.TM, VI.index, sig = 0.05)
+RESTREND(anu.VI, acu.RF, VI.index, acu.TM = NULL, sig = 0.05)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
@@ -14,13 +14,13 @@ if anu.VI=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxV
 NA's and be of equal length and temporal range to anu.VI. if anu.RF=FALSE, it will be
 calculated from ACP.table usingthe \code{\link{AnnualClim.Cal}}}
 
-\item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
-NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
-calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
-
 \item{VI.index}{the index of the CTSR.VI ts that the anu.VI values occur at. Must be the same length
 as anu.VI. NOTE. R indexs from 1 rather than 0.
 if VI.index=FALSE, it will be calculated from the CTSR.VI using \code{\link{AnMaxVI}}.}
+
+\item{acu.TM}{The optimal accumulated rainfall for anu.TM. Must be a object of class \code{'ts'} without
+NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it will be
+calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{sig}{Significance of all the functions. defualt sig=0.05}
 }
