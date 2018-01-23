@@ -17,12 +17,6 @@ Description:Time Series Segmented Residual Trends is a method for the automated 
     and speed improvements. The version under active development and additional  
     example scripts can be can be found at \url{https://
     github.com/ArdenB/TSSRESTREND}.
-    References:
-    Arden L. Burrell, Jason P. Evans, Yi Liu, Detecting dryland degradation
-    using Time Series Segmentation and Residual Trend analysis (TSS-RESTREND),
-    In Remote Sensing of Environment, Volume 197, 2017, Pages 43-57,
-    ISSN 0034-4257, \url{https://doi.org/10.1016/j.rse.2017.05.018.}
-    (\url{http://www.sciencedirect.com/science/article/pii/S0034425717302171})
 License: GPL-3
 LazyData:TRUE
 Imports:
