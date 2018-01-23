@@ -40,3 +40,4 @@ R CMD INSTALL TSS.RESTREND_0.2.03.tar.gz
 
 ### Examples
 
+A full list of examples and extra documentation are currently under development 

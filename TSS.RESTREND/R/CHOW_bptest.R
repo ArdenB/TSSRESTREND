@@ -157,7 +157,6 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, acu.TM = NULL, sig = 0.0
       if (is.null(acu.TM)) {
         VPR.chow <- sctest(anu.VI ~ acu.RF, type = "Chow", point = ind.df$yr.index[1])
       }else{
-        browser()
         VPR.chow <- sctest(anu.VI ~ acu.RF + acu.TM, type = "Chow", point = bkp)
       }
       # Pull out the p value
