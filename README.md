@@ -37,7 +37,7 @@ install_github("ArdenB/TSS.RESTREND")
 R CMD INSTALL TSS.RESTREND_0.2.03.tar.gz 
 ```
 ### Change log
-
+[NEWS](NEWS.md)
 ### Examples
 
 A full list of examples and extra documentation are currently under development 
