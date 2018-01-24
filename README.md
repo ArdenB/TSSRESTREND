@@ -6,7 +6,7 @@ The full details of the testing and justification of the TSS-RESTREND method (ve
       
   Burrell, Arden L., Jason P. Evans, and Yi Liu. 2017. “Detecting Dryland Degradation Using Time Series Segmentation and Residual Trend Analysis (TSS-RESTREND).” Remote Sensing of Environment 197 (August):43–57. <https://doi.org/10.1016/j.rse.2017.05.018> 
   
-The changes to the method included in version 0.2.03 focus on the inclusion of temperature as an additional climate variable. This allows for land degradation assessment in temperature limited drylands. A paper that details this work is currently under review. There are also a number of bug fixes and speed improvements.  
+The changes to the method included in version 0.2.13 focus on the inclusion of temperature as an additional climate variable. This allows for land degradation assessment in temperature limited drylands. A paper that details this work is currently under review. There are also a number of bug fixes and speed improvements.  
 
 ### Dependencies 
 TSS.RESTREND depends on:
@@ -34,7 +34,7 @@ install_github("ArdenB/TSS.RESTREND")
 ```
 #### Installing from local package
 ``` bash
-R CMD INSTALL TSS.RESTREND_0.2.03.tar.gz 
+R CMD INSTALL TSS.RESTREND_0.2.13.tar.gz 
 ```
 ### Change log
 [NEWS](NEWS.md)

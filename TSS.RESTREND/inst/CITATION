@@ -1,0 +1,20 @@
+citHeader("To cite TSS.RESTREND in publications use")
+
+citEntry(
+  entry = "Article",
+	title = "Detecting dryland degradation using Time Series Segmentation and Residual Trend analysis (TSS-RESTREND)",
+  author = personList(as.person("Arden L. Burrell"),
+            as.person("Jason P. Evans"),
+	          as.person("Yi Liu")),
+  journal      = "Remote Sensing of Environment",
+  year         = "2017",
+	volume       = "197",
+	number       = "1",
+	pages        = "43--57",
+	doi          = "10.1016/j.rse.2017.05.018",
+  textVersion = paste(
+    "Burrell, Arden L. and Evans, Jason P. and Liu, Yi (2017).",
+    "Detecting dryland degradation using Time Series Segmentation and Residual Trendanalysis (TSS-RESTREND)",
+    "Remote Sensing of Environment, 197(1), 43-57.",
+    "10.1016/j.rse.2017.05.018"),
+)
