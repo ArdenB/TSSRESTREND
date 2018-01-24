@@ -28,12 +28,14 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' #Test the complete time series for breakpoints
 #' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
 #' bp <- as.numeric(VPRBFdem$bkps)
 #' #test the significance of the breakpoints
 #' reschow <- CHOW(segVPR$max.NDVI, segVPR$acum.RF, segVPR$index, bp)
 #' print(reschow)
+#' }
 #'
 
 CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, acu.TM = NULL, sig = 0.05) {

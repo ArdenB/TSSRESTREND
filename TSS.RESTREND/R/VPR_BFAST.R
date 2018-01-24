@@ -28,8 +28,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
-#' print(VPRBFdem)
+#' print(VPRBFdem)}
 
 VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=FALSE, h = 0.15) {
 

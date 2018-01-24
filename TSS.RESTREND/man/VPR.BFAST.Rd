@@ -50,8 +50,9 @@ takes the Complete VI and optimally accumulated Rainfall (and tmperature if incl
      And then performs a \code{\link[bfast]{bfast}}.in the residuals.  If BFAST.raw=TRUE, it will perform bfast on the Complete VI ts
 }
 \examples{
+\dontrun{
 VPRBFdem <- VPR.BFAST(segVPRCTSR$cts.NDVI, segVPRCTSR$cts.precip)
-print(VPRBFdem)
+print(VPRBFdem)}
 }
 \author{
 Arden Burrell, arden.burrell@unsw.edu.au
