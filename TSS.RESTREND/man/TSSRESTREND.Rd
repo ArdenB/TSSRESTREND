@@ -126,7 +126,6 @@ install.packages("devtools")
 library("devtools")
 install_github("ArdenB/TSSRESTREND", subdir="TSS.RESTREND")
 library(TSS.RESTREND)
-}
 #Find the path of the rabbitRF.csv dataset, read it in and turn it into a time series
 rf.path<- system.file("extdata", "rabbitRF.csv", package = "TSS.RESTREND", mustWork = TRUE)
 in.RF <- read.csv(rf.path)
@@ -145,8 +144,6 @@ max.osp <- 4
 ACP.table <- climate.accumulator(CTSR.VI, rf.data, max.acp, max.osp)
 results <- TSSRESTREND(CTSR.VI, ACP.table)
 print(results)
-
-\dontrun{
 plot(results, verbose=TRUE)
 }
 
