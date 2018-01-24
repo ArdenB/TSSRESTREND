@@ -16,7 +16,7 @@ Description:Time Series Segmented Residual Trends is a method for the automated 
     this work is currently under review. There are also a number of bug fixes
     and speed improvements. The version under active development and additional  
     example scripts can be can be found at <https://
-    github.com/ArdenB/TSSRESTREND>.
+    github.com/ArdenB/TSSRESTREND>. 
 License: GPL-3
 LazyData:TRUE
 Imports:
