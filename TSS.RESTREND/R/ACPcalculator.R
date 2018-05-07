@@ -93,17 +93,18 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
         # +++++ do the multivariate regression with precip and temperature +++++
         fit <- lm(CTSR.VI ~ ACP.N + ACT.N)
         R.Rval <- summary(fit)$r.square
-        
+        R.slpe <- as.numeric(coef(fit)[2])
+
         if (simple) {
           #To speed up looping over all the pixels (simple = TRUE)
-          return(R.Rval)
+          return(c(R.Rval, R.slpe))
         }
         #  +++++ Pull of the rest of the key values +++++
         R.pval <- glance(fit)$p.value
         R.intr <- as.numeric(coef(fit)[1])
         R.slpe <- as.numeric(coef(fit)[2]) #precip Coefficent
         R.Tcoef <- as.numeric(coef(fit)[3]) #Temperatur coefficent
-        # test to see if temperature should be left in tegression
+        # test to see if temperature should be left in regression
         t.sig <- (coef(summary(fit))["ACT.N","Pr(>|t|)"] < 0.05)
 
       }
@@ -129,22 +130,23 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
       #Add the climate table
       lines <- dim(ACP.table)[1]*dim(ACT.table)[1] #Should allow for variable size tables
     }
+    m <- matrix(nrow = (lines), ncol = 2)
+    colnames(m) <- c("R^2.Value", "slope")
     #empy matrix to store lm results
     if (is.null(ACT.table)) { # no Temperature data
-      # Build an empy array for the numbers
-      m <- matrix(nrow = (lines), ncol = 2)
       rownames(m) <- rownames(ACP.table)
-      colnames(m) <- c("R^2.Value", "slope")
+      # Build an empy array for the numbers
     }else{
       # Build an empy array for the numbers
-      m <- matrix(nrow = (lines), ncol = 1)
+      # m <- matrix(nrow = (lines), ncol = 2)
       rn.names <- NULL
       for (rnm in rownames(ACP.table)) {
         rnms <- cbind(rnm, rownames(ACT.table))
         rmx <- paste(rnms[,1] , rnms[,2], sep = ":")
         rn.names <- c(rn.names, rmx)}
+
       rownames(m) <- rn.names
-      colnames(m) <- c("R^2.Value")
+      # colnames(m) <- c("R^2.Value", "slope")
     }
     # ========== Loop over the acculuation tables ==========
     # For loops to call the linreg function and fit a LM to every combination of rainfall and vegetation
@@ -174,7 +176,8 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
 
     # ========== Find the Max R^2 =========
     # +++++ Check and see if negative should be considered +++++
-    if (dim(mx)[1] <= 2 || allow.negative) { # No positve slpoes or allow negative = TRUE
+    if (dim(mx)[1] <= 2 || allow.negative) {
+      # ++++++++ No positve slpoes or allow negative = TRUE ++++++
       # ++++++ Includes negative precip relationships +++++
       # Get the max line and values
       max.line <- which.max(m[, "R^2.Value"])
@@ -220,27 +223,62 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
       }
 
     }else{
+      browser()
       # +++++ excludes negative precipitation relationships +++++
-      #Filter the negative results out
-      rfx <- ACP.table[m[, "slope"] > 0,]
       # Get the max line and values
       max.line <- which.max(mx[, "R^2.Value"])
       fulname <- rownames(mx)[max.line]
 
-      #get all the details needed from the lm()
-      sum.res <- linreg(CTSR.VI, ACP.table[fulname, ], simple = FALSE)
-      suma <- sum.res$lm.sum
+      if (is.null(ACT.table)) {
+        #Filter the negative results out
+        rfx <- ACP.table[m[, "slope"] > 0,]
+        #get all the details needed from the lm()
+        sum.res <- linreg(CTSR.VI, ACP.table[fulname, ], simple = FALSE)
+        suma <- sum.res$lm.sum
 
-      # get the values to return
-      CTSR.ARF <- ts(rfx[max.line, ], start = c(yst, mst), frequency = 12)
-      namestr <- rownames(rfx)[max.line]
-      nmsplit <- strsplit(namestr, "\\-")[[1]]
-      osp <- as.numeric(nmsplit[1])
-      acp <- as.numeric(nmsplit[2])
+        # get the values to return
+        CTSR.ARF <- ts(rfx[max.line, ], start = c(yst, mst), frequency = 12)
+        namestr <- rownames(rfx)[max.line]
+        nmsplit <- strsplit(namestr, "\\-")[[1]]
+        osp <- as.numeric(nmsplit[1])
+        acp <- as.numeric(nmsplit[2])
 
-      return(structure(list(
-        summary = suma, CTSR.precip = CTSR.ARF, CTSR.tmp = NULL, CTSR.osp = osp,
-        CTSR.acp = acp, CTSR.tosp = NaN, CTSR.tacp = NaN)))
+        precip.nm <- fulname
+        CTSR.ATM <- NULL
+        t.osp <- NaN
+        t.acp <- NaN
+        } else {
+          # Temperature data included
+          browser()
+          # namesplit the precip part
+          part.nm <- strsplit(fulname, "\\:")[[1]]
+          precip.nm <- part.nm[1]
+          sum.res <- linreg(CTSR.VI, ACP.table[precip.nm, ], ACT.table[part.nm[2],], simple = FALSE)
+          suma <- sum.res$lm.sum
+
+          # Get the values to return
+          nmsplit <- strsplit(precip.nm, "\\-")[[1]]
+          osp <- as.numeric(nmsplit[1])
+          acp <- as.numeric(nmsplit[2])
+          #pull out tose parms that are only temp related
+          CTSR.ATM <- ts(ACT.table[part.nm[2], ], start = c(yst, mst), frequency = 12)
+          CTSR.ARF <- ts(ACP.table[precip.nm, ], start = c(yst, mst), frequency = 12)
+          Tnmsplit <- strsplit(part.nm[2], "\\-")[[1]]
+          t.osp <- as.numeric(Tnmsplit[1])
+          t.acp <- as.numeric(Tnmsplit[2])
+        }
+
+      if (!sum.res$temp.sig) {
+        ACT.table = NULL
+        allow.negative = allowneg.retest
+
+      }else {
+        return(structure(list(
+          summary = suma, CTSR.precip = CTSR.ARF, CTSR.tmp = CTSR.ATM,CTSR.osp = osp,
+          CTSR.acp = acp, CTSR.tosp = t.osp, CTSR.tacp = t.acp))
+        )
+      }
+
     }
   }
   browser()

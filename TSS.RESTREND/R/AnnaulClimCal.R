@@ -295,6 +295,7 @@ AnnualClim.Cal <- function(
           allow.negative = allowneg.retest
         }
       } else {# allow.negative=FALSE
+        browser()
         mx <- matrix(m[m[, "slope"] > 0,], ncol = 2)
         colnames(mx) <- c("R^2.Value", "slope")
         rownames(mx) <- rownames(m[m[, "slope"] > 0,])

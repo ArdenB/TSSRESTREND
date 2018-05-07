@@ -178,9 +178,9 @@ TSSRESTREND <- function(
     }
     # Change the allow.negative for multivariate regression with temperature
     # (Temperature can have a negative or positive impact on veg in drylands)
-    if (!is.null(ACT.table)) {
-      allow.negative = TRUE
-    }
+    # if (!is.null(ACT.table)) {
+    #   allow.negative = TRUE
+    # }
 
     if (!CTSR.RF) {
       # ==============================================================================================

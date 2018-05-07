@@ -19,4 +19,3 @@
 \description{
 Produces plots for class TSSRESTREND
 }
-
