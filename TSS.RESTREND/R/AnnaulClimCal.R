@@ -215,16 +215,16 @@ AnnualClim.Cal <- function(
       lines <- dim(ACP.table)[1]*dim(ACT.table)[1]
     }
     # ===== reate a blank matrix and assign it colum headings to hold lm() results =====
+    m <- matrix(nrow = (lines), ncol = 2)
+    colnames(m) <- c("R^2.Value", "slope")
+
     if (is.null(ACT.table)) {# No Temp data
       # Build an empy array for the numbers
-      m <- matrix(nrow = (lines), ncol = 2)
       #Get the names of the rows and colunms
       rownames(m) <- rownames(ACP.table)
-      colnames(m) <- c("R^2.Value", "slope")
 
     }else{# Temp data
       # Build an empy array for the numbers
-      m <- matrix(nrow = (lines), ncol = 1)
       #Get the names of the rows and colunms
       rn.names <- NULL
       for (rnm in rownames(ACP.table)) {
@@ -233,8 +233,8 @@ AnnualClim.Cal <- function(
         rn.names <- c(rn.names, rmx)}
       #Set the row and column names
       rownames(m) <- rn.names
-      colnames(m) <- c("R^2.Value")
     }
+
     # ===== Duplicate the matrix if there is a breakpoint =====
     if (class(Breakpoint) != "logical") {
       p <- m
@@ -306,7 +306,10 @@ AnnualClim.Cal <- function(
             #upll out the significance then remove it
             tsig <- results$tsig
             results$tsig = NULL
-          }else{stop("There shold be no tmp data here (V1)")}
+          }else{
+            browser()
+            stop("There shold be no tmp data here (V1)")
+            }
           return(results)
         }else {# only looking at positive slopes
           if (is.null(ACT.table)) {# no temperature data
@@ -331,6 +334,7 @@ AnnualClim.Cal <- function(
             )
         }
       }else {# no temperature, only condidering positive slopes
+        browser()
         mx <- matrix(m[m[, "slope"] > 0,], ncol = 2)
         colnames(mx) <- c("R^2.Value", "slope")
         rownames(mx) <- rownames(m[m[, "slope"] > 0,])

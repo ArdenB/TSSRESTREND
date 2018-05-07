@@ -223,7 +223,6 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
       }
 
     }else{
-      browser()
       # +++++ excludes negative precipitation relationships +++++
       # Get the max line and values
       max.line <- which.max(mx[, "R^2.Value"])
@@ -249,7 +248,6 @@ ACP.calculator <- function(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative 
         t.acp <- NaN
         } else {
           # Temperature data included
-          browser()
           # namesplit the precip part
           part.nm <- strsplit(fulname, "\\:")[[1]]
           precip.nm <- part.nm[1]
