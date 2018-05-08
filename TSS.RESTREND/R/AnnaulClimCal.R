@@ -113,8 +113,8 @@ AnnualClim.Cal <- function(
         # pass a true value for the tempurature sig test
         t.sig <- TRUE
 
-      }else{# temperature data
-        # +++++ do the multivariate regression with precip and temperature +++++
+      }else{# Temperature data
+        # +++++ regression with precip and temperature +++++
         fit <- lm(VI.in ~ ACP.N + ACT.N)
         R.Rval <- summary(fit)$r.square
 
@@ -154,6 +154,7 @@ AnnualClim.Cal <- function(
     max.line <- which.max(res.mat[, "R^2.Value"])
     # Get that lines name
     fulname <- rownames(res.mat)[max.line]
+    browser()
     # ===== call the linreg function And get the long form of the data =====
     if (is.null(temp.m)) {# No temperature data
       # +++++ perform the regression +++++
@@ -200,38 +201,37 @@ AnnualClim.Cal <- function(
     # While loop to handles what happens if temp is not a significant variable
       #On the second loop temperature will be excluded and the analysis run again
 
+    # ========== Subset the precip and temperature datasets ==========
     # Subset the complete ACP.table using the indexs of the an mav values and get dims
     anu.ACUP <- ACP.table[, VI.index]
-    #add a subset of the temp data if its present
+    # Add a subset of the temp data if its present
     if (!is.null(ACT.table)) {
       anu.ACUT <- ACT.table[, VI.index]
     }
-    #Get the dimensions of the data for indexing
+    # ========== Get the dimensions of the data for indexing ==========
     len <- dim(anu.ACUP)[2]
     if (is.null(ACT.table)) {
       lines <- dim(ACP.table)[1]
     }else{
-      #Add the climate table, This should allow for variable size tables
+      # Add the temperature table, This should allow for variable size tables
       lines <- dim(ACP.table)[1]*dim(ACT.table)[1]
     }
-    # ===== reate a blank matrix and assign it colum headings to hold lm() results =====
+
+    # ========== Create a blank matrix to hold lm() results ==========
     m <- matrix(nrow = (lines), ncol = 2)
     colnames(m) <- c("R^2.Value", "slope")
 
     if (is.null(ACT.table)) {# No Temp data
-      # Build an empy array for the numbers
       #Get the names of the rows and colunms
       rownames(m) <- rownames(ACP.table)
-
     }else{# Temp data
-      # Build an empy array for the numbers
-      #Get the names of the rows and colunms
+      #Get the names of the rows
       rn.names <- NULL
       for (rnm in rownames(ACP.table)) {
         rnms <- cbind(rnm, rownames(ACT.table))
         rmx <- paste(rnms[,1] , rnms[,2], sep = ":")
         rn.names <- c(rn.names, rmx)}
-      #Set the row and column names
+      # Set the row names
       rownames(m) <- rn.names
     }
 
@@ -240,11 +240,10 @@ AnnualClim.Cal <- function(
       p <- m
     }
     # ===== For loops to call the linreg function  =====
-    #     it a LM to every combination of rainfall and vegetation
     for (n in 1:dim(ACP.table)[1]) {
-      # browser()
+      # loop over every combination of rainfall and vegetation
       if (is.null(ACT.table)) { #no Temperature data
-        # Stack the results in the empyt matryx m
+        # Stack the results in the empty matryx m
         # if there is a breakpoint do the same on the other side
         if (class(Breakpoint) != "logical") { #means breakpoint is a number (not logical)
           #perform the regressions on either side of the breakpoint. m before and p after
@@ -256,15 +255,21 @@ AnnualClim.Cal <- function(
         }
       } else {# Temperature data
         for (nx in 1:dim(ACT.table)[1]) {
-          #Get the row name of the correct line
+          # Get the row name of the correct line
           rn.loop <- paste(rownames(ACP.table)[n], rownames(ACT.table)[nx], sep = ":")
           # Stack the results in the empyt matryx m
-          if (class(Breakpoint) != "logical") {# Means breakpoint is a number (not logical)
-            m[rn.loop, ] <- linreg(anu.VI[1:Breakpoint], anu.ACUP[n, 1:Breakpoint], anu.ACUT[nx, 1:Breakpoint])
-            p[rn.loop, ] <- linreg(
-              anu.VI[(Breakpoint + 1):len], anu.ACUP[n, (Breakpoint + 1):len], anu.ACUT[nx, (Breakpoint + 1):len]
+          if (class(Breakpoint) != "logical") {# Breakpoint
+          # Means breakpoint is a number (not logical)
+            m[rn.loop, ] <- linreg(
+              anu.VI[1:Breakpoint], anu.ACUP[n, 1:Breakpoint],
+              anu.ACUT[nx, 1:Breakpoint]
               )
-          }else{
+            p[rn.loop, ] <- linreg(
+              anu.VI[(Breakpoint + 1):len], anu.ACUP[n,
+              (Breakpoint + 1):len], anu.ACUT[nx,
+              (Breakpoint + 1):len]
+              )
+          } else {# No Breakpoint
             m[rn.loop, ] <- linreg(anu.VI, anu.ACUP[n, ], anu.ACUT[nx,])
           }
         }
@@ -275,7 +280,9 @@ AnnualClim.Cal <- function(
     # +++++ Check and see if negative should be considered +++++
     # depending on the breakpoints and the allow.negative state do things
     if (!Breakpoint) {
-      # =====  No Breakpoint =====
+      # ====================================
+      # ==========  No Breakpoint ==========
+      # ====================================
       if (allow.negative) { # all values are considered
         if (is.null(ACT.table)) { # no temperature data
           results <- exporter(m, anu.VI, anu.ACUP)
@@ -283,7 +290,7 @@ AnnualClim.Cal <- function(
           results$tsig = NULL
         } else {# considereing temperature
           results <- exporter(m, anu.VI, anu.ACUP, anu.ACUT)
-          #upll out the significance then remove it
+          # pull out the significance then remove it
           tsig <- results$tsig
           results$tsig = NULL
         }
@@ -295,45 +302,76 @@ AnnualClim.Cal <- function(
           allow.negative = allowneg.retest
         }
       } else {# allow.negative=FALSE
-        browser()
+        # +++++ Remove the negative slopes +++++
         mx <- matrix(m[m[, "slope"] > 0,], ncol = 2)
         colnames(mx) <- c("R^2.Value", "slope")
         rownames(mx) <- rownames(m[m[, "slope"] > 0,])
+
+        # +++++ Test the number of positive slopes +++++
+        # if the number is <= 2, use the negative slopes and raise a warning
         if (dim(mx)[1] <= 2) {
-          warning("Insufficent positve slopes exist. Returing most significant negative slope")
           if (is.null(ACT.table)) { # no temperature data
+            warning("Insufficent positve slopes exist. Returing most significant negative slope")
             results <- exporter(m, anu.VI, anu.ACUP)
             #upll out the significance then remove it
             tsig <- results$tsig
             results$tsig = NULL
-          }else{
-            browser()
-            stop("There shold be no tmp data here (V1)")
-            }
-          return(results)
-        }else {# only looking at positive slopes
+            return(results)
+          } else {# Temperature data
+              results <- exporter(m, anu.VI, anu.ACUP, anu.ACUT)
+              # pull out the significance then remove it
+              tsig <- results$tsig
+              results$tsig = NULL
+
+              # +++++ TEST THE SIG OF TEMPERATURE +++++
+              if (tsig) {
+                return(results)
+              } else {# Temperature doesnt help, sending the script around again
+                ACT.table = NULL
+                allow.negative = allowneg.retest
+              }
+          }
+        } else {# Positive slopes (more than 2)
           if (is.null(ACT.table)) {# no temperature data
             results <- exporter(m[m[, "slope"] >= 0,], anu.VI, anu.ACUP[m[, "slope"] >= 0,])
             #upll out the significance then remove it
             tsig <- results$tsig
             results$tsig = NULL
-            }else{stop("There shold be no tmp data here (V2)")}
-          return(results)
+            return(results)
+          }else{
+            results <- exporter(mx, anu.VI, anu.ACUP, anu.ACUT)
+            # pull out the significance then remove it
+            tsig <- results$tsig
+            results$tsig = NULL
+            # +++++ TEST THE SIG OF TEMPERATURE +++++
+            if (tsig) {
+              return(results)
+            } else {# Temperature doesnt help, sending the script around again
+              ACT.table = NULL
+              allow.negative = allowneg.retest
+            }
+          }
         }
       }
-    }else {
-      # ===== has a breakpoint =====
+    } else {
+      # ======================================
+      # ========== has a breakpoint ==========
+      # ======================================
       if (allow.negative) {# all values are considered
         if (is.null(ACT.table)) {# no temperature data
           results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
           results.af <- exporter(p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
         }else {# considereing temperature
-          results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint], anu.ACUT[, 1:Breakpoint])
+          results.b4 <- exporter(
+            m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint], 
+            anu.ACUT[, 1:Breakpoint]
+            )
           results.af <- exporter(
-            p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len], anu.ACUT[, (Breakpoint + 1):len]
+            p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len], 
+            anu.ACUT[, (Breakpoint + 1):len]
             )
         }
-      }else {# no temperature, only condidering positive slopes
+      }else {# only condidering positive slopes
         browser()
         mx <- matrix(m[m[, "slope"] > 0,], ncol = 2)
         colnames(mx) <- c("R^2.Value", "slope")
@@ -344,6 +382,8 @@ AnnualClim.Cal <- function(
         rownames(px) <- rownames(p[p[, "slope"] > 0,])
 
         if ((dim(mx)[1] <= 2) || (dim(px)[1] <= 2)) {
+          browser()
+          # TO DO: ADD TEMPERATURE CONSIDERATION HERE 
           warning("<2 positve slopes exist before or after the bp. Returing most significant negative slope")
           results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
           results.af <- exporter(p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
@@ -352,6 +392,7 @@ AnnualClim.Cal <- function(
           results.af <- exporter(px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
         }
       }
+      browser()
       # remove the temperature variables
       tsig.b4 = results.b4$tsig
       tsig.af = results.af$tsig
