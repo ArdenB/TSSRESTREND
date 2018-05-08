@@ -12,7 +12,7 @@ allow for greater user control.  The version in active development, as well as a
 example scripts, see \url{https://github.com/ArdenB/TSSRESTREND}.
 }
 \details{
-Version 0.2.13
+Version 0.2.14
 }
 \note{
 This code is a demostration of the method and not the code used in Burrell et. al., (2016?).
