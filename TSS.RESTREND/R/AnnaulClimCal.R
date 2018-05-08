@@ -154,7 +154,6 @@ AnnualClim.Cal <- function(
     max.line <- which.max(res.mat[, "R^2.Value"])
     # Get that lines name
     fulname <- rownames(res.mat)[max.line]
-    browser()
     # ===== call the linreg function And get the long form of the data =====
     if (is.null(temp.m)) {# No temperature data
       # +++++ perform the regression +++++
@@ -372,7 +371,6 @@ AnnualClim.Cal <- function(
             )
         }
       }else {# only condidering positive slopes
-        browser()
         mx <- matrix(m[m[, "slope"] > 0,], ncol = 2)
         colnames(mx) <- c("R^2.Value", "slope")
         rownames(mx) <- rownames(m[m[, "slope"] > 0,])
@@ -382,17 +380,29 @@ AnnualClim.Cal <- function(
         rownames(px) <- rownames(p[p[, "slope"] > 0,])
 
         if ((dim(mx)[1] <= 2) || (dim(px)[1] <= 2)) {
-          browser()
+          if (is.null(ACT.table)) {# no temperature data
+            warning("<2 positve slopes exist before or after the bp. Returing most significant negative slope")
+            results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
+            results.af <- exporter(p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
+          }else {# considereing temperature
           # TO DO: ADD TEMPERATURE CONSIDERATION HERE 
-          warning("<2 positve slopes exist before or after the bp. Returing most significant negative slope")
-          results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
-          results.af <- exporter(p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
-        }else{
-          results.b4 <- exporter(mx, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
-          results.af <- exporter(px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
+          }
+        } else {# More than two positive slopes 
+          if (is.null(ACT.table)){ #No temperature
+            results.b4 <- exporter(mx, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
+            results.af <- exporter(px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
+          } else {#
+            results.b4 <- exporter(
+              mx, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint], 
+              anu.ACUT[, 1:Breakpoint]
+              )
+            results.af <- exporter(
+              px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len], 
+              anu.ACUT[, (Breakpoint + 1):len]
+              )
+          }
         }
       }
-      browser()
       # remove the temperature variables
       tsig.b4 = results.b4$tsig
       tsig.af = results.af$tsig
