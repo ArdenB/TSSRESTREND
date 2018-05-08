@@ -178,9 +178,9 @@ TSSRESTREND <- function(
     }
     # Change the allow.negative for multivariate regression with temperature
     # (Temperature can have a negative or positive impact on veg in drylands)
-    if (!is.null(ACT.table)) {
-      allow.negative = TRUE
-    }
+    # if (!is.null(ACT.table)) {
+    #   allow.negative = TRUE
+    # }
 
     if (!CTSR.RF) {
       # ==============================================================================================
@@ -230,7 +230,7 @@ TSSRESTREND <- function(
     # =================================================================================================================
     # ===== Calculate the optimal Accumulated Rainfall and temperature for the annual max VI using AnnualClim.Cal =====
     if (!acu.RF) { #if annual accumulated precipitation in not provided
-      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table=ACT.table, allow.negative = allow.negative)
+      precip.df <- AnnualClim.Cal(anu.VI, VI.index, ACP.table, ACT.table = ACT.table, allow.negative = allow.negative)
       # +++++ Pull out and store key values from AnnualClim.Cal result ++++++
       osp <- precip.df$osp # offset period
       acp <- precip.df$acp # Accumulation period

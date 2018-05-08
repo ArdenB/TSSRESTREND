@@ -18,4 +18,3 @@ contains CTSR.VI and CTSR.RF. See \code{\link{TSSRESTREND}}. Starts 1/1982 and e
 \code{\link{stdRESTREND}} for the annual values for the same pixel
 }
 \keyword{datasets}
-

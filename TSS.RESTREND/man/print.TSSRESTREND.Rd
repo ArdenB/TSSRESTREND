@@ -14,4 +14,3 @@
 \description{
 print function for objects of class TSSRESTREND
 }
-

@@ -1,9 +1,9 @@
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.2.13
+Version: 0.2.14
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
-Description:Time Series Segmented Residual Trends is a method for the automated detection
+Description: Time Series Segmented Residual Trends is a method for the automated detection
     of land degradation from remotely sensed vegetation and climate datasets.
     TSS-RESTREND incorporates aspects of two existing degradation detection methods:
     RESTREND which is used to control for climate variability, and BFAST which
@@ -18,7 +18,7 @@ Description:Time Series Segmented Residual Trends is a method for the automated 
     example scripts can be can be found at <https://
     github.com/ArdenB/TSSRESTREND>. 
 License: GPL-3
-LazyData:TRUE
+LazyData: TRUE
 Imports:
     stats,
     graphics,
@@ -33,4 +33,4 @@ Suggests:
     car
 Depends:
     R (>= 3.2.0)
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

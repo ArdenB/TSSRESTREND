@@ -148,13 +148,12 @@ plot(results, verbose=TRUE)
 }
 
 }
-\author{
-Arden Burrell, arden.burrell@unsw.edu.au
-}
 \seealso{
 \itemize{
    \item \code{\link{plot.TSSRESTREND}}
    \item \code{\link{print.TSSRESTREND}}
    }
 }
-
+\author{
+Arden Burrell, arden.burrell@unsw.edu.au
+}
