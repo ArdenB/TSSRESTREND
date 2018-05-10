@@ -98,6 +98,7 @@ AnnualClim.Cal <- function(
       # +++++ Check if temperature needs to be considered +++++
       if (is.null(ACT.N)) {# No Temperature data
         # perform the regression between VI and precipitation
+        browser()
         fit <- lm(VI.in ~ ACP.N)
         R.Rval <- summary(fit)$r.square
         R.slpe <- as.numeric(coef(fit)[2])
@@ -117,10 +118,11 @@ AnnualClim.Cal <- function(
         # +++++ regression with precip and temperature +++++
         fit <- lm(VI.in ~ ACP.N + ACT.N)
         R.Rval <- summary(fit)$r.square
+        R.slpe <- as.numeric(coef(fit)[2])
 
         if (simple) {
           #To speed up looping over all the pixels
-          return(R.Rval)
+          return(c(R.Rval, R.slpe))
         }
         #  +++++ Pull of the rest of the key values +++++
         R.pval <- glance(fit)$p.value
@@ -362,11 +364,11 @@ AnnualClim.Cal <- function(
           results.af <- exporter(p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
         }else {# considereing temperature
           results.b4 <- exporter(
-            m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint], 
+            m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint],
             anu.ACUT[, 1:Breakpoint]
             )
           results.af <- exporter(
-            p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len], 
+            p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len],
             anu.ACUT[, (Breakpoint + 1):len]
             )
         }
@@ -385,19 +387,21 @@ AnnualClim.Cal <- function(
             results.b4 <- exporter(m, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
             results.af <- exporter(p, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
           }else {# considereing temperature
-          # TO DO: ADD TEMPERATURE CONSIDERATION HERE 
+          # TO DO: ADD TEMPERATURE CONSIDERATION HERE
+          ACT.table = NULL
+          allow.negative = allowneg.retest
           }
-        } else {# More than two positive slopes 
+        } else {# More than two positive slopes
           if (is.null(ACT.table)){ #No temperature
             results.b4 <- exporter(mx, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint])
             results.af <- exporter(px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len])
           } else {#
             results.b4 <- exporter(
-              mx, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint], 
+              mx, anu.VI[1:Breakpoint], anu.ACUP[, 1:Breakpoint],
               anu.ACUT[, 1:Breakpoint]
               )
             results.af <- exporter(
-              px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len], 
+              px, anu.VI[(Breakpoint + 1):len], anu.ACUP[, (Breakpoint + 1):len],
               anu.ACUT[, (Breakpoint + 1):len]
               )
           }

@@ -1,7 +1,7 @@
 #' @title TSS.RESTREND: Time Series Segmented RESidual TREND
 #' @docType package
 #' @details
-#' Version 0.2.14
+#' Version 0.2.15
 #'
 #' @description
 #' The TSS-RESTREND package is designed used via the TSS-RESTREND function which calls all the other functions in the

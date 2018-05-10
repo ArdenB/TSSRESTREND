@@ -1,7 +1,7 @@
 Package: TSS.RESTREND
 Type: Package
 Title: Time Series Segmentation of Residual Trends
-Version: 0.2.14
+Version: 0.2.15
 Authors@R: person("Arden", "Burrell", email = "arden.burrell@unsw.edu.au", role = c("aut", "cre"))
 Description: Time Series Segmented Residual Trends is a method for the automated detection
     of land degradation from remotely sensed vegetation and climate datasets.
