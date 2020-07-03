@@ -8,6 +8,30 @@ The full details of the testing and justification of the TSS-RESTREND method (ve
   
 The changes to the method included in version 0.2.13 focus on the inclusion of temperature as an additional climate variable. This allows for land degradation assessment in temperature limited drylands. A paper that details this work is currently under review. There are also a number of bug fixes and speed improvements.  
 
+   
+
+### Change log
+TSS-RESTREND v0.2.03 (Release date: 2018-01-23)
+==============
+
+## Major changes: 
+* Added the ability to include temperature as an additional climate variable. This involves changes to almost all parts of the package and new plotting functionality.   
+* METHOD TWEAK: If the complete time series VPR/VCR relationship is not significant. TSS-RESTREND no longer returns indeterminate. It instead tests BFAST on the complete time series of Vegetation and uses those breakpoints.  This will cause minor differences in the results between earlier versions.
+
+## Minor tweaks and bug fixes:
+* Large improvements to the internal documentation 
+* Speed improvements made throughout the functions  
+* Add the ability to vary BFAST window (h) 
+* ACPcalculator updated to deal with places where there are negative CTS VPR relationship. Small tweaks to TSS.RESTREND master script and the Annual.Precipitation functions
+* BUG FIX: in the rainfall.accumulator now has a check that makes sure the rainfall data has some variance (SD >0). No variance (SD == 0) breaks lm() calculations and causes failures
+* BUG FIX: Fixed a bug in the indexing of AnnualRF.Cal (now AnnualClim.Cal) and the rainfall.accumulator (now climate.accumulator) that was causing downstream problems with the segVPR function. This bug may have slightly impacted some results in segVPR 
+
+
+### Examples
+
+A full list of examples and extra documentation are currently under development 
+
+
 ### Dependencies 
 TSS.RESTREND depends on:
 ```R
@@ -17,27 +41,4 @@ It also suggests two packages for 3D plots:
 ```R
 rgl, car
 ```
-Because of the difficult of installing these packages on some unix based systems, these packages were not made dependencies   
-
-### Installing the package
-#### Installing in R
-
-```R
-# Install from CRAN
-install.packages("TSS.RESTREND")
-
-# Install the version on Github
-install.packages("devtools")
-library(devtools)
-install_github("ArdenB/TSS.RESTREND")
-
-```
-#### Installing from local package
-``` bash
-R CMD INSTALL TSS.RESTREND_0.2.13.tar.gz 
-```
-### Change log
-[NEWS](NEWS.md)
-### Examples
-
-A full list of examples and extra documentation are currently under development 
+Because of the difficult of installing these packages on some unix based systems, these packages were not made dependencies
