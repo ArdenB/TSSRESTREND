@@ -10,15 +10,16 @@ The changes to the method included in version 0.2.13 focus on the inclusion of t
 
    
 
-### Change log
-TSS-RESTREND v0.2.03 (Release date: 2018-01-23)
-==============
+## Change log
 
-## Major changes: 
+**TSS-RESTREND v0.2.03 (Release date: 2018-01-23)**
+
+
+### Major changes: 
 * Added the ability to include temperature as an additional climate variable. This involves changes to almost all parts of the package and new plotting functionality.   
 * METHOD TWEAK: If the complete time series VPR/VCR relationship is not significant. TSS-RESTREND no longer returns indeterminate. It instead tests BFAST on the complete time series of Vegetation and uses those breakpoints.  This will cause minor differences in the results between earlier versions.
 
-## Minor tweaks and bug fixes:
+### Minor tweaks and bug fixes:
 * Large improvements to the internal documentation 
 * Speed improvements made throughout the functions  
 * Add the ability to vary BFAST window (h) 
