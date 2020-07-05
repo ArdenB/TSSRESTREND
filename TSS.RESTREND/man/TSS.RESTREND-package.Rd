@@ -12,10 +12,10 @@ allow for greater user control.  The version in active development, as well as a
 example scripts, see \url{https://github.com/ArdenB/TSSRESTREND}.
 }
 \details{
-Version 0.2.15
+Version 0.3.0
 }
 \note{
-This code is a demostration of the method and not the code used in Burrell et. al., (2016?).
+This code is a demostration of the method and not the code used in Burrell et. al., (2017).
        The original code uses both python and R and was designed for batch proccessing. For the pixels
        tested using the TSS.RESTREND package it produces identical results.
 }

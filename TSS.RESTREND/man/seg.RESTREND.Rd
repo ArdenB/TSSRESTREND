@@ -4,8 +4,7 @@
 \alias{seg.RESTREND}
 \title{Segmented RESTREND (RESidual TREND)}
 \usage{
-seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL,
-  sig = 0.05)
+seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, sig = 0.05)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.

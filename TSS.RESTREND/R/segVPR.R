@@ -283,5 +283,4 @@ seg.VPR <- function(
     summary = overview, ts.data = ts.data, ols.summary = ols.summary,
     TSSRmodels = models, acum.df = acum.df), class = "TSSRESTREND")
     )
-
 }

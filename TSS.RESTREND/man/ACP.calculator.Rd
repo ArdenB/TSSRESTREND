@@ -4,8 +4,13 @@
 \alias{ACP.calculator}
 \title{Antecedental Rainfall (and temperature) Accumulation calculator for the VI Complete Time Series}
 \usage{
-ACP.calculator(CTSR.VI, ACP.table, ACT.table = NULL, allow.negative = FALSE,
-  allowneg.retest = FALSE)
+ACP.calculator(
+  CTSR.VI,
+  ACP.table,
+  ACT.table = NULL,
+  allow.negative = FALSE,
+  allowneg.retest = FALSE
+)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.

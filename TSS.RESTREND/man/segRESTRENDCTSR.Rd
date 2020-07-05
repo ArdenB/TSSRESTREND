@@ -4,7 +4,9 @@
 \name{segRESTRENDCTSR}
 \alias{segRESTRENDCTSR}
 \title{Data frame containing the Complete Times Series data for a segmented RESTREND analysis}
-\format{R data frame}
+\format{
+R data frame
+}
 \source{
 a single pixel from \code{\link[gimms]{monthlyComposite}}
 }

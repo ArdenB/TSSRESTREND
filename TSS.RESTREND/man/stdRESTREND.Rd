@@ -4,7 +4,9 @@
 \name{stdRESTREND}
 \alias{stdRESTREND}
 \title{Data frame containing the annual data for a standard Restrend analysis}
-\format{R data frame}
+\format{
+R data frame
+}
 \source{
 \code{\link[gimms]{gimms-package}}
 }

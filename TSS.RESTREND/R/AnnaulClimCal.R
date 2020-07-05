@@ -98,7 +98,6 @@ AnnualClim.Cal <- function(
       # +++++ Check if temperature needs to be considered +++++
       if (is.null(ACT.N)) {# No Temperature data
         # perform the regression between VI and precipitation
-        browser()
         fit <- lm(VI.in ~ ACP.N)
         R.Rval <- summary(fit)$r.square
         R.slpe <- as.numeric(coef(fit)[2])

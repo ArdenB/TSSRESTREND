@@ -4,7 +4,9 @@
 \name{segVPRCTSR}
 \alias{segVPRCTSR}
 \title{Data frame containing the Complete Times Series data for a segmented VPR (VEGETATION PRECIPTATION RELATIONSHIP) analysis}
-\format{R data frame}
+\format{
+R data frame
+}
 \source{
 a single pixel from \code{\link[gimms]{monthlyComposite}}
 }

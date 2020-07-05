@@ -1,7 +1,7 @@
 #
 # demo.stdRESTEND <- function(sig=0.05, print=TRUE, plot=TRUE, details=FALSE, mode="TSS.RESTREND"){
 #   #set the environment variables
-#   CTSR.VI <- stdRESTREND.CTSR$cts.NDVI
+# CTSR.VI <- stdRESTREND.CTSR$cts.NDVI
 #   CTSR.RF <- stdRESTREND.CTSR$cts.precip
 #   anu.VI <- stdRESTREND$max.NDVI
 #   acu.RF <- stdRESTREND$acc.precip

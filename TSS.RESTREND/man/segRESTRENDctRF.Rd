@@ -4,7 +4,9 @@
 \name{segRESTRENDctRF}
 \alias{segRESTRENDctRF}
 \title{Data frame containing the raw rainfall data set for the segRESTREND data,  ending dec 2013 with a frquency of 12}
-\format{R data frame}
+\format{
+R data frame
+}
 \source{
 Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 }

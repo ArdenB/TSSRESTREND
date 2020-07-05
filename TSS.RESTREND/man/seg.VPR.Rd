@@ -4,8 +4,18 @@
 \alias{seg.VPR}
 \title{Segmented Vegetation Climate Relationship}
 \usage{
-seg.VPR(anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af, acu.TM = NULL,
-  tm.b4 = NULL, tm.af = NULL, sig = 0.05)
+seg.VPR(
+  anu.VI,
+  acu.RF,
+  VI.index,
+  breakpoint,
+  rf.b4,
+  rf.af,
+  acu.TM = NULL,
+  tm.b4 = NULL,
+  tm.af = NULL,
+  sig = 0.05
+)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.

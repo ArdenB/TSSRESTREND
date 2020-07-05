@@ -1,6 +1,6 @@
 # Set the woking diroctory to the location
-this.dir <- dirname(parent.frame(2)$ofile)
-setwd(this.dir)
+# this.dir <- dirname(parent.frame(2)$ofile)
+# setwd(this.dir)
 
 # install the devtools package (contains the install_github)
 
@@ -39,7 +39,7 @@ in.RF = read.csv("./demo_data/chow2RF.csv")
 # in.RF = read.csv("./demo_data/failRF.csv")
 
 #turn the data into a time series object
-rf.data = ts(in.RF, end=c(2013,12), frequency = 12)
+rf.data=ts(in.RF,end=c(2013,12),frequency = 12)
 
 # Define the max accumuulation period
 max.acp <- 12

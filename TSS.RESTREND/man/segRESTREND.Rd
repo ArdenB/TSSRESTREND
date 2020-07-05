@@ -4,7 +4,9 @@
 \name{segRESTREND}
 \alias{segRESTREND}
 \title{Data frame containing the annual data for a segRESTREND analysis}
-\format{R data frame}
+\format{
+R data frame
+}
 \source{
 \code{\link[gimms]{gimms-package}}
 }

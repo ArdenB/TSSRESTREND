@@ -4,11 +4,25 @@
 \alias{TSSRESTREND}
 \title{Time Series Segmentation of Residual Trends (MAIN FUNCTION)}
 \usage{
-TSSRESTREND(CTSR.VI, ACP.table = FALSE, ACT.table = NULL, CTSR.RF = FALSE,
-  CTSR.TM = NULL, anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL,
-  VI.index = FALSE, rf.b4 = FALSE, rf.af = FALSE, sig = 0.05,
-  season = "none", exclude = 0, allow.negative = FALSE,
-  allowneg.retest = FALSE, h = 0.15)
+TSSRESTREND(
+  CTSR.VI,
+  ACP.table = FALSE,
+  ACT.table = NULL,
+  CTSR.RF = FALSE,
+  CTSR.TM = NULL,
+  anu.VI = FALSE,
+  acu.RF = FALSE,
+  acu.TM = NULL,
+  VI.index = FALSE,
+  rf.b4 = FALSE,
+  rf.af = FALSE,
+  sig = 0.05,
+  season = "none",
+  exclude = 0,
+  allow.negative = FALSE,
+  allowneg.retest = FALSE,
+  h = 0.15
+)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.

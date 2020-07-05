@@ -4,8 +4,14 @@
 \alias{VPR.BFAST}
 \title{BFAST Breakpoint Detector}
 \usage{
-VPR.BFAST(CTSR.VI, CTSR.RF, CTSR.TM = NULL, season = "none",
-  BFAST.raw = FALSE, h = 0.15)
+VPR.BFAST(
+  CTSR.VI,
+  CTSR.RF,
+  CTSR.TM = NULL,
+  season = "none",
+  BFAST.raw = FALSE,
+  h = 0.15
+)
 }
 \arguments{
 \item{CTSR.VI}{Complete Monthly Time Series of Vegetation Index values.

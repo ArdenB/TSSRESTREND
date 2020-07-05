@@ -4,7 +4,9 @@
 \name{rabbitACPtable}
 \alias{rabbitACPtable}
 \title{Rabbit Impacted Vegetation Precipitation Accumulation Table}
-\format{A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details}
+\format{
+A matrix containing the complete time series of every acp and ofp. See \code{\link{climate.accumulator}} for details
+}
 \source{
 Awap data from \url{http://www.csiro.au/awap/cgi/awap2.pl}
 }
