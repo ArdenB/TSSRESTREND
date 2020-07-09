@@ -4,7 +4,15 @@
 \alias{seg.RESTREND}
 \title{Segmented RESTREND (RESidual TREND)}
 \usage{
-seg.RESTREND(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, sig = 0.05)
+seg.RESTREND(
+  anu.VI,
+  acu.RF,
+  VI.index,
+  breakpoint,
+  acu.TM = NULL,
+  sig = 0.05,
+  retnonsig = FALSE
+)
 }
 \arguments{
 \item{anu.VI}{The annual (Growing season) max VI. Must be a object of class \code{'ts'} without NA's.
@@ -25,6 +33,9 @@ NA's and be of equal length and temporal range to anu.TM. if anu.TM=FALSE, it wi
 calculated from ACT.table usingthe \code{\link{AnnualClim.Cal}}}
 
 \item{sig}{Significance of all the functions. defualt sig=0.05}
+
+\item{retnonsig}{Bool. New in v0.3.0. Allows TSSRESTREND to return change estimates of values that filed the sig component in the residual analysis.
+defualt FALSE will give the same result as eralier versions.}
 }
 \value{
 a list of class TSSRESTREND.

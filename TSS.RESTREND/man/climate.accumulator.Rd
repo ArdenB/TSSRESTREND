@@ -4,7 +4,14 @@
 \alias{climate.accumulator}
 \title{Climate Accumulator}
 \usage{
-climate.accumulator(CTSR.VI, clim.data, max.acp, max.osp)
+climate.accumulator(
+  CTSR.VI,
+  clim.data,
+  max.acp,
+  max.osp,
+  temperature = FALSE,
+  cliwindow = 0
+)
 }
 \arguments{
 \item{CTSR.VI}{Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values}
@@ -16,6 +23,12 @@ period (max.acp) plus the max offset period.(max.ops)}
 \item{max.acp}{The max accumuation period. Must be an integer > 1.}
 
 \item{max.osp}{The max offset period. Must be an integer >1}
+
+\item{temperature}{Bool. If the clim.data being accumulated is temperature, will take a mean not a sum.  This makes
+it easier to comapare regions with different accumulation and offset periods. This is new in v0.3.0.
+Defualt=FALSE which replicates the behaviour of TSSRESTREND versions <0.2.16.}
+
+\item{cliwindow}{The size of the window in years to be used for calculating climate change.}
 }
 \value{
 ACP.table

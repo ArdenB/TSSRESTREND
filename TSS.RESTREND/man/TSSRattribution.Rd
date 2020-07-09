@@ -8,6 +8,8 @@ TSSRattribution(
   CTSR.VI,
   CTSR.RF,
   CTSR.TM,
+  max.acp,
+  max.osp,
   C4frac = 0,
   sig = 0.05,
   season = "none",
@@ -15,7 +17,12 @@ TSSRattribution(
   allow.negative = FALSE,
   allowneg.retest = FALSE,
   h = 0.15,
-  verbose = FALSE
+  returnmodels = FALSE,
+  AnnualRes = FALSE,
+  SkipError = FALSE,
+  retnonsig = TRUE,
+  splitclim = TRUE,
+  cliwindow = 20
 )
 }
 \arguments{
@@ -31,6 +38,10 @@ If ACP.table is provided, CTSR.RF will be automitaclly calculated using the
 and be the same length and cover the same time range as CTSR.VI.  Default (CTSR.TM=NULL).
 If ACT.table is provided, CTSR.RF will be automitaclly calculated using the
 \code{\link{ACP.calculator}}}
+
+\item{max.acp}{The max accumuation period. Must be an integer > 1.}
+
+\item{max.osp}{The max offset period. Must be an integer >1}
 
 \item{C4frac}{The fraction of vegetation that follows the C4 photosynthetic pathway, between 0 and 1}
 
@@ -54,7 +65,25 @@ This paramter is to allow negative on re-test.}
 given as fraction relative to the sample size (i.e. the minimal number of observations in each segment
 divided by the total length of the timeseries. Default h = 0.15.}
 
-\item{verbose}{Return all the created models as well as the original data}
+\item{returnmodels}{Return all the created models as well as the original data}
+
+\item{AnnualRes}{Report results in change per year. Defualt is False. Instead reports total change from the
+start to the end of the time series.}
+
+\item{SkipError}{Bool, If TRUE will handle most errors and return a dataframe filled with NA's.
+Usefull when processing large datasets to stop analysis failing on a single pixel.
+Use with caution. Defualt=FALSE.}
+
+\item{retnonsig}{Bool. New in v0.3.0. Allows TSSRESTREND to return change estimates of values that filed the sig component in the residual analysis.
+defualt FALSE will give the same result as eralier versions.}
+
+\item{splitclim}{Bool, If TRUE Climate will be split into climate change and climate varibility as
+per Burrell et al., (2020). If FALSE. will just return climate as per IPCC:
+Chapter 3: Desertification in the IPCC Special Report on Climate Change, Desertification,
+Land Degradation, Sustainable Land Management, Food Security, and Greenhouse gas fluxes in Terrestrial Ecosystems.
+Defualt=True.}
+
+\item{cliwindow}{The size of the window in years to be used for calculating climate change.}
 }
 \value{
 \bold{tacp}

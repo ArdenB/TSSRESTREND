@@ -42,8 +42,13 @@ franksCO2 <- function(CTSR.VI, C4frac, CO2=FALSE, refyear=1980){
 			484.927,489.435,494.032,498.73,503.53,508.433,513.456,518.611,
 			523.9,529.324,534.875,540.543)
 		CO2 = ts(CO2con, start=c(1960, 1), end=c(2050,1), frequency = 1)
-	}else if (class(CO2) != "ts")
+	}
+  # ========== Check the data ==========
+  if (class(CO2) != "ts"){
 	  stop("CTSR.VI Not a time series object. Please check the data")
+	}else if ((C4frac > 1)||(C4frac<0)){
+	  stop("C4frac must be between 0 and 1")
+	}
 
 
   franks_FvC <- function(Ca){
@@ -53,7 +58,7 @@ franksCO2 <- function(CTSR.VI, C4frac, CO2=FALSE, refyear=1980){
 	 }
 
 	# ========== Calculate the baseline ==========
-	baseline_Ca = window(CO2, 1980, 1981)[[1]]
+	baseline_Ca = window(CO2, refyear, refyear+1)[[1]]
 	baseAnet    = franks_FvC(baseline_Ca)
 
 	# +++++ Get the start year and start month of the data +++++

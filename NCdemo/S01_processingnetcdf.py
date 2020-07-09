@@ -9,7 +9,7 @@ that R can read in.
 
 # ==============================================================================
 
-__title__ = "Process Netcdf"
+__title__ = "Process Netcdf into csv"
 __author__ = "Arden Burrell"
 __version__ = "v1.0(23.06.2020)"
 __email__ = "aburrell@whrc.org"
@@ -34,10 +34,17 @@ from collections import OrderedDict, defaultdict
 
 # ==============================================================================
 def main():
+	# coarsen = 0
+	coarsen = 10
 	# ========== Set the filenames ==========
-	fnNDVI  = "./AUSdemo_GIMMS_ndvi.nc"
-	fnPPT   = "./AUSdemo_TERRACLIMATE_ppt.nc"
-	fnTMEAN = "./AUSdemo_TERRACLIMATE_tmean.nc"
+	if coarsen == 0:
+		fnNDVI  = "./AUSdemo_GIMMS_ndvi.nc"
+		fnPPT   = "./AUSdemo_TERRACLIMATE_ppt.nc"
+		fnTMEAN = "./AUSdemo_TERRACLIMATE_tmean.nc"
+	else:
+		fnNDVI  = "./AUSdemo_GIMMS_ndvi_xrcoarsen_%dwin.nc" % coarsen
+		fnPPT   = "./AUSdemo_TERRACLIMATE_ppt_xrcoarsen_%dwin.nc" % coarsen
+		fnTMEAN = "./AUSdemo_TERRACLIMATE_tmean_xrcoarsen_%dwin.nc" % coarsen
 
 	# ========== Loop over the three datasets ==========
 	for dsname, dsdesc in zip([fnNDVI, fnPPT, fnTMEAN], ["ndvi", "ppt", "tmean"]):
@@ -57,8 +64,8 @@ def main():
 		# ========== Save the file out ==========
 		df_out.to_csv(fnout)
 
-
-	breakpoint()
+	print("CSV's exported")
+	# breakpoint()
 
 # ==============================================================================
 if __name__ == '__main__':

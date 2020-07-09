@@ -3,7 +3,7 @@
 #' @description
 #' Takes the time series of rainfall and returns a rainfall accumulation table of every possible combination
 #' of the max accumulation period and the max offset period.
-#' @importFrom RcppRoll roll_sum
+#' @importFrom RcppRoll roll_sum roll_mean
 #' @param CTSR.VI
 #' Complete Time Series of Vegetation Index. An object of class \code{'ts'}. Monthly time series of VI values
 #' @param clim.data
@@ -14,7 +14,12 @@
 #' The max accumuation period. Must be an integer > 1.
 #' @param max.osp
 #' The max offset period. Must be an integer >1
-#'
+#' @param temperature
+#' Bool. If the clim.data being accumulated is temperature, will take a mean not a sum.  This makes
+#' it easier to comapare regions with different accumulation and offset periods. This is new in v0.3.0.
+#' Defualt=FALSE which replicates the behaviour of TSSRESTREND versions <0.2.16.
+#' @param cliwindow
+#' The size of the window in years to be used for calculating climate change.
 #' @return ACP.table
 #' A matrix with ever possible accumuated climate combination
 #'
@@ -27,7 +32,7 @@
 #' osp <- 4
 #' rftable <- climate.accumulator(segRESTRENDCTSR$cts.NDVI, segRESTRENDctRF$precip, acp, osp)
 
-climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp){
+climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp, temperature=FALSE, cliwindow=0){
   # ==============================================================================================
   # ========== Sanity check the input data ==========
   if (class(CTSR.VI) != "ts")
@@ -37,7 +42,7 @@ climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp){
   if (sd(clim.data) == 0)
     stop("The precipitation data has identical values (SD=0)")
   # +++++  Get the start and end dates of the precip and the VI +++++
-  yst <- start(CTSR.VI)[1]
+  yst <- start(CTSR.VI)[1] - cliwindow
   mst <-  start(CTSR.VI)[2]
   y.en <- end(CTSR.VI)[1]
   m.en <- end(CTSR.VI)[2]
@@ -46,8 +51,8 @@ climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp){
   # +++++ Check to make sure they have no issues +++++
   if ((y.en != clim.yend) || clim.mend != m.en) {
     stop("clim.data does not end at the same time as CTSR.VI")}
-  if (length(clim.data) < (length(CTSR.VI) + max.acp + max.osp)) {
-    stop("clim.data is not long enough for the set max.acp and max.ops")}
+  if (length(clim.data) < (length(CTSR.VI) + max.acp + max.osp+(cliwindow*12))) {
+    stop("clim.data is not long enough for the set max.acp, max.ops and cliwindow")}
 
   # ==============================================================================================
   # ========== Build the accumulation table ==========
@@ -61,7 +66,8 @@ climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp){
     }
   }
   # get the length of the matrix
-  len <- length(CTSR.VI)
+  # len <- length(CTSR.VI) + cliwindow*12
+  len <- (1+y.en-yst) * 12
 
   # +++++ Set up a blank matrix to write into +++++
   m <- matrix(nrow = (max.acp * max.osp), ncol = len)
@@ -76,8 +82,14 @@ climate.accumulator <- function(CTSR.VI, clim.data, max.acp, max.osp){
   # ===== pupulate the table with accumulation values =====
   # get the values for just the accumulation period
   for (n in 1:max.acp) {
-    # rolling sum the reversed climate data
-    roll = (roll_sum(rev.rf, n))
+    # +++++ perform the roll +++++
+    if (temperature){
+      # rolling mean the reversed climate data
+      roll = (roll_mean(rev.rf, n))
+      }else{
+      # rolling sum the reversed climate data
+      roll = (roll_sum(rev.rf, n))
+      }
     if (n > 1) {
       # Add nans to the the end of the reversed climate data to make them the same size
       roll = c(roll, rep(NaN, (n - 1)))

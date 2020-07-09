@@ -139,7 +139,7 @@ AnnualClim.Cal <- function(
       # +++++ Return the results +++++
       return(structure(list(
         lm.sum = c(R.slpe, R.Tcoef, R.intr, R.pval, R.Rval, R.BH, R.SC, R.SCT), temp.sig = t.sig)
-        ))
+      ))
     }}
 
   # ==============================================================================================
@@ -199,7 +199,7 @@ AnnualClim.Cal <- function(
 
   while (TRUE) {
     # While loop to handles what happens if temp is not a significant variable
-      #On the second loop temperature will be excluded and the analysis run again
+    #On the second loop temperature will be excluded and the analysis run again
 
     # ========== Subset the precip and temperature datasets ==========
     # Subset the complete ACP.table using the indexs of the an mav values and get dims

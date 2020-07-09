@@ -71,7 +71,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, acu.TM = NULL, sig = 0.0
   empty.1 <- NaN
   empty.2 <- NaN
   empty.3 <- NaN
-  # Setup empty data frames to stor infomation
+  # Setup empty data frames to store infomation
   ind.df <- data.frame(
     abs.index = breakpoints, yr.index = empty.1, reg.sig = empty.2, VPR.bpsig = empty.3
     )
@@ -141,7 +141,7 @@ CHOW <- function(anu.VI, acu.RF, VI.index, breakpoints, acu.TM = NULL, sig = 0.0
           # This is here to catch VPR fails that have a breakpoint
           #  Currently this shouldn't be used because when the VCR fails it reverts to a VPR
           #  This may need to be changes in the future
-          browser("This may need further development")
+          # browser("This may need further development")
           chow <- sctest(dep[bp.start:bp.end] ~ ind[bp.start:bp.end]+ind2[bp.start:bp.end], type = "Chow", point = bkp)
         }
       # Pull out the Chow results

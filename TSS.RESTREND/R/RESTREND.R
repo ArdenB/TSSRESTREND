@@ -20,7 +20,7 @@
 #' restrend <- RESTREND(stdRESTREND$max.NDVI, stdRESTREND$acc.precip, stdRESTREND$index)
 #' print(restrend)
 
-RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05) {
+RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05, retnonsig=FALSE) {
   # ==============================================================================================
   # ========== Sanity check the input data ==========
   while (TRUE) {
@@ -39,6 +39,8 @@ RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05) {
       stop("ts object do not have the same frequency")}
     break
   }
+  # ========== New in 0.3.0, This is to allow retnonsig while still identifing failed areas ==========
+  Metd = "RESTREND" # Method identifer
 
   # ==============================================================================================
   # ========== Calculate the VPR/VCR ==========
@@ -80,57 +82,59 @@ RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05) {
 
   if (R.pval > sig) {
     # VPR/VCR failed
-    print("VPR significance below critical threshold")
-    tot.ch <- FALSE
-    change <- FALSE
-    overview <- data.frame(
-      Method = "indeterminate", Total.Change = tot.ch,
-      Residual.Change = change,VPR.HeightChange = FALSE,
-      model.p = glance(VPR.fit)$p.value, residual.p = FALSE,
-      VPRbreak.p = FALSE, bp.year = FALSE
-      )
-    models <- list(
-      CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
-      resid.fit = FALSE, segVPR.fit = FALSE
-      )
-    ts.data <- list(
-      CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
-      VI.index = VI.index, acu.RF = acu.RF, StdVar.RF = FALSE
-      )
-    ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
+    Metd = "indeterminate"
+    if (!retnonsig){
+      print("VPR significance below critical threshold")
+      tot.ch <- FALSE
+      change <- FALSE
+      overview <- data.frame(
+        Method = "indeterminate", Total.Change = tot.ch,
+        Residual.Change = change,VPR.HeightChange = FALSE,
+        model.p = glance(VPR.fit)$p.value, residual.p = FALSE,
+        VPRbreak.p = FALSE, bp.year = FALSE
+        )
+      models <- list(
+        CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
+        resid.fit = FALSE, segVPR.fit = FALSE
+        )
+      ts.data <- list(
+        CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
+        VI.index = VI.index, acu.RF = acu.RF, StdVar.RF = FALSE
+        )
+      ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
 
-    return(structure(list(
-      summary = overview, ts.data = ts.data, ols.summary = ols.summary,
-      TSSRmodels = models), class = "TSSRESTREND")
-    )
-
+      return(structure(list(
+        summary = overview, ts.data = ts.data, ols.summary = ols.summary,
+        TSSRmodels = models), class = "TSSRESTREND"))}
   } else if ((R.slpe < 0) && (is.null(acu.TM))) {
     # This may need to be changes to accout for allow negatives in the future
     # VPR/VCR is significant but negative
-    print("VPR slope is negative")
-    tot.ch <- FALSE
-    change <- FALSE
+    Metd = "IND-agr?"
+    if (!retnonsig){
+      print("VPR slope is negative")
+      tot.ch <- FALSE
+      change <- FALSE
 
-    overview <- data.frame(
-      Method = "IND-agr?", Total.Change = tot.ch,
-      Residual.Change = change, VPR.HeightChange = FALSE,
-      model.p = glance(VPR.fit)$p.value, residual.p = FALSE,
-      VPRbreak.p = FALSE, bp.year = FALSE
-      )
-    models <- list(
-      CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
-      resid.fit = FALSE, segVPR.fit = FALSE
-      )
-    ts.data <- list(
-      CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
-      VI.index = VI.index, acu.RF = acu.RF, StdVar.RF = FALSE
-      )
-    ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
+      overview <- data.frame(
+        Method = "IND-agr?", Total.Change = tot.ch,
+        Residual.Change = change, VPR.HeightChange = FALSE,
+        model.p = glance(VPR.fit)$p.value, residual.p = FALSE,
+        VPRbreak.p = FALSE, bp.year = FALSE
+        )
+      models <- list(
+        CTS.fit = FALSE, BFAST = FALSE, VPR.fit = VPR.fit,
+        resid.fit = FALSE, segVPR.fit = FALSE
+        )
+      ts.data <- list(
+        CTSR.VI = FALSE, CTSR.RF = FALSE, anu.VI = anu.VI,
+        VI.index = VI.index, acu.RF = acu.RF, StdVar.RF = FALSE
+        )
+      ols.summary <- list(chow.sum = FALSE, chow.ind = FALSE, OLS.table = m)
 
-    return(structure(list(
-      summary = overview, ts.data = ts.data, ols.summary = ols.summary,
-      TSSRmodels = models), class = "TSSRESTREND")
-    )
+      return(structure(list(
+        summary = overview, ts.data = ts.data, ols.summary = ols.summary,
+        TSSRmodels = models), class = "TSSRESTREND")
+      )}
   }
 
   # ==============================================================================================
@@ -139,7 +143,7 @@ RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05) {
   VPR.resid <- ts(VPR.fit$residuals, start = start(ti), end = end(ti), frequency = f)
   RES <- lm(VPR.resid ~ ti)
   R2.pval <- glance(RES)$p.value
-  R2.tcoef <- NaN
+  R2.tcoef <- NaN #Regression is with time so this isn't needed, included to make the table the same sixe
   R2.Rval <- summary(RES)$r.square
   R2.intr <- RES$coefficients[[1]]
   R2.slpe <- RES$coefficients[[2]]
@@ -152,15 +156,14 @@ RESTREND <- function(anu.VI, acu.RF,  VI.index, acu.TM = NULL, sig = 0.05) {
   init <- RES$fitted.values[1]
   fin <- RES$fitted.values[end(RES$fitted.values)[1]]
   change <- fin - init
-  if (R2.pval < 0.10) {
-    tot.ch = change
-  } else {
+  tot.ch = change
+  if ((R2.pval > 0.10) & (!retnonsig)){
     tot.ch = 0
   }
 
   # ===== Build and return the results =====
   overview <- data.frame(
-    Method = "RESTREND", Total.Change = tot.ch,
+    Method = Metd, Total.Change = tot.ch,
     Residual.Change = change, VPR.HeightChange = FALSE,
     model.p = glance(VPR.fit)$p.value, residual.p = glance(RES)$p.value,
     VPRbreak.p = FALSE, bp.year = FALSE

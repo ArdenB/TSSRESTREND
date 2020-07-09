@@ -14,7 +14,8 @@ seg.VPR(
   acu.TM = NULL,
   tm.b4 = NULL,
   tm.af = NULL,
-  sig = 0.05
+  sig = 0.05,
+  retnonsig = FALSE
 )
 }
 \arguments{
@@ -52,6 +53,9 @@ the breakpoint. It must be the same length as the anu.VI. If ACT.table is provid
 be generated using \code{\link{AnnualClim.Cal}}}
 
 \item{sig}{Significance of all the functions. defualt sig=0.05}
+
+\item{retnonsig}{Bool. New in v0.3.0. Allows TSSRESTREND to return change estimates of values that filed the sig component in the residual analysis.
+defualt FALSE will give the same result as eralier versions.}
 }
 \value{
 a list of class TSSRESTREND.

@@ -44,8 +44,11 @@ An example pipeline showing how this method can be applied to
 A full list of examples and extra documentation are currently under development 
 
 ## **Change log**
+* Added a function for removing the errects of eCO2 from a VI time series.  
+* Modified the climate.accumulator function to allow rolling means of temperature data not just rolling sums
+* Added the option to turn off the sigmasking in parts of the analysis. Usefull when doing multirun ensembles. 
 
-###**TSS-RESTREND v0.2.03 (Release date: 2018-01-23)**
+###**TSS-RESTREND v0.2.15 (Release date: 2018-01-23)**
 
 
 ### Major changes: 

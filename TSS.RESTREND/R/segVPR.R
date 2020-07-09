@@ -34,7 +34,7 @@
 
 seg.VPR <- function(
   anu.VI, acu.RF, VI.index, breakpoint, rf.b4, rf.af,
-  acu.TM = NULL,  tm.b4 = NULL, tm.af = NULL, sig = 0.05
+  acu.TM = NULL,  tm.b4 = NULL, tm.af = NULL, sig = 0.05, retnonsig=FALSE
   ) {
   # ==============================================================================================
   # ========== Sanity check the input data ==========
@@ -254,15 +254,21 @@ seg.VPR <- function(
   }
 
   # ===== Work out the total change =====
-  tc <- c(0, 0)
+
   # Check if residual change and the VPR/VCR breakheights meet 0.10 significance levels
-  if (R3.pval < 0.10) {
-    tc[1] = change
+  if  (!retnonsig){
+    tc <- c(0, 0)
+    if (R3.pval < 0.10) {
+      tc[1] = change
+    }
+
+    if (bp.pval < 0.10) {
+      tc[2] = breakheight
+    }
+  }else{
+    tc <- c(change, breakheight)
   }
 
-  if (bp.pval < 0.10) {
-    tc[2] = breakheight
-  }
   # Calculate the total change
   tot.ch = sum(tc)
 

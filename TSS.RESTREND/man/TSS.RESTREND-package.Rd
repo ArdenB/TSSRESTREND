@@ -20,6 +20,6 @@ This code is a demostration of the method and not the code used in Burrell et. a
        tested using the TSS.RESTREND package it produces identical results.
 }
 \author{
-\strong{Maintainer}: Arden Burrell \email{arden.burrell@unsw.edu.au}
+\strong{Maintainer}: Arden Burrell \email{arden.burrell@gmail.com}
 
 }

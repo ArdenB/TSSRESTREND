@@ -21,7 +21,8 @@ TSSRESTREND(
   exclude = 0,
   allow.negative = FALSE,
   allowneg.retest = FALSE,
-  h = 0.15
+  h = 0.15,
+  retnonsig = FALSE
 )
 }
 \arguments{
@@ -86,6 +87,9 @@ This paramter is to allow negative on re-test.}
 \item{h}{See \code{\link[bfast]{bfast}}, The.minimal segment size between potentially detected breaks in the trend model
 given as fraction relative to the sample size (i.e. the minimal number of observations in each segment
 divided by the total length of the timeseries. Default h = 0.15.}
+
+\item{retnonsig}{Bool. New in v0.3.0. Allows TSSRESTREND to return change estimates of values that filed the sig component in the residual analysis.
+defualt FALSE will give the same result as eralier versions.}
 }
 \value{
 An object of class \code{'TSSRESTREND'} is a list with the following elements:

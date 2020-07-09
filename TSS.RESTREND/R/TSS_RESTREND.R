@@ -76,6 +76,9 @@
 #'        See \code{\link[bfast]{bfast}}, The.minimal segment size between potentially detected breaks in the trend model
 #'        given as fraction relative to the sample size (i.e. the minimal number of observations in each segment
 #'        divided by the total length of the timeseries. Default h = 0.15.
+#' @param retnonsig
+#'        Bool. New in v0.3.0. Allows TSSRESTREND to return change estimates of values that filed the sig component in the residual analysis.
+#'        defualt FALSE will give the same result as eralier versions.
 #' @return
 #' An object of class \code{'TSSRESTREND'} is a list with the following elements:
 #' \describe{
@@ -150,7 +153,7 @@ TSSRESTREND <- function(
   CTSR.VI, ACP.table = FALSE, ACT.table = NULL, CTSR.RF = FALSE, CTSR.TM = NULL,
   anu.VI = FALSE, acu.RF = FALSE, acu.TM = NULL, VI.index = FALSE, rf.b4 = FALSE,
   rf.af = FALSE, sig = 0.05, season = "none", exclude = 0, allow.negative = FALSE,
-  allowneg.retest = FALSE, h = 0.15){
+  allowneg.retest = FALSE, h = 0.15, retnonsig=FALSE){
 
   # ==============================================================================================
   # ========== Sanity check the input data ==========
@@ -305,12 +308,12 @@ TSSRESTREND <- function(
 
   if (test.Method == "RESTREND") {
     # ===== No breakpoints, Results calculated using the RESTREND function =====
-    result <- RESTREND(anu.VI, acu.RF, VI.index, acu.TM=acu.TM, sig = sig)
+    result <- RESTREND(anu.VI, acu.RF, VI.index, acu.TM=acu.TM, sig = sig, retnonsig=retnonsig)
 
   }else if (test.Method == "seg.RESTREND") {
     # ===== breakpoints in the VPR/VCR residuals, Results calculated using the seg.RESTREND function =====
     breakpoint = as.integer(res.chow$bp.summary[2])
-    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp, acu.TM=acu.TM, sig = sig)
+    result <- seg.RESTREND(anu.VI, acu.RF, VI.index, brkp, acu.TM=acu.TM, sig=sig, retnonsig=retnonsig)
 
   }else if (test.Method == "seg.VPR") {
     # ===== breakpoints in the VPR/VCR, Results calculated using the seg.VPR function =====
@@ -337,8 +340,22 @@ TSSRESTREND <- function(
     # +++++ Perform segmented VPR/VCR calculation  +++++
     breakpoint = as.integer(res.chow$bp.summary[2])
     print(brkp)
-    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, acu.TM, tm.b4, tm.af, sig = sig)
+    result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, acu.TM, tm.b4, tm.af, sig=sig, retnonsig=retnonsig)
   }
+  # ========== New (in version 0.3.0) Sanity check on Total change values ==========
+  # +++ Checks to see if value for total change fall within a sane range +++
+  if (abs(result$summary$Total.Change > (max(CTSR.VI)-min(CTSR.VI)))){
+    print("Non Valid estimate produced, returning zero")
+    result$summary$Total.Change = 0
+    result$summary$Method = "InvalidValueError"
+  }
+  # else if (result$summary$Total.Change == 0){
+  #   browser("Failure here somewhere, Take a look and see what the options are")
+  #   # result2 <- RESTREND(anu.VI, acu.RF, VI.index, acu.TM=acu.TM, sig = sig, retnonsig=retnonsig)
+  # } else if (is.na(result$summary$Total.Change)){
+  #   browser("Failure here somewhere, Take a look and see what the options are")
+  # }
+
 
   # ==============================================================================================
   # ===== Build the results into a list to be returned to user =====

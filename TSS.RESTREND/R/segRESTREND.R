@@ -22,7 +22,7 @@
 #' brkp <-  as.integer(11)
 #' resu <- seg.RESTREND(segRESTREND$max.NDVI, segRESTREND$acc.precip, segRESTREND$index, brkp)
 
-seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, sig=0.05){
+seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, sig=0.05, retnonsig=FALSE){
   # ==============================================================================================
   # ========== Sanity check the input data ==========
   while (TRUE) {
@@ -109,9 +109,8 @@ seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, si
   init <- bpanalysis$fitted.values[1]
   fin <- bpanalysis$fitted.values[end(bpanalysis$fitted.values)[1]]
   change <- as.numeric(fin - init)
-  if (R2.pval < 0.10) {
-    tot.ch = change
-  }else{
+  tot.ch = change
+  if ((R2.pval > 0.10) & (!retnonsig)){
     tot.ch = 0
   }
 
@@ -136,6 +135,6 @@ seg.RESTREND <- function(anu.VI, acu.RF, VI.index, breakpoint, acu.TM = NULL, si
   return(structure(list(
     summary = overview, ts.data = ts.data, ols.summary = ols.summary,
     TSSRmodels = models, acum.df = acum.df), class = "TSSRESTREND")
-    )
+  )
 
 }
