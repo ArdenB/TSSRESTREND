@@ -14,6 +14,7 @@
 #'
 #' @inheritParams TSSRESTREND
 #' @inheritParams climate.accumulator
+#' @inheritParams franksCO2
 #' @param C4frac
 #'        The fraction of vegetation that follows the C4 photosynthetic pathway, between 0 and 1
 #' @param returnmodels
@@ -24,7 +25,7 @@
 #' @param SkipError
 #'        Bool, If TRUE will handle most errors and return a dataframe filled with NA's.
 #'        Usefull when processing large datasets to stop analysis failing on a single pixel.
-#'        Use with caution. Defualt=FALSE.
+#'        Use with caution. Defualt=TRUE
 #' @param splitclim
 #'        Bool, If TRUE Climate will be split into climate change and climate varibility as
 #'        per Burrell et al., (2020). If FALSE. will just return climate as per IPCC:
@@ -40,7 +41,7 @@
 TSSRattribution <- function(
 	CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, C4frac = 0,  sig = 0.05, season = "none", exclude = 0,
 	allow.negative = FALSE, allowneg.retest = FALSE, h = 0.15, returnmodels = FALSE, AnnualRes=FALSE,
-  SkipError=FALSE, retnonsig=TRUE, splitclim=TRUE, cliwindow=20){
+  SkipError=TRUE, retnonsig=TRUE, splitclim=TRUE, cliwindow=20, CO2=FALSE, refyear=1980){
 
   # ========== Work out the Change unit  ==========
   if (AnnualRes){

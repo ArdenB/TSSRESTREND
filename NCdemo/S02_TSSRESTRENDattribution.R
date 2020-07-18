@@ -58,7 +58,7 @@ tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp){
   	CTSR.TM <- ts(as.numeric(TM), start=c(TMys, TMms), end=c(TMyf,TMmf), frequency = 12)
 
   	# ========== get the results ==========
-  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, SkipError=TRUE)
+  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp)
   }
   # ========== return the results ==========
   ret <- results$summary
