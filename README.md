@@ -22,11 +22,31 @@ library(TSS.RESTREND)
 max.acp <- 12
 max.osp <- 4
 # Load in the data here 
+# CTSR.VI <- LOAD YOUR VEGETATION DATA HERE. Must me a ts object with a monthly frequency
+# CTSR.RF <- LOAD YOUR PRECIPITATION DATA HERE. Must me a ts object with a monthly frequency
+# CTSR.TM <- LOAD YOUR TEMPERATURE DATA HERE. Must me a ts object with a monthly frequency
+
 results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp)
+
 print(results)
 ```
 
 The original way to use this package was through the TSSRESTREND function. 
+```R
+library(TSS.RESTREND)
+#Define the max accumuulation period
+max.acp <- 12
+#Define the max offset period
+max.osp <- 4
+#Create a table of every possible precipitation value given the max.acp and max.osp
+ACP.table <- climate.accumulator(CTSR.VI, CTSE.RF, max.acp, max.osp)
+ACT.table <- climate.accumulator(CTSR.VI, CTSE.TM, max.acp, max.osp, temperature=TRUE)
+
+# perform the TSSRESTREND, retnonsig=FALSE replicates defualt behaviour is version<0.3.0
+results <- TSSRESTREND(CTSR.VI, ACP.table, ACT.table, retnonsig=FALSE)
+print(results)
+plot(results, verbose=TRUE)
+``` 
 
 NOTE: TSSRESTREND was designed to demonstrate the methodology and is not optimised for perforce. If analysing a large area, major performance gains can be had by doing specific steps of the method on the entire dataset at once rather than on a per pixel basis.  
 
