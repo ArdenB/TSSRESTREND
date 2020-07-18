@@ -14,7 +14,9 @@ Version 0.3.0 is an expansion of the TSS-RESTREND package to perform additional 
 
 ## Logic and structure of the package 
 This package was designed to work with a single pixel at a time, not 3D data structures like Rasters. This decision was made for a number of reasons the most significant of which is that processing spatial data, especially netcdf files, is much slower in R than using Python (using Xarray+Dask) or using the command line tool Climate Data Operators (CDO). It is computationally faster to turn spatial data into a 2D matrix/Dataframes then use the R package foreach and %do% to iterate through each row of the dataframe.  This also has the advantage of allowing the user to switch to a parallel workflow easily using backends like doParallel, doMC, doMPI or doSNOW.  
+
 An example showing one way to process spatial data, then apply TSS-RESTREND to it, convert back to a spatial format and produce maps can be found [here](NCdemo).  
+
 There are two main ways to use this package.  The easiest way is the new [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) function.  It takes a compete time seres ov monthly vegetation (CTSR,VI), precipitation (CTSR.RF), temperature (CTSR.TM) as well as the maximum accumulation and offset periods to consider.  
 
 ```R
