@@ -68,7 +68,7 @@ An example pipeline showing how this method can be applied to spatial data can b
 * In some rare cases TSSRESTREND function would return Total Change estimates outside of the range of the VI data passed.  I Was unable to replicate this error, but a catch statement has been added to detect these errors and flag them for the user. The TSSRESTREND function will now return result$summary$Method = "InvalidValueError" if it detects a total change larger than the range on the input vegetation data.  
 
 
-###**TSS-RESTREND v0.2.15 (Release date: 2018-01-23)**
+### **TSS-RESTREND v0.2.15 (Release date: 2018-01-23)**
 **Major changes:**
 
 * Added the ability to include temperature as an additional climate variable. This involves changes to almost all parts of the package and new plotting functionality.   
