@@ -56,7 +56,7 @@ An example pipeline showing how this method can be applied to spatial data can b
 
 ## **Change log**
 ### **TSS-RESTREND v0.3.0 (Release date: 2020-07-16)**
-* Major changes:**
+**Major changes:**
 
 * Added a new wrapper function [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) that will perform the full attribution described in Burrell et al., (2020).  
 * Added a function for removing the effects of eCO2 from a VI time series.  
