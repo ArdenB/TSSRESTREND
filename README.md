@@ -96,3 +96,6 @@ It also suggests two packages for 3D plots:
 rgl, car
 ```
 Because of the difficult of installing these packages on some unix based systems, these packages were not made dependencies
+
+### Modifing soruce code 
+The source code for all the functions in the TSSRESTREND package can be found [here](TSS>RESTREND/R/) and an RSTUDIO project that allows users to modifiy then rebuild the TSSRESTREND package is located [here](TSS>RESTREND/TSS.RESTREND.Rproj).  Contribbutions and suggestions are welcome.  
