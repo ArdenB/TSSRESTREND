@@ -55,18 +55,20 @@ NOTE: TSSRESTREND was designed to demonstrate the methodology and is not optimis
 An example pipeline showing how this method can be applied to spatial data can be found [here](NCdemo).  
 
 ## **Change log**
-###**TSS-RESTREND v0.3.0 (Release date: 2020-07-16)**
+### **TSS-RESTREND v0.3.0 (Release date: 2020-07-16)**
 ### Major changes: 
 * Added a new wrapper function [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) that will perform the full attribution described in Burrell et al., (2020).  
 * Added a function for removing the effects of eCO2 from a VI time series.  
 * Added a function for detrending climate data using a moving window smoothing,  
 
+### Minor tweaks and bug fixes:
 * Modified the [climate.accumulator]( TSS.RESTREND/man/climate.accumulator.Rd) function to allow rolling means of temperature data not just rolling sums
 * Added the option to turn off the sigmasking in parts of the analysis. This means an estimate for total change will be calculated even when the underlying vegetation climate relationship is not significant.  Useful when doing multirun ensembles where a pixels is not considered in isolation
 * In some rare cases TSSRESTREND function would return Total Change estimates outside of the range of the VI data passed.  I Was unable to replicate this error, but a catch statement has been added to detect these errors and flag them for the user. The TSSRESTREND function will now return result$summary$Method = "InvalidValueError" if it detects a total change larger than the range on the input vegetation data.  
 
 
 ###**TSS-RESTREND v0.2.15 (Release date: 2018-01-23)**
+### Major changes: 
 
 * Added the ability to include temperature as an additional climate variable. This involves changes to almost all parts of the package and new plotting functionality.   
 * METHOD TWEAK: If the complete time series VPR/VCR relationship is not significant. TSS-RESTREND no longer returns indeterminate. It instead tests BFAST on the complete time series of Vegetation and uses those breakpoints.  This will cause minor differences in the results between earlier versions.
