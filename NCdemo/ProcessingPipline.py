@@ -5,12 +5,15 @@ import pandas as pd
 import os
 
 
-fnV    = "./vod_AUS_GIMMS_monthly_1982_2015.nc"
-fnoutV = "./AUSdemo_GIMMS_ndvi.nc"
-fnP    = "./TerraClimate_ppt_AUS_remapped.nc"
-fnoutP = "./AUSdemo_TERRACLIMATE_ppt.nc"
-fnT    = "./TerraClimate_tmean_AUS_remapped.nc"
-fnoutT = "./AUSdemo_TERRACLIMATE_tmean.nc"
+fnV    = "./data/vod_AUS_GIMMS_monthly_1982_2015.nc"
+fnoutV = "./data/AUSdemo_GIMMS_ndvi.nc"
+fnP    = "./data/TerraClimate_ppt_AUS_remapped.nc"
+fnoutP = "./data/AUSdemo_TERRACLIMATE_ppt.nc"
+fnT    = "./data/TerraClimate_tmean_AUS_remapped.nc"
+fnoutT = "./data/AUSdemo_TERRACLIMATE_tmean.nc"
+
+# ========== This will determine by hoe much to carsen the data ======= 
+# pass 0 to get original resolution, higher numbers make coarser data which if faster to process
 coarsen = 10
 
 encoding = ({'shuffle':True, 
@@ -81,4 +84,4 @@ if coarsen > 0:
 			format         = 'NETCDF4', 
 			encoding       = {va:encoding},
 			unlimited_dims = ["time"])
-breakpoint()
+# breakpoint()

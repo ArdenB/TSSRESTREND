@@ -8,11 +8,11 @@ library(lubridate)
 library(TSS.RESTREND)
 
 # ========== read in the vegetation and climate data ==========
-fnVI <- "./demo_dataframe_ndvi.csv"
+fnVI <- "./data/demo_dataframe_ndvi.csv"
 VIdf <- read.csv(fnVI, row.names=1, check.names=FALSE) # NDVI
-fnPP <- "./demo_dataframe_ppt.csv"
+fnPP <- "./data/demo_dataframe_ppt.csv"
 PPdf <- read.csv(fnPP, row.names=1, check.names=FALSE) # precip
-fnTM <- "./demo_dataframe_tmean.csv"
+fnTM <- "./data/demo_dataframe_tmean.csv"
 TMdf <- read.csv(fnTM, row.names=1, check.names=FALSE) # temperature
 
 
@@ -78,7 +78,7 @@ ptime  <- system.time(
     })
 
 # ========== name to save the file ==========
-fnout <- "./AttributionResults.csv"
+fnout <- "./results/AttributionResults.csv"
 write.csv(tss.atdf, fnout)
 
 # browser()

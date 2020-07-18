@@ -38,13 +38,13 @@ def main():
 	coarsen = 10
 	# ========== Set the filenames ==========
 	if coarsen == 0:
-		fnNDVI  = "./AUSdemo_GIMMS_ndvi.nc"
-		fnPPT   = "./AUSdemo_TERRACLIMATE_ppt.nc"
-		fnTMEAN = "./AUSdemo_TERRACLIMATE_tmean.nc"
+		fnNDVI  = "./data/AUSdemo_GIMMS_ndvi.nc"
+		fnPPT   = "./data/AUSdemo_TERRACLIMATE_ppt.nc"
+		fnTMEAN = "./data/AUSdemo_TERRACLIMATE_tmean.nc"
 	else:
-		fnNDVI  = "./AUSdemo_GIMMS_ndvi_xrcoarsen_%dwin.nc" % coarsen
-		fnPPT   = "./AUSdemo_TERRACLIMATE_ppt_xrcoarsen_%dwin.nc" % coarsen
-		fnTMEAN = "./AUSdemo_TERRACLIMATE_tmean_xrcoarsen_%dwin.nc" % coarsen
+		fnNDVI  = "./data/AUSdemo_GIMMS_ndvi_xrcoarsen_%dwin.nc" % coarsen
+		fnPPT   = "./data/AUSdemo_TERRACLIMATE_ppt_xrcoarsen_%dwin.nc" % coarsen
+		fnTMEAN = "./data/AUSdemo_TERRACLIMATE_tmean_xrcoarsen_%dwin.nc" % coarsen
 
 	# ========== Loop over the three datasets ==========
 	for dsname, dsdesc in zip([fnNDVI, fnPPT, fnTMEAN], ["ndvi", "ppt", "tmean"]):
@@ -59,7 +59,7 @@ def main():
 		df_out =  pd.DataFrame(ds_stack[dsdesc].values.T, index=ds_stack.cord.values, columns=ds_stack.time.values)
 
 		# ========== Create a file name out ==========
-		fnout = "./demo_dataframe_%s.csv" % (dsdesc)
+		fnout = "./data/demo_dataframe_%s.csv" % (dsdesc)
 
 		# ========== Save the file out ==========
 		df_out.to_csv(fnout)
