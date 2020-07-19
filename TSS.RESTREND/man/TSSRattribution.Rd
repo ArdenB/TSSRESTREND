@@ -19,10 +19,12 @@ TSSRattribution(
   h = 0.15,
   returnmodels = FALSE,
   AnnualRes = FALSE,
-  SkipError = FALSE,
+  SkipError = TRUE,
   retnonsig = TRUE,
   splitclim = TRUE,
-  cliwindow = 20
+  cliwindow = 20,
+  CO2 = FALSE,
+  refyear = 1980
 )
 }
 \arguments{
@@ -72,7 +74,7 @@ start to the end of the time series.}
 
 \item{SkipError}{Bool, If TRUE will handle most errors and return a dataframe filled with NA's.
 Usefull when processing large datasets to stop analysis failing on a single pixel.
-Use with caution. Defualt=FALSE.}
+Use with caution. Defualt=TRUE}
 
 \item{retnonsig}{Bool. New in v0.3.0. Allows TSSRESTREND to return change estimates of values that filed the sig component in the residual analysis.
 defualt FALSE will give the same result as eralier versions.}
@@ -84,6 +86,12 @@ Land Degradation, Sustainable Land Management, Food Security, and Greenhouse gas
 Defualt=True.}
 
 \item{cliwindow}{The size of the window in years to be used for calculating climate change.}
+
+\item{CO2}{A timeseries containg the CO2 concentration. The defualt is CMIP5 RCP8.5}
+
+\item{refyear}{The Year that acts as a baseline for CO2. All vegetation values will be scaled #
+to the CO2 concentration of this year. Defulat is 1980. THis function will pick the
+first value in the selected year,}
 }
 \value{
 \bold{tacp}
