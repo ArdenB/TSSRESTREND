@@ -232,7 +232,7 @@ TSSRattribution <- function(
       overview$ClimateChange        = as.numeric(CCtheil[[1]][2]) *ScaleFactor
       overview$ClimateChange.Pvalue = glance(CCcor)$p.value
 
-      # ========== Get the climate Varibility ==========
+      # ========== Get the climate Variability ==========
       CV.vi <- VCRmod$fitted.value - CC.vi
       CVcor    <- cor.test(ti, CV.vi, method="spearman")
       CVtheil  <-  mblm(CV.vi~ti, repeated=FALSE)

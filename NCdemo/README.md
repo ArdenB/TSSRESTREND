@@ -37,7 +37,7 @@ install.packages("TSS.RESTREND")
 ```
 The other option is to use this repo to build TSS-RESTREND. Rstudio project file TSS.RESTREND.Rproj is lovated [here](../TSS.RESTREND/)
 ```R
-# TSS.RESTREND can also be installed by building the  
+# The following packages are needed to build TSS.RESTREND in Rstudio
 install.packages("devtools")
 install.packages("roxygen2")
 
