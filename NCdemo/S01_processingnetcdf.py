@@ -27,6 +27,7 @@ import xarray as xr
 # import dask
 # import bottleneck as bn
 from collections import OrderedDict, defaultdict
+import json
 
 # import matplotlib as mpl
 # import matplotlib.pyplot as plt
@@ -34,8 +35,11 @@ from collections import OrderedDict, defaultdict
 
 # ==============================================================================
 def main():
-	# coarsen = 0
-	coarsen = 10
+	# =========== Read the metadata file in ==========
+	infofile = './data/infomation.json'
+	with open(infofile, "r+") as f:
+		info = json.load(f)
+	coarsen = info["coarsen"]
 	# ========== Set the filenames ==========
 	if coarsen == 0:
 		fnNDVI  = "./data/AUSdemo_GIMMS_ndvi.nc"
@@ -64,8 +68,15 @@ def main():
 		# ========== Save the file out ==========
 		df_out.to_csv(fnout)
 
-	print("CSV's exported")
-	# breakpoint()
+		print(dsdesc, " CSV exported")
+	
+	# ========== writing JSON object ==========
+	info["history"] = "%s: Datasets converted to CSV (%s). " % (str(pd.Timestamp.now()), __file__) + info["history"]
+	info["DataProcessed"] = str(pd.Timestamp.now())
+	os.remove(infofile)
+	with open(infofile, 'w') as f:
+		json.dump(info, f, indent=4)
+	print("Data converted into csv and info file updated at:", pd.Timestamp.now())
 
 # ==============================================================================
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ library(xts)
 library(zoo)
 library(lubridate)
 library(TSS.RESTREND)
+library(jsonlite)
 
 # ========== read in the vegetation and climate data ==========
 fnVI <- "./data/demo_dataframe_ndvi.csv"
@@ -14,20 +15,27 @@ fnPP <- "./data/demo_dataframe_ppt.csv"
 PPdf <- read.csv(fnPP, row.names=1, check.names=FALSE) # precip
 fnTM <- "./data/demo_dataframe_tmean.csv"
 TMdf <- read.csv(fnTM, row.names=1, check.names=FALSE) # temperature
+fnIN <-'./data/infomation.json'
+info <- fromJSON(fnIN)
 
+# ========== pull out the info from the setup json =========
+anres   <- info$annual
+max.acp <- info$maxacp
+max.osp <- info$maxosp
 
-tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp){
+# ========= Create a function that can be used in foreach ==========
+tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp, AnnualRes){
   # =========== Function is applied to one pixel at a time ===========
   # ========== Perfrom the data checks and if anything fails skipp processing ==========
   # There is a data check for NANs in the TSSRattribution function, If SkipError is True
   # It then returns an opject of the same structure as actual results but filled with NaN
   # Usefull stacking using the foreac::do command.
   if (any(is.na(VI))){
-    results = TSSRattribution(c(NA, NA), c(NA, NA), c(NA, NA), max.acp, max.osp, SkipError=TRUE)
+    results = TSSRattribution(c(NA, NA), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
   }else if (any(is.na(PP))){
-    results = TSSRattribution(c(1,1), c(NA, NA), c(NA, NA), max.acp, max.osp, SkipError=TRUE)
+    results = TSSRattribution(c(1,1), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
   }else if (any(is.na(TM))){
-    results = TSSRattribution(c(1,1), c(1,1), c(NA, NA), max.acp, max.osp, SkipError=TRUE)
+    results = TSSRattribution(c(1,1), c(1,1), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
   }else{
 
   	# +++++ Nothing has failed +++++
@@ -58,7 +66,7 @@ tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp){
   	CTSR.TM <- ts(as.numeric(TM), start=c(TMys, TMms), end=c(TMyf,TMmf), frequency = 12)
 
   	# ========== get the results ==========
-  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp)
+  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, AnnualRes=AnnualRes)
   }
   # ========== return the results ==========
   ret <- results$summary
@@ -67,19 +75,25 @@ tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp){
   return(ret)
 }
 
-# ========== Calculate the number of rows i need to loop over ==========
-max.acp <- 12
-max.osp <- 4
 
+# ========== Calculate the number of rows i need to loop over ==========
 ptime  <- system.time(
   tss.atdf <- foreach(
     line=rownames(VIdf), .combine = rbind) %do% {
-      tssr.attr(line, VIdf[line, ], PPdf[line,], TMdf[line,], max.acp, max.osp)
+      tssr.attr(line, VIdf[line, ], PPdf[line,], TMdf[line,], max.acp, max.osp, anres)
     })
 
 # ========== name to save the file ==========
 fnout <- "./results/AttributionResults.csv"
 write.csv(tss.atdf, fnout)
 
-# browser()
+# ========== modify the info file ==========
+info$ComputeTime = ptime[[1]]
+info$TSSRESTREND.version = toString(packageVersion("TSS.RESTREND"))
+info$history = paste(toString(Sys.time()), ": TSS.RESTREND change estimates calculated using S02_TSSRESTRENDattribution.R. ", info$history)
+
+jinfo = toJSON(info, auto_unbox = TRUE, pretty=4)
+write(jinfo, fnIN)
+
+browser()
 

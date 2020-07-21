@@ -32,7 +32,7 @@ The latest version of R is available from [CRAN](https://cran.r-project.org/mirr
 
 ```R
 # ========== Install dependincies ==========
-install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggplot2", "mblm", "curl", "libcurl"))
+install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggplot2", "mblm", "curl", "libcurl", "rjson"))
 
 # ========== Install TSS.RESTREND from cran ==========
 install.packages("TSS.RESTREND")
@@ -40,8 +40,7 @@ install.packages("TSS.RESTREND")
 The other option is to use this repo to build TSS-RESTREND. Rstudio project file TSS.RESTREND.Rproj is located [here](../TSS.RESTREND/)
 ```R
 # The following packages are needed to build TSS.RESTREND in Rstudio
-install.packages("devtools")
-install.packages("roxygen2")
+install.packages(c("devtools", "roxygen2"))
 
 ```
 

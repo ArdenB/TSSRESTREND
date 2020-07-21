@@ -29,7 +29,7 @@ import xarray as xr
 import dask
 import bottleneck as bn
 from collections import OrderedDict, defaultdict
-
+import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -37,6 +37,15 @@ import statsmodels.stats.multitest as smsM
 
 # ==============================================================================
 def main(args):
+		# =========== Read the metadata file in ==========
+	infofile = './data/infomation.json'
+	with open(infofile, "r+") as f:
+		info = json.load(f)
+		# ========== fix the timedelta ==========
+		if type(info["ComputeTime"]) == float:
+			info["ComputeTime"] = pd.Timedelta(info["ComputeTime"], unit="sec")
+
+
 	# ========== Process system arguments ==========
 	# ========== Open the csv results file ==========
 	fn = "./results/AttributionResults.csv"
@@ -63,7 +72,7 @@ def main(args):
 	ds = ds.transpose('time', 'latitude', 'longitude')
 	
 	# ++++++++++ Fix the Global Attributes ++++++++++
-	ds = GlobalAttributes(ds, ds_ref=ds_ref)
+	ds = GlobalAttributes(ds, info, ds_ref=ds_ref)
 
 	# ++++++++++ Setup the netcdf file encoding and add  ++++++++++
 	encoding = OrderedDict()
@@ -275,7 +284,7 @@ def FDRSignificanceCorrection(ds, var, FDRmethod, alpha = 0.10, ):
 # FIX THE METADATA OF THE XR DATASET
 # ==============================================================================
 
-def GlobalAttributes(ds, ds_ref=None):
+def GlobalAttributes(ds, info, ds_ref=None):
 	"""
 	Creates the global attributes for the netcdf file that is being written
 	these attributes come from :
@@ -302,9 +311,10 @@ def GlobalAttributes(ds, ds_ref=None):
 	attr["Conventions"]         = "CF-1.7"
 	
 	# ++++++++++ Data Provinance ++++++++++ 
-	attr["history"]             = "%s: Netcdf file created using %s (%s):%s by %s" % (
-		str(pd.Timestamp.now()), __title__, __file__, __version__, __author__)
+	info["history"]             = "%s: Netcdf file created using %s (%s):%s. Script originally developed by %s" % (
+		str(pd.Timestamp.now()), __title__, __file__, __version__, __author__) + info["history"]
 	# attr["history"]            += ds.history
+	attr["history"]             = info["history"]
 
 	attr["creator_name"]        = __author__
 	attr["creator_url"]         = "ardenburrell.com"
@@ -315,6 +325,9 @@ def GlobalAttributes(ds, ds_ref=None):
 	# ++++++++++ Netcdf Summary infomation ++++++++++ 
 	attr["time_coverage_start"] = str(pd.Timestamp("2015-12-31"))
 	attr["time_coverage_end"]   = str(pd.Timestamp("1982-01-01"))
+	# ++++++++++ TSS.RESTREND INFOMATION ++++++++++ 
+	attr["package_version"]     = "TSSRESTREND version: " + info["TSSRESTREND.version"]
+	attr["package_url"]         = "https://cran.r-project.org/web/packages/TSS.RESTREND/index.html"
 	if not ds_ref is None:
 		ds.longitude.attrs = ds_ref.longitude.attrs
 		ds.latitude.attrs  = ds_ref.latitude.attrs
@@ -373,6 +386,6 @@ if __name__ == '__main__':
 		"-s", "--sig", action="store_false", 
 		help="Significance: Apply a zero mask using FDR adjustment and the Benjamini/Hochberg method")
 	parser.add_argument(
-		"--method", type=str, default="fdr_bh", help="The method used to adjust for False Discovery Rate. must be ")
+		"--method", type=str, default="fdr_bh", help="The method used to adjust for False Discovery Rate. must be fdr_bh or fdr_by")
 	args = parser.parse_args() 
 	main(args)
