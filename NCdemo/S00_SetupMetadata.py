@@ -54,7 +54,7 @@ def main(args):
 		'complevel':5})
 
 	# ========== Create the  ========== 
-	dssize = _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, encoding)
+	dssize, nyears = _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, encoding)
 
 	# ========== This will determine by hoe much to carsen the data ======= 
 	coarsen = args.coarsen
@@ -77,7 +77,7 @@ def main(args):
 				unlimited_dims = ["time"])
 			dssize = dsout.latitude.size * dsout.longitude.size
 	
-	print("\n A run at this resolution will take aproximatly:", (dssize * pd.Timedelta(5, unit="sec")), 
+	print("\n A run at this resolution will take aproximatly:", (dssize * pd.Timedelta(4.6, unit="sec")), 
 		"to complete on a single core. \n For shorter run times use a larger coarsen value to shring the resoluntion or use parellel processing. \n")
 
 	# ========== This is where i plan to implement some tracking and auto formatiing ==========
@@ -103,6 +103,7 @@ def main(args):
 	Metadata["maxosp"] = args.maxosp
 	Metadata["annual"] = args.annual
 	Metadata["pixelN"] = dssize
+	Metadata["Nyears"] = nyears
 	if args.annual:
 		Metadata["units" ] =  r"$NDVI_{max}$ per year"
 	else:
@@ -112,6 +113,7 @@ def main(args):
 	Metadata["TSSRESTREND.version"] = ""
 	Metadata["ComputeTime"]         = ""
 	Metadata["ResultsProcessed"]    = ""
+
 
 
 	# ========== writing JSON object ==========
@@ -178,7 +180,7 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, encoding):
 			format         = 'NETCDF4', 
 			encoding       = {'tmean':encoding},
 			unlimited_dims = ["time"])
-	return dsV.latitude.size * dsV.longitude.size
+	return dsV.latitude.size * dsV.longitude.size, dsV.time.size / 12.
 #==============================================================================
 if __name__ == '__main__':
 	# ========== Set the args Description ==========

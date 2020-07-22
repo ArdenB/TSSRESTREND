@@ -28,7 +28,7 @@ sudo apt-get intall ncview
 
 **Building an R programming environment**
 
-The latest version of R is available from [CRAN](https://cran.r-project.org/mirrors.html). I would also recomment [Rstudio](https://rstudio.com/products/rstudio/download/) as an IDE and for modifing the R packages that is included in this repo.
+The latest version of R is available from [CRAN](https://cran.r-project.org/mirrors.html). The TSSRESTREN package was built with [Rstudio](https://rstudio.com/products/rstudio/download/).
 
 ```R
 # ========== Install dependincies ==========
@@ -44,10 +44,11 @@ install.packages(c("devtools", "roxygen2"))
 
 ```
 
-## 2. Processing the example netcdf files using python
+## 2. Example Ananlysis
+
+To demonstrate how TSS-RESTREND can be applied to spatial data, this repo this repo contains four script that, if run in order will setup the analysis, process the data, perform TSS-RESTREND on the data, reassemble the results into a netcdf file and save maps of the results.  The results will be equivilant to a single run from Burrell et al., (2020).  
 
 There are two scripts used to process files. The primary one is [S01_processingnetcdf.py](S01_processingnetcdf.py) which opens the vegetation, precipitation and temperature netcdf files then creates 3 .csv files that can be read in my R.  The second is the [ProcessingPipline.py](ProcessingPipline.py) script which is only usefull for downscaling 
 
 Script opens the ndvi, precip and temp netcdfs provided, reshapes them and converts them to a dataframe which is saved as a csv.
 
-References for the original data:

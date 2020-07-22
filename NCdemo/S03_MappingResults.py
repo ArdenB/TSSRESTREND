@@ -15,9 +15,11 @@ __version__ = "v1.0(23.06.2020)"
 __email__   = "aburrell@whrc.org"
 
 # ==============================================================================
+# ========== Load my custom functions ==========
 import sys
 import os
-# Aappend the Current path and load custom plotting modules 
+sys.path.append(os.getcwd())
+import CustomFunctions as cf 
 
 # ========== Import packages ==========
 import numpy as np
@@ -33,6 +35,7 @@ import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
+import palettable
 import statsmodels.stats.multitest as smsM
 
 # ==============================================================================
@@ -46,7 +49,7 @@ def main(args):
 			info["ComputeTime"] = pd.Timedelta(info["ComputeTime"], unit="sec")
 
 
-	# ========== Process system arguments ==========
+
 	# ========== Open the csv results file ==========
 	fn = "./results/AttributionResults.csv"
 	df = pd.read_csv(fn, index_col=0)
@@ -98,105 +101,121 @@ def main(args):
 
 	# ========== Make a series of maps ==========
 	if args.plots:
-		for var in ds.variables:
-			# check its a variable to be skipped or mapped
-			if (var in ['longitude', 'latitude', "OtherFactorsValid", "errors", "time"] or var.endswith(".Pvalue")):
+		# ========== set the plot ==========
+		plotpath = "./results/plots/"
+
+		for va in ds.variables:
+			# +++++ check its a variable to be skipped or mapped +++++
+			if (va in ['longitude', 'latitude', "OtherFactorsValid", "errors", "time"] or va.endswith(".Pvalue")):
 				continue
 
 			# ========== Perform significance correction ==========
 			if args.sig:
-				signif, s_method = FDRSignificanceCorrection(ds, var, args.method)
+				signif, s_method = FDRSignificanceCorrection(ds, va, args.method)
 			else:
 				s_method = ""
 				signif   = None
+			# ========== Create the metadata for the plots ==========
+			maininfo = "Plot from %s (%s):%s by %s, %s" % (__title__, __file__, 
+				__version__, __author__, str(pd.Timestamp.now()))
+			maininfo += s_method
+			gitinfo   = cf.gitmetadata()
 			
-			print(var)
-			breakpoint()
+			print(va)
+			# ========== Build, save and show the maps ==========
+			MapSetup(ds, va, signif, maininfo, gitinfo, info, plotpath)
 
 
 
 
 
-	breakpoint()
 # ==============================================================================
 # BUILD THE MAPS
 # ==============================================================================
-def MapMaker(ensinfo, results, va, va_col, maininfo, gitinfo, pshow, mask, photo, fdr_col=None, mask_col=None):
+def MapSetup(ds, va, signif, maininfo, gitinfo, info, plotpath,  mask=None):
 	"""
 	Builds the maps of the change attribution
 	args:
 		ensinfo
-		results 	npA : with the atttribution results
+		ds 			xrds: TSSRESTREND RESULTS
 		va  		str : the name of the change variable
-		va_col 		int : the column number
 		maininfo	str : plot string
 		gitinfo 	str : summary of the git header
-		pshow		bool: show the plots or just save
-		fdr_col		int : The colum of the zeros and ones that are used for fdr significance checking
-		mask_col	int : The colum of the Nan's and ones that are the dryland mask
+		mask    	xrda: Any additional boolean masks 
 	""" 
 	# ========== Create the mapdet object ==========
-	mapdet = pf.mapclass(ensinfo, pshow)
-	mapdet.dpi = 130
-	
+	mapdet = cf.mapclass("Australia", plotpath)
+	mapdet.dpi  = 130
+	mapdet.var  =  va 
+	mapdet.desc =  va 
+	# ========== Create the data array ==========
+	da = ds[va].copy()
+	ad = da.squeeze()
 	# ========== Remove the non dryland areas ==========
-	if not (mask_col is None):
-		# ========== account for dryland mask ========== 
-		results[1:-1, va_col] *= results[1:-1, mask_col]
+	if not (mask is None):
+		da *= mask
 	
-	# ========== Set the colormap ==========
+	# ========== Mask for FDR significnace ==========
+	if not signif is None:
+		da *= signif
+		mapdet.desc += "_withNonSigMasked"
+	# ========== calculate the tick position  ==========
+	if info['annual']:
+		mapdet.cblabel = r"$\times$10$^{-2}$ $\Delta$ NDVI$_{max}$ yr$^{-1}$" 
+		# scale the NDVI to make it fit 
+		da *= 1e2 
+	else:
+		mapdet.cblabel = r'$\Delta$ NDVI$_{max}$'
+
+
+	if info['Nyears'] != 34.:
+		warn.warn("The plot tick values were chosen for a time series of 34 years.  Other lengths may require differen colorbars")
+
+
 	tks = np.array([-0.30, -0.24, -0.12, -0.06, -0.02, 0, 0.02, 0.06, 0.12, 0.24, 0.30])
-	
-	if va == "Climate":
+	# ========== Set the colormap ==========
+	if va == "ObservedChange":
+		cmapHex = palettable.colorbrewer.diverging.PRGn_10.hex_colors
+		mapdet.cmin  = -0.3 #-0.1 	# the min of the colormap
+		mapdet.cmax  =  0.3 # 0.1	# the max of the colormap
+	elif va in ["ObservedClimate", "ClimateChange"]:
 		cmapHex     = palettable.colorbrewer.diverging.BrBG_10.hex_colors
 		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
 		mapdet.cmax =  0.3#0.1	# the max of the colormap
 		# colour      = "#00bfff"
-		colour      = "#005f7f"
-	elif "CO2_" in va:
-				# cmapHex = palettable.colorbrewer.diverging.PuOr_10.hex_colors
+
+	elif va == "ClimateVariability":
+		cmapHex     = palettable.colorbrewer.diverging.RdBu_10.hex_colors
+		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
+		mapdet.cmax =  0.3#0.1	# the max of the colormap
+		# colour      = "#00bfff"
+	elif va == "CO2":
+		tks = np.array([0, 0.001, 0.02, 0.03, 0.04, 0.06, 0.24, 0.30])
 		cmapHex = palettable.colorbrewer.sequential.Purples_7.hex_colors
 		mapdet.cmin =  0.0#-0.1 	# the min of the colormap
 		mapdet.cmax =  0.3#0.1	# the max of the colormap
-		tks         = np.array([0, 0.001, 0.02, 0.03, 0.04, 0.06, 0.24, 0.30])
-		colour      = "#006400"
 	elif va == "LandUse":
 		cmapHex     = palettable.colorbrewer.diverging.PiYG_10.hex_colors
-		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
-		mapdet.cmax =  0.3#0.1	# the max of the colormap
+		mapdet.cmin  = -0.3 #-0.1 	# the min of the colormap
+		mapdet.cmax  =  0.3 # 0.1	# the max of the colormap
+		# breakpoint()
 		# colour      = "#ffc125"
-		colour       = "#eaa700"
 	elif va == "OtherFactors":
-		cmapHex = palettable.colorbrewer.diverging.RdBu_10.hex_colors
+		# cmapHex = palettable.colorbrewer.diverging.RdBu_10.hex_colors
+		cmapHex = palettable.colorbrewer.diverging.PuOr_10.hex_colors
 		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
 		mapdet.cmax =  0.3#0.1	# the max of the colormap
-		colour = cmapHex[-2]
+
 		
 	
 	# ========== Set the variables ==========
-	mapdet.var   =  va + ensinfo.desc 
-	mapdet.column=  va_col	# the column to be mapped
 	mapdet.cZero =  0.5 	# the zero point of the colormap
-	if not(mask is None):
-		mapdet.mask	 = np.load(mask)
 	
 	# ========== Add the Font info ========== 
-	mapdet.gridalp  = 0.05
+	mapdet.gridalp  = 0.5
 
-
-	if not (fdr_col is None):
-		# ========== account for significance in the results ========== 
-		if isinstance(fdr_col, (list,)):
-			for fdr_c in fdr_col:
-				results[1:-1, va_col] *= results[1:-1, fdr_c]	
-		else:
-			results[1:-1, va_col] *= results[1:-1, fdr_col]
-	
 	# ========== Setup the cmap ==========
-	if not ("CO2_Change" in va):
-		cmap, norm, ticks, cbounds, spacing = pf.ReplaceHexColor(
-			cmapHex, mapdet.cmin, mapdet.cmax, ticks=tks, zeroR = 0.001)
-	else:
+	if va == "CO2":
 		spacing = 'uniform'
 		cbounds = tks
 		ticks   = tks
@@ -207,6 +226,10 @@ def MapMaker(ensinfo, results, va, va_col, maininfo, gitinfo, pshow, mask, photo
 		
 		norm   = mpl.colors.BoundaryNorm(cbounds, cmap.N)
 		mapdet.extend  = "max"
+	else:
+		cmap, norm, ticks, cbounds, spacing = cf.ReplaceHexColor(
+			cmapHex, mapdet.cmin, mapdet.cmax, ticks=tks, zeroR = 0.001)
+		# print(cbounds)
 
 	# cmap, norm, ticks, cbounds, spacing = pf.ReplaceHexColor(
 	# 	cmapHex, mapdet.cmin, mapdet.cmax, ticks=tks, zeroR = 0.001)
@@ -220,14 +243,13 @@ def MapMaker(ensinfo, results, va, va_col, maininfo, gitinfo, pshow, mask, photo
 	mapdet.spacing = spacing
 
 	# ========== Make a map ========== 
-	plotinfo, fname = pf.mapmaker(results, ensinfo, mapdet) 
+	plotinfo, fname = cf.mapmaker(da, mapdet) 
 
 	# ========== Save the metadata ========== 
 	if fname:
-		infomation = [maininfo, histinfo, hist_fname, plotinfo, fname, gitinfo]
+		infomation = [maininfo, plotinfo, fname, gitinfo]
 		cf.writemetadata(fname, infomation)
 	# ipdb.set_trace()
-	return colour
 
 def FDRSignificanceCorrection(ds, var, FDRmethod, alpha = 0.10, ):
 	"""
@@ -257,12 +279,15 @@ def FDRSignificanceCorrection(ds, var, FDRmethod, alpha = 0.10, ):
 		print(t_method)
 		return ds["OtherFactorsValid"].astype(float), t_method
 	else:
-		pnm = var + ".Pvalues"
+		pnm = var + ".Pvalue"
 
 
 	# ========== Locate the p values and reshape them into a 1d array ==========
 	# ++++++++++ Find the pvalues ++++++++++
-	ODimDa     = ds[pnm].stack(loc = ('time', 'latitude', 'longitude')).copy()
+	try:
+		ODimDa     = ds[pnm].stack(loc = ('time', 'latitude', 'longitude')).copy()
+	except:
+		breakpoint()
 	isnan      = np.isnan(ODimDa)
 	
 	# ++++++++++ pull out the non nan pvalus ++++++++++
@@ -383,7 +408,7 @@ if __name__ == '__main__':
 		"-p", "--plots", action="store_false", 
 		help="Quiet plots: if selected plots will not be displayed ")
 	parser.add_argument(
-		"-s", "--sig", action="store_false", 
+		"-s", "--sig", action="store_true", 
 		help="Significance: Apply a zero mask using FDR adjustment and the Benjamini/Hochberg method")
 	parser.add_argument(
 		"--method", type=str, default="fdr_bh", help="The method used to adjust for False Discovery Rate. must be fdr_bh or fdr_by")
