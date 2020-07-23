@@ -7,6 +7,13 @@ library(zoo)
 library(lubridate)
 library(TSS.RESTREND)
 library(jsonlite)
+library(optparse)
+
+option_list = list(
+   make_option(c("-i", "--infofile"), type="character", default='./results/infomation.json',
+               help="the infomation file", metavar="character"))
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
 
 # ========== read in the vegetation and climate data ==========
 fnVI <- "./data/demo_dataframe_ndvi.csv"
@@ -15,7 +22,9 @@ fnPP <- "./data/demo_dataframe_ppt.csv"
 PPdf <- read.csv(fnPP, row.names=1, check.names=FALSE) # precip
 fnTM <- "./data/demo_dataframe_tmean.csv"
 TMdf <- read.csv(fnTM, row.names=1, check.names=FALSE) # temperature
-fnIN <-'./data/infomation.json'
+fnC4 <- "./data/demo_dataframe_C4frac.csv"
+C4df <- read.csv(fnC4, row.names=1, check.names=FALSE) # temperature
+fnIN <- opt$infofile
 info <- fromJSON(fnIN)
 
 # ========== pull out the info from the setup json =========
@@ -24,7 +33,7 @@ max.acp <- info$maxacp
 max.osp <- info$maxosp
 
 # ========= Create a function that can be used in foreach ==========
-tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp, AnnualRes){
+tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes){
   # =========== Function is applied to one pixel at a time ===========
   # ========== Perfrom the data checks and if anything fails skipp processing ==========
   # There is a data check for NANs in the TSSRattribution function, If SkipError is True
@@ -66,7 +75,7 @@ tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp, AnnualRes){
   	CTSR.TM <- ts(as.numeric(TM), start=c(TMys, TMms), end=c(TMyf,TMmf), frequency = 12)
 
   	# ========== get the results ==========
-  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, AnnualRes=AnnualRes)
+  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, C4frac=C4frac, AnnualRes=AnnualRes)
   }
   # ========== return the results ==========
   ret <- results$summary
@@ -75,12 +84,12 @@ tssr.attr <- function(line, VI, PP, TM, max.acp, max.osp, AnnualRes){
   return(ret)
 }
 
-
+browser()
 # ========== Calculate the number of rows i need to loop over ==========
 ptime  <- system.time(
   tss.atdf <- foreach(
     line=rownames(VIdf), .combine = rbind) %do% {
-      tssr.attr(line, VIdf[line, ], PPdf[line,], TMdf[line,], max.acp, max.osp, anres)
+      tssr.attr(line, VIdf[line, ], PPdf[line,], TMdf[line,], C4df[line, ], max.acp, max.osp, anres)
     })
 
 # ========== name to save the file ==========

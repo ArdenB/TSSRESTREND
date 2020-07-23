@@ -32,7 +32,7 @@ The latest version of R is available from [CRAN](https://cran.r-project.org/mirr
 
 ```R
 # ========== Install dependincies ==========
-install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggplot2", "mblm", "curl", "libcurl", "rjson"))
+install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggplot2", "mblm", "curl", "libcurl", "rjson", "optparse"))
 
 # ========== Install TSS.RESTREND from cran ==========
 install.packages("TSS.RESTREND")

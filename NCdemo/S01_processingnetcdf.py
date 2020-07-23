@@ -21,7 +21,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-# import datetime as dt
+import argparse
 # import warnings as warn
 import xarray as xr
 # import dask
@@ -34,28 +34,37 @@ import json
 # import seaborn as sns
 
 # ==============================================================================
-def main():
+def main(args):
 	# =========== Read the metadata file in ==========
-	infofile = './data/infomation.json'
+	if args.use_archived is None:
+		infofile = './results/infomation.json'
+	else:
+		'./results/archive/infomation_%02d.json' % args.use_archived
+
 	with open(infofile, "r+") as f:
 		info = json.load(f)
 	coarsen = info["coarsen"]
+
 	# ========== Set the filenames ==========
-	if coarsen == 0:
-		fnNDVI  = "./data/AUSdemo_GIMMS_ndvi.nc"
-		fnPPT   = "./data/AUSdemo_TERRACLIMATE_ppt.nc"
-		fnTMEAN = "./data/AUSdemo_TERRACLIMATE_tmean.nc"
-	else:
-		fnNDVI  = "./data/AUSdemo_GIMMS_ndvi_xrcoarsen_%dwin.nc" % coarsen
-		fnPPT   = "./data/AUSdemo_TERRACLIMATE_ppt_xrcoarsen_%dwin.nc" % coarsen
-		fnTMEAN = "./data/AUSdemo_TERRACLIMATE_tmean_xrcoarsen_%dwin.nc" % coarsen
+	fnNDVI   = info["NDVI"]["fname"]
+	fnPPT    = info["precipitation"]["fname"]
+	fnTMEAN  = info["temperature"]["fname"]
+	fnC4frac = info["C4fraction"]["fname"]
 
 	# ========== Loop over the three datasets ==========
-	for dsname, dsdesc in zip([fnNDVI, fnPPT, fnTMEAN], ["ndvi", "ppt", "tmean"]):
+	for dsname, dsdesc in zip([fnNDVI, fnPPT, fnTMEAN, fnC4frac], ["ndvi", "ppt", "tmean", "C4frac"]):
 
 		# ========== Read the dataset in ==========
 		dsin = xr.open_dataset(dsname)
 
+		# ========== deal with C3 and C4 ==========
+		if dsdesc == "C4frac":
+			# ========== Change the c4 fraction ==========
+			if info["photo"] == "C4":
+				dsin = xr.ones_like(dsin)
+			elif info["photo"] == "C3":
+				dsin = xr.zeros_like(dsin)
+		
 		# ========== Stack the dataset ==========
 		ds_stack = dsin.stack(cord=('longitude', 'latitude'))
 
@@ -64,6 +73,7 @@ def main():
 
 		# ========== Create a file name out ==========
 		fnout = "./data/demo_dataframe_%s.csv" % (dsdesc)
+
 
 		# ========== Save the file out ==========
 		df_out.to_csv(fnout)
@@ -80,4 +90,14 @@ def main():
 
 # ==============================================================================
 if __name__ == '__main__':
-	main()
+	# ========== Set the args Description ==========
+	description='Convert the dataset to CSV'
+	parser = argparse.ArgumentParser(description=description)
+	
+	# ========== Add additional arguments ==========
+	parser.add_argument(
+		"--use_archived", type=int, default=None, help="Use this argument to redo archived infomation.json files")
+	args = parser.parse_args() 
+	
+	# ========== Call the main function ==========
+	main(args)

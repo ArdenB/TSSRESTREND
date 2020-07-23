@@ -36,9 +36,9 @@ def main(args):
 	# ========== Make Folders ========== 
 	folders = ([
 		"./data/",
-		"./data/archive/",
 		"./results/",
 		"./results/plots/",
+		"./results/archive/"
 		])
 	for fol in folders:
 		cf.pymkdir(fol)
@@ -50,6 +50,8 @@ def main(args):
 	fnoutP = "./data/AUSdemo_TERRACLIMATE_ppt.nc"
 	fnT    = "./data/TerraClimate_tmean_AUS_remapped.nc"
 	fnoutT = "./data/AUSdemo_TERRACLIMATE_tmean.nc"
+	fnC4   = "./data/AUSdemo_C3vsC4Fraction.nc"
+	fnoutC = "./data/AUSdemo_SYNMAP_C4Fraction.nc"
 
 	encoding = ({
 		'shuffle':True, 
@@ -57,14 +59,15 @@ def main(args):
 		'complevel':5})
 
 	# ========== Create the  ========== 
-	dssize, nyears = _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, encoding)
+	dssize, nyears = _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding)
 
 	# ========== This will determine by hoe much to carsen the data ======= 
 	coarsen = args.coarsen
 
 	# ========== Add a loop to coarsen the data ==========
 	if coarsen > 0:
-		for va, fn in zip(["ndvi", "ppt", "tmean"],[fnoutV, fnoutP, fnoutT]):
+		files = [] #store the files
+		for va, fn in zip(["ndvi", "ppt", "tmean", "C4frac"],[fnoutV, fnoutP, fnoutT, fnoutC]):
 			xr.set_options(keep_attrs=True)
 			dsin = xr.open_dataset(fn) 
 			# ========== Coarsen the dataset ==========
@@ -73,12 +76,15 @@ def main(args):
 			dsout.attrs = dsin.attrs
 			dsout.attrs["history"]  = hist2 + dsout.attrs["history"]
 			fnout = fn[:-3] +"_xrcoarsen_%dwin.nc" % coarsen
-				# write out
+			# write out
 			dsout.to_netcdf(fnout, 
 				format         = 'NETCDF4', 
 				encoding       = {va:encoding},
 				unlimited_dims = ["time"])
+			files.append(fnout)
 			dssize = dsout.latitude.size * dsout.longitude.size
+	else:
+		files = [fnoutV, fnoutP, fnoutT, fnoutC]
 	
 	print("\n A run at this resolution will take aproximatly:", (dssize * pd.Timedelta(4.6, unit="sec")), 
 		"to complete on a single core. \n For shorter run times use a larger coarsen value to shring the resoluntion or use parellel processing. \n")
@@ -88,19 +94,28 @@ def main(args):
 	Metadata["Title"]   = "TSS.RESTREND change estimate"
 	Metadata["history"] = "%s: Datasets built and run setup with GIMMS NDVI and TERRACLIMATE data. Downscaled to approximatly %dkm." % (str(pd.Timestamp.now()), (25*(coarsen-1)+25) )
 	Metadata["coarsen"] = coarsen
+	# ========== Info abount the dataset ==========
 	Metadata["NDVI"]   = ({
 		"name"     :"GIMMS", 
 		"var"      :"ndvi", 
-		"reference":"Pinzon, Jorge E., and Compton J. Tucker. A Non-Stationary 1981-2012 AVHRR NDVI3g Time Series. Remote Sensing 6, no. 8 (25 July 2014): 6929--60. https://doi.org/10.3390/rs6086929."
-		})
+		"reference":"Pinzon, Jorge E., and Compton J. Tucker. A Non-Stationary 1981-2012 AVHRR NDVI3g Time Series. Remote Sensing 6, no. 8 (25 July 2014): 6929--60. https://doi.org/10.3390/rs6086929.",
+		"fname"    :files[0]})
 	Metadata["precipitation"] = ({
 		"name"     :"TERRACLIMATE", 
 		"var"      :"ppt", 
-		"reference":"Abatzoglou, John T., Solomon Z. Dobrowski, Sean A. Parks, and Katherine C. Hegewisch. TerraClimate, a High-Resolution Global Dataset of Monthly Climate and Climatic Water Balance from 1958-2015. Scientific Data 5 (9 January 2018): 170191. https://doi.org/10.1038/sdata.2017.191."})
+		"reference":"Abatzoglou, John T., Solomon Z. Dobrowski, Sean A. Parks, and Katherine C. Hegewisch. TerraClimate, a High-Resolution Global Dataset of Monthly Climate and Climatic Water Balance from 1958-2015. Scientific Data 5 (9 January 2018): 170191. https://doi.org/10.1038/sdata.2017.191.",
+		"fname"    :files[1]})
 	Metadata["temperature"]   = ({
 		"name"     :"TERRACLIMATE", 
 		"var"      :"tmean", 
-		"reference":"Abatzoglou, John T., Solomon Z. Dobrowski, Sean A. Parks, and Katherine C. Hegewisch. TerraClimate, a High-Resolution Global Dataset of Monthly Climate and Climatic Water Balance from 1958-2015. Scientific Data 5 (9 January 2018): 170191. https://doi.org/10.1038/sdata.2017.191."})
+		"reference":"Abatzoglou, John T., Solomon Z. Dobrowski, Sean A. Parks, and Katherine C. Hegewisch. TerraClimate, a High-Resolution Global Dataset of Monthly Climate and Climatic Water Balance from 1958-2015. Scientific Data 5 (9 January 2018): 170191. https://doi.org/10.1038/sdata.2017.191.",
+		"fname"    :files[2]})
+	Metadata["C4fraction"]   = ({
+		"name"     :"SYNMAP", 
+		"var"      :"C4frac", 
+		"reference":"Jung, Martin, Kathrin Henkel, Martin Herold, and Galina Churkina. Exploiting Synergies of Global Land Cover Products for Carbon Cycle Modeling. Remote Sensing of Environment 101, no. 4 (30 April 2006): 534–53. https://doi.org/10.1016/j.rse.2006.01.020.",
+		"fname"    :files[3]})
+
 	# ========== Set the max ops and acp ==========
 	Metadata["maxacp"] = args.maxacp
 	Metadata["maxosp"] = args.maxosp
@@ -113,23 +128,22 @@ def main(args):
 	else:
 		Metadata["units" ] =   r"$\Delta NDVI_{max}$"
 
+	Metadata["RunSetup"]            = str(pd.Timestamp.now())
 	Metadata["DataProcessed"]       = ""
 	Metadata["TSSRESTREND.version"] = ""
 	Metadata["ComputeTime"]         = ""
 	Metadata["ResultsProcessed"]    = ""
 
-
-
 	# ========== writing JSON object ==========
-	infofn = './data/infomation.json'
+	infofn = './results/infomation.json'
 	if args.archive == True and os.path.isfile(infofn):
 		# ========== Existing file found ==========
 		# ===== look at the archive folder =====
-		arc = glob.glob("./archive/*.json")
+		arc = glob.glob("./results/archive/*.json")
 		# ===== Move the existing info file =====
-		shutil.move(infofn, './data/archive/infomation_%02d.json' % len(arc))
+		shutil.move(infofn, './results/archive/infomation_%02d.json' % len(arc))
 		# ===== Notify the user =====
-		print("Existing %s file moved to ./data/archive/infomation_%02d.json" % (infofn, len(arc)))
+		print("Existing %s file moved to ./results/archive/infomation_%02d.json" % (infofn, len(arc)))
 	elif os.path.isfile(infofn):
 		print("Overwriting existing %s file" % infofn)
 	
@@ -139,9 +153,7 @@ def main(args):
 	print("Run Setup Complete")
 
 
-
-
-def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, encoding):
+def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding):
 	"""This function is not available to the user as it depends on data too large to put in a 
 	git repo, It lef here so i know how to redo the data if needs be."""
 
@@ -197,16 +209,32 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, encoding):
 			format         = 'NETCDF4', 
 			encoding       = {'tmean':encoding},
 			unlimited_dims = ["time"])
+	if not os.path.isfile(fnoutC):
+		# ========== C4frac ==========
+		dsC = xr.open_dataset(fnC4).rename({"lon":"longitude", "lat":"latitude"})
+		# Add to the history
+		hist = "%s: Regridded and modified version of SYNMAP C4frac data. It was produced by AB to demonstrate the TSS-RESTREND method" % (pd.Timestamp.now())
+		dsC.attrs["history"]  = hist + dsC.attrs["history"]
+		dsC.attrs["FileName"] = fnoutC
+		dsC["C4frac"] = dsC["C4frac"].astype("float32")
+
+		# write out
+		dsC.to_netcdf(fnoutC, 
+			format         = 'NETCDF4', 
+			encoding       = {'C4frac':encoding},
+			unlimited_dims = ["time"])
+
 	return dsV.latitude.size * dsV.longitude.size, dsV.time.size / 12.
+
 #==============================================================================
 if __name__ == '__main__':
 	# ========== Set the args Description ==========
-	description='Build the standard plots for each multi-run ensemble'
+	description='Function to create a run with metadata'
 	parser = argparse.ArgumentParser(description=description)
 	
 	# ========== Add additional arguments ==========
 	parser.add_argument(
-		"--coarsen", type=int, default=0, help="The size of the box used to downscale data, Defualt is zeros")
+		"-c","--coarsen", type=int, default=0, help="The size of the box used to downscale data, Defualt is zeros")
 	parser.add_argument(
 		"-y","--yearly", action="store_true", help="When calculating TSS-RESTRENDm report values in change per year")
 	parser.add_argument(
@@ -216,7 +244,7 @@ if __name__ == '__main__':
 	parser.add_argument(
 		"--photo", type=str, default="C3andC4", help="The photosyenthetic pathyway", choices=['C3andC4', 'C3', 'C4'],)
 	parser.add_argument(
-		"-a","--archive", action="store_false", help="The size of the box used to downscale data, Defualt is zeros")
+		"-a","--archive", action="store_true", help="The size of the box used to downscale data, Defualt is zeros")
 	args = parser.parse_args() 
 	
 	# ========== Call the main function ==========
