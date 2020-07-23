@@ -23,6 +23,8 @@ import argparse
 from collections import OrderedDict
 import warnings as warn
 import json
+import glob
+import shutil
 # ========== Load my custom functions ==========
 import os
 import sys
@@ -34,6 +36,7 @@ def main(args):
 	# ========== Make Folders ========== 
 	folders = ([
 		"./data/",
+		"./data/archive/",
 		"./results/",
 		"./results/plots/",
 		])
@@ -101,10 +104,11 @@ def main(args):
 	# ========== Set the max ops and acp ==========
 	Metadata["maxacp"] = args.maxacp
 	Metadata["maxosp"] = args.maxosp
-	Metadata["annual"] = args.annual
+	Metadata["annual"] = args.yearly
+	Metadata["photo"]  = args.photo
 	Metadata["pixelN"] = dssize
 	Metadata["Nyears"] = nyears
-	if args.annual:
+	if args.yearly:
 		Metadata["units" ] =  r"$NDVI_{max}$ per year"
 	else:
 		Metadata["units" ] =   r"$\Delta NDVI_{max}$"
@@ -117,7 +121,20 @@ def main(args):
 
 
 	# ========== writing JSON object ==========
-	with open('./data/infomation.json', 'w') as f:
+	infofn = './data/infomation.json'
+	if args.archive == True and os.path.isfile(infofn):
+		# ========== Existing file found ==========
+		# ===== look at the archive folder =====
+		arc = glob.glob("./archive/*.json")
+		# ===== Move the existing info file =====
+		shutil.move(infofn, './data/archive/infomation_%02d.json' % len(arc))
+		# ===== Notify the user =====
+		print("Existing %s file moved to ./data/archive/infomation_%02d.json" % (infofn, len(arc)))
+	elif os.path.isfile(infofn):
+		print("Overwriting existing %s file" % infofn)
+	
+	# ========== Save the new file ==========
+	with open(infofn, 'w') as f:
 		json.dump(Metadata, f, indent=4)
 	print("Run Setup Complete")
 
@@ -191,11 +208,15 @@ if __name__ == '__main__':
 	parser.add_argument(
 		"--coarsen", type=int, default=0, help="The size of the box used to downscale data, Defualt is zeros")
 	parser.add_argument(
-		"-a","--annual", action="store_true", help="The size of the box used to downscale data, Defualt is zeros")
+		"-y","--yearly", action="store_true", help="When calculating TSS-RESTRENDm report values in change per year")
 	parser.add_argument(
 		"--maxacp", type=int, default=12, help="The maximum accumulation period")
 	parser.add_argument(
 		"--maxosp", type=int, default=4, help="The maximim ofset period")
+	parser.add_argument(
+		"--photo", type=str, default="C3andC4", help="The photosyenthetic pathyway", choices=['C3andC4', 'C3', 'C4'],)
+	parser.add_argument(
+		"-a","--archive", action="store_false", help="The size of the box used to downscale data, Defualt is zeros")
 	args = parser.parse_args() 
 	
 	# ========== Call the main function ==========
