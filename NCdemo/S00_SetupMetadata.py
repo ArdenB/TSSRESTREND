@@ -75,13 +75,13 @@ def main(args):
             xr.set_options(keep_attrs=True)
             dsin = xr.open_dataset(fn) 
             # ========== Coarsen the dataset ==========
-            with warn.catch_warnings():
-                warn.simplefilter("ignore")
-                try:
-                    dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
-                except TypeError:
-                    warn.warn("This version of xarray has a bug in the coarsen function. Defualting to a manual coarsen which is a lot slower.")
-                    dsout = _backup_coarsen(dsin, va,  coarsen)
+            try:
+	            with warn.catch_warnings():
+	                warn.simplefilter("ignore")
+	                dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
+            except TypeError:
+                warn.warn("This version of xarray has a bug in the coarsen function. Defualting to a manual coarsen which is a lot slower.")
+                dsout = _backup_coarsen(dsin, va,  coarsen)
             hist2 = "%s: Coarsend using Xarray coarsen with a window of size %d" % (pd.Timestamp.now(), coarsen)
             dsout.attrs = dsin.attrs
             dsout.attrs["history"]  = hist2 + dsout.attrs["history"]
