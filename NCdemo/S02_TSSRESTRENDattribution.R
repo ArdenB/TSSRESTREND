@@ -9,10 +9,23 @@ library(TSS.RESTREND)
 library(jsonlite)
 library(optparse)
 
-this.dir <- dirname(parent.frame(2)$ofile)
-print(this.dir)
-setwd(this.dir)
+# ========== Check if the relative paths are going to work ==========
+cwd = getwd()
+if (endsWith(cwd, "NCdemo")){
+   # The folder is
+}else if (file.exists(paste0(cwd, "/S02_TSSRESTRENDattribution.R"))){
+   # pass as well
+}else{
+   # pass
+   if (dir.exists(paste0(cwd, "NCdemo"))){
+      setwd("NCdemo")
+  }else{
+     stop("Script running in an unknown working directory.  Please run from or set the workind dir to the NCdemo folder ")
+  }}
 
+
+
+# ========== Pull in the option ==========
 option_list = list(
    make_option(c("-i", "--infofile"), type="character", default='./results/infomation.json',
                help="the infomation file", metavar="character"))
@@ -46,7 +59,7 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes){
   # There is a data check for NANs in the TSSRattribution function, If SkipError is True
   # It then returns an opject of the same structure as actual results but filled with NaN
   # Usefull stacking using the foreac::do command.
-  if (any(is.na(VI))){
+  if (any(is.na(VI)) | (sd(VI)==0)){
     results = TSSRattribution(c(NA, NA), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
   }else if (any(is.na(PP))){
     results = TSSRattribution(c(1,1), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)

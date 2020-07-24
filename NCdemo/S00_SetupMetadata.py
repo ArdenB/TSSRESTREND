@@ -130,7 +130,7 @@ def main(args):
     Metadata["C4fraction"]   = ({
         "name"     :"SYNMAP", 
         "var"      :"C4frac", 
-        "reference":"Jung, Martin, Kathrin Henkel, Martin Herold, and Galina Churkina. Exploiting Synergies of Global Land Cover Products for Carbon Cycle Modeling. Remote Sensing of Environment 101, no. 4 (30 April 2006): 534–53. https://doi.org/10.1016/j.rse.2006.01.020.",
+        "reference":"Jung, Martin, Kathrin Henkel, Martin Herold, and Galina Churkina. Exploiting Synergies of Global Land Cover Products for Carbon Cycle Modeling. Remote Sensing of Environment 101, no. 4 (30 April 2006): https://doi.org/10.1016/j.rse.2006.01.020.",
         "fname"    :files[3]})
 
     # ========== Set the max ops and acp ==========

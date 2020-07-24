@@ -24,6 +24,9 @@ conda install dask xarray pandas matplotlib palettable cartopy seaborn ipdb numb
 # Install other usefull commmand line utils. This is optional, but makes it easy to read netcdf files
 sudo apt-get intall ncview
 
+# Sometimes, R packages can fail to install on Ubuntu because libcurl is missing. To fix this
+sudo apt install libcurl4-openssl-dev
+
 ```
 
 #### Building an R programming environment ####
@@ -32,7 +35,7 @@ The latest version of R is available from [CRAN](https://cran.r-project.org/mirr
 
 ```R
 # ========== Install dependincies ==========
-install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggplot2", "mblm", "curl", "rjson", "optparse")) #"libcurl",
+install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggplot2", "mblm", "curl", "rjson", "optparse", "foreach", "lubridate")) #"libcurl",
 
 # ========== Install TSS.RESTREND from cran ==========
 install.packages("TSS.RESTREND")
