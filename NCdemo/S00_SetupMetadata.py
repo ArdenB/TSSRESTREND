@@ -244,7 +244,7 @@ if __name__ == '__main__':
 	
 	# ========== Add additional arguments ==========
 	parser.add_argument(
-		"-c","--coarsen", type=int, default=0, help="The size of the box used to downscale data, Defualt is zeros")
+		"-c","--coarsen", type=int, default=0, help="The size of the box used to downscale data, Defualt=zero")
 	parser.add_argument(
 		"-y","--yearly", action="store_true", help="When calculating TSS-RESTREND, report values in change per year not total change")
 	parser.add_argument(
