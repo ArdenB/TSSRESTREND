@@ -14,6 +14,13 @@ __version__ = "v1.0(23.06.2020)"
 __email__   = "aburrell@whrc.org"
 
 # ==============================================================================
+import os
+import sys
+# ===== CHange the dir to the script location =====
+if not os.path.dirname(sys.argv[0]) == "":
+	os.chdir(os.path.dirname(sys.argv[0]))
+# ===== append that to the system path =====
+sys.path.append(os.getcwd())
 
 import xarray as xr 
 import dask 
@@ -26,9 +33,6 @@ import json
 import glob
 import shutil
 # ========== Load my custom functions ==========
-import os
-import sys
-sys.path.append(os.getcwd())
 import CustomFunctions as cf 
 
 
@@ -161,6 +165,7 @@ def main(args):
 		json.dump(Metadata, f, indent=4)
 	print("Run Setup Complete")
 
+# ==============================================================================
 
 def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding):
 	"""This function is not available to the user as it depends on data too large to put in a 

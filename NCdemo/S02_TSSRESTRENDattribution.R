@@ -107,5 +107,5 @@ info$history = paste(toString(Sys.time()), ": TSS.RESTREND change estimates calc
 jinfo = toJSON(info, auto_unbox = TRUE, pretty=4)
 write(jinfo, fnIN)
 
-browser()
+# browser()
 

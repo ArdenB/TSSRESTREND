@@ -15,6 +15,13 @@ __version__ = "v1.0(23.06.2020)"
 __email__ = "aburrell@whrc.org"
 
 # ==============================================================================
+import os
+import sys
+# ===== CHange the dir to the script location =====
+if not os.path.dirname(sys.argv[0]) == "":
+	os.chdir(os.path.dirname(sys.argv[0]))
+# ===== append that to the system path =====
+sys.path.append(os.getcwd())
 
 # ========== Import packages ==========
 import os
@@ -64,7 +71,7 @@ def main(args):
 				dsin = xr.ones_like(dsin)
 			elif info["photo"] == "C3":
 				dsin = xr.zeros_like(dsin)
-				
+
 		# ========== Stack the dataset ==========
 		ds_stack = dsin.stack(cord=('longitude', 'latitude'))
 

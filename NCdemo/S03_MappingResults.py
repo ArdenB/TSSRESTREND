@@ -15,11 +15,14 @@ __version__ = "v1.0(23.06.2020)"
 __email__   = "aburrell@whrc.org"
 
 # ==============================================================================
-# ========== Load my custom functions ==========
-import sys
 import os
+import sys
+# ===== CHange the dir to the script location =====
+if not os.path.dirname(sys.argv[0]) == "":
+	os.chdir(os.path.dirname(sys.argv[0]))
+# ===== append that to the system path =====
 sys.path.append(os.getcwd())
-import CustomFunctions as cf 
+
 
 # ========== Import packages ==========
 import numpy as np
@@ -40,6 +43,9 @@ import palettable
 import statsmodels.stats.multitest as smsM
 import scipy.stats as sps
 
+# ========== Load custom functions ==========
+import CustomFunctions as cf 
+
 # ==============================================================================
 def main(args):
 	# =========== Read the metadata file in ==========
@@ -48,7 +54,7 @@ def main(args):
 	else:
 		'./results/archive/infomation_%02d.json' % args.use_archived
 
-	with open(infofile, "r+") as f:
+	with open(infofile, "r+", errors='ignore') as f:
 		info = json.load(f)
 		# ========== fix the timedelta ==========
 		if type(info["ComputeTime"]) == float:
@@ -198,9 +204,9 @@ def MapSetup(ds, va, signif, maininfo, gitinfo, info, plotpath,  mask=None):
 		cmapHex     = palettable.colorbrewer.diverging.PiYG_10.hex_colors
 	elif va == "OtherFactors":
 		# cmapHex = palettable.colorbrewer.diverging.RdBu_10.hex_colors
-		cmapHex = palettable.cmocean.diverging.Curl_10.hex_colors
+		cmapHex = palettable.cmocean.diverging.Curl_10_r.hex_colors
 	elif va == "AnthropogenicClimateChange":
-		cmapHex = palettable.colorbrewer.diverging.PuOr_10_r.hex_colors
+		cmapHex = palettable.colorbrewer.diverging.PuOr_10.hex_colors
 
 		
 	
@@ -421,7 +427,7 @@ if __name__ == '__main__':
 		"-s", "--sig", action="store_true", 
 		help="Significance: Apply a zero mask using FDR adjustment and the Benjamini/Hochberg method")
 	parser.add_argument(
-		"--method", type=str, default="fdr_bh", help="The method used to adjust for False Discovery Rate. must be fdr_bh or fdr_by")
+		"--method", type=str,choices=["fdr_bh", 'fdr_by'], default="fdr_bh", help="The method used to adjust for False Discovery Rate. must be fdr_bh or fdr_by")
 	parser.add_argument(
 		"--use_archived", type=int, default=None, help="Use this argument to redo archived infomation.json files")
 	args = parser.parse_args() 
