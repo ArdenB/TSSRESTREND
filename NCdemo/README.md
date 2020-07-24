@@ -74,16 +74,23 @@ For this example we will use a coarsen value of 3 and the defualts for all other
 python S00_SetupMetadata.py -c 3
 ```
 
-#### Reshape the demo data into two dimensional csv files ####
+#### Reshape the demo nc data into two-dimensional csv files ####
 
 
 The [S01_processingnetcdf.py](S01_processingnetcdf.py) opens the demo vegetation, precipitation, temperature and C4 fraction netcdf files then creates 2 dimensional .csv files that can be read in by R. R can be very slow when worting with higher dimensional rasters. Using python to convert the 3D netcdf files to a 2D .csv file with the lat and long as the rowname and each column being a timestep reduces overall computation time. Which files are processed is determined using the infomation.json file produced in the previous step.  
-
-- --use_archived		Use this argument to redo archived infomation.json files.  Must be an int which correpondes to the number of the desired ./data/archive/infomation_{int}.json file. 
 
 ```sh
 # Run in console
 python S01_processingnetcdf.py
 ```
+This script has one optional argument:
+
+- --use_archived		Use this argument to redo archived infomation.json files.  Must be an int which correpondes to the number of the desired ./data/archive/infomation_{int}.json file. 
+
+
+#### Use R to perform TSSRESTREND analysis ####
+
+
+
 
 
