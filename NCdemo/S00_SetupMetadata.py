@@ -193,7 +193,6 @@ def _backup_coarsen(dsin, va, coarsen):
                 lat = (ds_sub.latitude[0].values + 
                     (np.diff(ds_sub.latitude.values).mean() * np.floor(coarsen/2))- 
                     ((coarsen+1)%2 * (np.diff(ds_sub.latitude.values).mean()/2)))
-                breakpoint()
 
             sub_mean = sub_mean.assign_coords(dict(
                 longitude=lon, 
