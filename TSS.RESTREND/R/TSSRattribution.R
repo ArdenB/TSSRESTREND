@@ -75,11 +75,11 @@ TSSRattribution <- function(
     }
   }
   # ========== Perfrom the data check ==========
-  if (any(is.na(CTSR.VI))){
+  if (any(is.na(CTSR.VI))|(sd(CTSR.VI)==0)){
     return(ret.fail(overview, models, "NANinCTSR.VI", SkipError))
-  }else if (any(is.na(CTSR.RF))){
+  }else if (any(is.na(CTSR.RF))|(sd(CTSR.RF)==0)){
     return(ret.fail(overview, models, "NANinCTSR.RF", SkipError))
-  }else if (any(is.na(CTSR.TM))){
+  }else if (any(is.na(CTSR.TM)) | (sd(CTSR.TM)==0)){
     return(ret.fail(overview, models, "NANinCTSR.TM", SkipError))
   }
   allerror <- try({
