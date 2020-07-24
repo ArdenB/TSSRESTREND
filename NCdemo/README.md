@@ -52,7 +52,7 @@ To demonstrate how TSS-RESTREND can be applied to spatial data, this repo this r
 
 The first script that needs to run is [S00_SetupMetadata.py](./S00_SetupMetadata.py).  This script saves a json file that is passed between all the following scripts with metadata about the run. It has six possible command line arguments:
 
-###### optional args: ######
+##### optional args: #####
 
   -h, --help            show help message and exit
 
