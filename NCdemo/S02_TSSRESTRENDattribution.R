@@ -9,6 +9,10 @@ library(TSS.RESTREND)
 library(jsonlite)
 library(optparse)
 
+this.dir <- dirname(parent.frame(2)$ofile)
+print(this.dir)
+setwd(this.dir)
+
 option_list = list(
    make_option(c("-i", "--infofile"), type="character", default='./results/infomation.json',
                help="the infomation file", metavar="character"))

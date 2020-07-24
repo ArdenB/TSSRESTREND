@@ -77,7 +77,11 @@ def main(args):
             # ========== Coarsen the dataset ==========
             with warn.catch_warnings():
                 warn.simplefilter("ignore")
-                dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
+                try:
+                    dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
+                except TypeError:
+                    warn.warn("This version of xarray has a bug in the coarsen function. Defualting to a manual coarsen which is a lot slower.")
+                    dsout = _backup_coarsen(dsin, coarsen)
             hist2 = "%s: Coarsend using Xarray coarsen with a window of size %d" % (pd.Timestamp.now(), coarsen)
             dsout.attrs = dsin.attrs
             dsout.attrs["history"]  = hist2 + dsout.attrs["history"]
@@ -166,7 +170,8 @@ def main(args):
     print("Run Setup Complete")
 
 # ==============================================================================
-
+def _backup_coarsen(dsin, coarsen):
+    breakpoint()
 def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding):
     """This function is not available to the user as it depends on data too large to put in a 
     git repo, It lef here so i know how to redo the data if needs be."""

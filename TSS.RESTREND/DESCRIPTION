@@ -20,5 +20,5 @@ Suggests:
     rgl,
     car
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.6.0)
 RoxygenNote: 7.1.1
