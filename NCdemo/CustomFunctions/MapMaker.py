@@ -52,6 +52,10 @@ def mapmaker(da, mapdet):
 
 	plt.rcParams.update({'figure.subplot.right' : 0.82 })
 	plt.rcParams.update({'figure.subplot.left' : 0.02 })
+	plt.rcParams.update({'figure.subplot.top' : 0.95 })
+	plt.rcParams.update({'figure.subplot.bottom' : 0.05 })
+	# plt.rcParams.update({'figure.subplot.right' : 0.80 })
+	# plt.rcParams.update({'figure.subplot.left' : 0.10 })
 	
 	# # ========== Deal with the fonts ==========
 	# if not mapdet.font is None:
@@ -125,29 +129,6 @@ def mapmaker(da, mapdet):
 	posn = ax.get_position()
 	cbar_ax = fig.add_axes([posn.x0 + posn.width + 0.005, posn.y0, 0.025, posn.height])
 
-	# if not mapdet.sigmask is None:
-	# 	# Calculate the lat and lon values
-	# 	slats = mapdet.lats[mapdet.sigmask["yv"]]
-	# 	slons = mapdet.lons[mapdet.sigmask["xv"]]
-
-	# 	ax.scatter(
-	# 		slons, slats,s=4, c='k', marker='X', 
-	# 		facecolors='none', edgecolors="none",  
-	# 		alpha=0.35, transform=ccrs.PlateCarree())
-
-		# ipdb.set_trace()
-		# plt.scatter(xvals, yvals, s=1, c='k', marker='.', alpha=0.5)
-
-
-	# divider = make_axes_locatable(ax)
-	# cbar_ax = divider.append_axes("right", size="5%", pad=0.05)
-
-	# im = ax.pcolormesh(image,  cmap=cmap, norm=mapdet.norm)
-	# old feature commands
-	# ax.add_feature(cpf.LAND, col="dimgrey")
-	# ax.add_feature(states_provinces, edgecolor='gray')
-	# ax.ocean(col='w')
-	# ax.coastlines(resolution='110m')
 
 	# ========== Add features to the map ==========
 	ax.add_feature(cpf.OCEAN, facecolor="w", alpha=1, zorder=100)
@@ -225,6 +206,7 @@ def mapmaker(da, mapdet):
 		# ipdb.set_trace()
 	else:
 		# Change the horrixontal allignment of cb ticks to right
+		# cb.ax.xaxis.set_tick_params(pad=25)
 		for t in cb.ax.get_yticklabels():
 			t.set_horizontalalignment('right')   
 			# sx = 3.1

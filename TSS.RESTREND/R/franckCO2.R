@@ -47,6 +47,7 @@ franksCO2 <- function(CTSR.VI, C4frac, CO2=FALSE, refyear=1980){
   if (class(CO2) != "ts"){
 	  stop("CTSR.VI Not a time series object. Please check the data")
 	}else if ((C4frac > 1)||(C4frac<0)){
+	  print(C4frac)
 	  stop("C4frac must be between 0 and 1")
 	}
 

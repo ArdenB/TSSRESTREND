@@ -50,7 +50,7 @@ def main(args):
 	fnoutP = "./data/AUSdemo_TERRACLIMATE_ppt.nc"
 	fnT    = "./data/TerraClimate_tmean_AUS_remapped.nc"
 	fnoutT = "./data/AUSdemo_TERRACLIMATE_tmean.nc"
-	fnC4   = "./data/AUSdemo_C3vsC4Fraction.nc"
+	fnC4   = "./data/C3vsC4Fraction_AUSremapped.nc"
 	fnoutC = "./data/AUSdemo_SYNMAP_C4Fraction.nc"
 
 	encoding = ({
@@ -76,7 +76,14 @@ def main(args):
 			dsout.attrs = dsin.attrs
 			dsout.attrs["history"]  = hist2 + dsout.attrs["history"]
 			fnout = fn[:-3] +"_xrcoarsen_%dwin.nc" % coarsen
-			# write out
+			# =========== Check for valid values ==========
+			if va in ["ndvi", "ppt", "C4frac"]:
+				dsout = dsout.where(dsout>=0., 0.)
+			
+			if va in ["ndvi", "C4frac"]:
+				dsout = dsout.where(dsout<=1., 1.)
+
+			# =========== write out =========== 
 			dsout.to_netcdf(fnout, 
 				format         = 'NETCDF4', 
 				encoding       = {va:encoding},
@@ -217,6 +224,9 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding
 		dsC.attrs["history"]  = hist + dsC.attrs["history"]
 		dsC.attrs["FileName"] = fnoutC
 		dsC["C4frac"] = dsC["C4frac"].astype("float32")
+		dsC = dsC.where(dsC >= 0., 0.)
+		dsC = dsC.where(dsC <= 1., 1.)
+		
 
 		# write out
 		dsC.to_netcdf(fnoutC, 
@@ -236,7 +246,7 @@ if __name__ == '__main__':
 	parser.add_argument(
 		"-c","--coarsen", type=int, default=0, help="The size of the box used to downscale data, Defualt is zeros")
 	parser.add_argument(
-		"-y","--yearly", action="store_true", help="When calculating TSS-RESTRENDm report values in change per year")
+		"-y","--yearly", action="store_true", help="When calculating TSS-RESTREND, report values in change per year not total change")
 	parser.add_argument(
 		"--maxacp", type=int, default=12, help="The maximum accumulation period")
 	parser.add_argument(
@@ -244,7 +254,7 @@ if __name__ == '__main__':
 	parser.add_argument(
 		"--photo", type=str, default="C3andC4", help="The photosyenthetic pathyway", choices=['C3andC4', 'C3', 'C4'],)
 	parser.add_argument(
-		"-a","--archive", action="store_true", help="The size of the box used to downscale data, Defualt is zeros")
+		"-a","--archive", action="store_true", help="Archive existing infomation.json file rather than overwriting it")
 	args = parser.parse_args() 
 	
 	# ========== Call the main function ==========

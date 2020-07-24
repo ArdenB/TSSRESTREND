@@ -30,25 +30,29 @@ import warnings as warn
 import xarray as xr
 import dask
 import bottleneck as bn
-from collections import OrderedDict, defaultdict
+from numba import jit
+from collections import OrderedDict
 import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 import palettable
 import statsmodels.stats.multitest as smsM
+import scipy.stats as sps
 
 # ==============================================================================
 def main(args):
-		# =========== Read the metadata file in ==========
-	infofile = './data/infomation.json'
+	# =========== Read the metadata file in ==========
+	if args.use_archived is None:
+		infofile = './results/infomation.json'
+	else:
+		'./results/archive/infomation_%02d.json' % args.use_archived
+
 	with open(infofile, "r+") as f:
 		info = json.load(f)
 		# ========== fix the timedelta ==========
 		if type(info["ComputeTime"]) == float:
 			info["ComputeTime"] = pd.Timedelta(info["ComputeTime"], unit="sec")
-
-
 
 	# ========== Open the csv results file ==========
 	fn = "./results/AttributionResults.csv"
@@ -60,6 +64,11 @@ def main(args):
 	df["latitude" ] = lonlat[:, 1]
 	df = df.reset_index(drop=True).set_index(["longitude","latitude" ])
 	df["errors"] = df["errors"].apply(_df_error)
+
+	df["AnthropogenicClimateChange"] = df.ClimateChange + df.CO2
+	# ========== function to calculate adjusted p values for ACC ==========
+	pstack = np.stack((df["ClimateChange.Pvalue"].values, df["CO2.Pvalue"].values))
+	df["AnthropogenicClimateChange.Pvalue"]= np.apply_along_axis(_combine_pvalue2d, 0, pstack)
 
 	# ========== Open a reference dataset ==========
 	# This is a hack so i don't have to harrd code all the infomation 
@@ -73,6 +82,7 @@ def main(args):
 	# Netcdf files need a time dimenstion
 	ds = ds.assign_coords(time=pd.Timestamp("2015-12-31")).expand_dims("time")
 	ds = ds.transpose('time', 'latitude', 'longitude')
+
 	
 	# ++++++++++ Fix the Global Attributes ++++++++++
 	ds = GlobalAttributes(ds, info, ds_ref=ds_ref)
@@ -89,9 +99,6 @@ def main(args):
 				'complevel':5.
 				# 'chunksizes':[1, ensinfo.lats.shape[0], 100],
 				})
-	warn.warn("TO BE IMPLEMENTED: The Attributes of the data variables need to be added here")
-	# To ADD, Fix variable attributes
-
 	# ========== Write the dataset to a netcdf file ==========
 	print("Starting write of data at:", pd.Timestamp.now())
 	ds.to_netcdf('./results/TSSRattribution_Results.nc', 
@@ -147,7 +154,7 @@ def MapSetup(ds, va, signif, maininfo, gitinfo, info, plotpath,  mask=None):
 	mapdet = cf.mapclass("Australia", plotpath)
 	mapdet.dpi  = 130
 	mapdet.var  =  va 
-	mapdet.desc =  va 
+	mapdet.desc =  "%s_%s_%dkm" % (va, info["photo"], (25*(info["coarsen"]-1)+25)) 
 	# ========== Create the data array ==========
 	da = ds[va].copy()
 	ad = da.squeeze()
@@ -173,38 +180,27 @@ def MapSetup(ds, va, signif, maininfo, gitinfo, info, plotpath,  mask=None):
 
 
 	tks = np.array([-0.30, -0.24, -0.12, -0.06, -0.02, 0, 0.02, 0.06, 0.12, 0.24, 0.30])
+	mapdet.cmin  = -0.3 #-0.1 	# the min of the colormap
+	mapdet.cmax =  0.3#0.1	# the max of the colormap
+
 	# ========== Set the colormap ==========
 	if va == "ObservedChange":
 		cmapHex = palettable.colorbrewer.diverging.PRGn_10.hex_colors
-		mapdet.cmin  = -0.3 #-0.1 	# the min of the colormap
-		mapdet.cmax  =  0.3 # 0.1	# the max of the colormap
 	elif va in ["ObservedClimate", "ClimateChange"]:
 		cmapHex     = palettable.colorbrewer.diverging.BrBG_10.hex_colors
-		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
-		mapdet.cmax =  0.3#0.1	# the max of the colormap
-		# colour      = "#00bfff"
-
 	elif va == "ClimateVariability":
 		cmapHex     = palettable.colorbrewer.diverging.RdBu_10.hex_colors
-		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
-		mapdet.cmax =  0.3#0.1	# the max of the colormap
-		# colour      = "#00bfff"
 	elif va == "CO2":
 		tks = np.array([0, 0.001, 0.02, 0.03, 0.04, 0.06, 0.24, 0.30])
 		cmapHex = palettable.colorbrewer.sequential.Purples_7.hex_colors
 		mapdet.cmin =  0.0#-0.1 	# the min of the colormap
-		mapdet.cmax =  0.3#0.1	# the max of the colormap
 	elif va == "LandUse":
 		cmapHex     = palettable.colorbrewer.diverging.PiYG_10.hex_colors
-		mapdet.cmin  = -0.3 #-0.1 	# the min of the colormap
-		mapdet.cmax  =  0.3 # 0.1	# the max of the colormap
-		# breakpoint()
-		# colour      = "#ffc125"
 	elif va == "OtherFactors":
 		# cmapHex = palettable.colorbrewer.diverging.RdBu_10.hex_colors
-		cmapHex = palettable.colorbrewer.diverging.PuOr_10.hex_colors
-		mapdet.cmin = -0.3#-0.1 	# the min of the colormap
-		mapdet.cmax =  0.3#0.1	# the max of the colormap
+		cmapHex = palettable.cmocean.diverging.Curl_10.hex_colors
+	elif va == "AnthropogenicClimateChange":
+		cmapHex = palettable.colorbrewer.diverging.PuOr_10_r.hex_colors
 
 		
 	
@@ -400,6 +396,20 @@ def _df_error(error):
 		# unknow errror
 		return 5
 
+def _combine_pvalue2d(pvals):
+	"""
+	takes an array and removes nans then combines
+	args:
+		pvalues: 	np.array
+	"""
+	if bn.allnan(pvals):
+		return np.NAN
+	elif np.sum(pvals) == 0:
+		return 0
+	else:
+		___, pv = sps.combine_pvalues(pvals[~np.isnan(pvals)])
+		return pv
+#===================
 # ==============================================================================
 if __name__ == '__main__':
 	description='Arguments that can be passed to the saving and plotting script'
@@ -412,5 +422,8 @@ if __name__ == '__main__':
 		help="Significance: Apply a zero mask using FDR adjustment and the Benjamini/Hochberg method")
 	parser.add_argument(
 		"--method", type=str, default="fdr_bh", help="The method used to adjust for False Discovery Rate. must be fdr_bh or fdr_by")
+	parser.add_argument(
+		"--use_archived", type=int, default=None, help="Use this argument to redo archived infomation.json files")
 	args = parser.parse_args() 
 	main(args)
+

@@ -64,7 +64,7 @@ def main(args):
 				dsin = xr.ones_like(dsin)
 			elif info["photo"] == "C3":
 				dsin = xr.zeros_like(dsin)
-		
+				
 		# ========== Stack the dataset ==========
 		ds_stack = dsin.stack(cord=('longitude', 'latitude'))
 

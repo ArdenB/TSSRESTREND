@@ -23,7 +23,10 @@ PPdf <- read.csv(fnPP, row.names=1, check.names=FALSE) # precip
 fnTM <- "./data/demo_dataframe_tmean.csv"
 TMdf <- read.csv(fnTM, row.names=1, check.names=FALSE) # temperature
 fnC4 <- "./data/demo_dataframe_C4frac.csv"
-C4df <- read.csv(fnC4, row.names=1, check.names=FALSE) # temperature
+C4df <- read.csv(fnC4, row.names=1, check.names=FALSE) # C4 frac
+C4df[C4df < 0] = 0
+C4df[C4df > 1] = 1
+
 fnIN <- opt$infofile
 info <- fromJSON(fnIN)
 
@@ -74,8 +77,9 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes){
   	TMmf    <- month(tail(TMdates, n=1))
   	CTSR.TM <- ts(as.numeric(TM), start=c(TMys, TMms), end=c(TMyf,TMmf), frequency = 12)
 
+
   	# ========== get the results ==========
-  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, C4frac=C4frac, AnnualRes=AnnualRes)
+  	results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, C4frac=round(C4frac, digits = 4), AnnualRes=AnnualRes)
   }
   # ========== return the results ==========
   ret <- results$summary
@@ -84,7 +88,6 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes){
   return(ret)
 }
 
-browser()
 # ========== Calculate the number of rows i need to loop over ==========
 ptime  <- system.time(
   tss.atdf <- foreach(
