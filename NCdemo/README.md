@@ -4,7 +4,7 @@ This folder gives and example of how TSS-RESTREND R package can be used to do an
 There are four netcdf files included in this repo, GIMMS derived NDVI (1982-2015), TERRACLIMATE derived precipitation (1960-2015), TERRACLIMATE derived temperature (1960-2015) and SYNMAP C4 vegetation fraction. To make the datasets small enough that they can be stored on git, they have all been down-sampled to approximately 25km and their spatial coverage has been limited to Australia. Example datasets are located in [data](data). They are included for demonstration purposes and should not be used for scientific analysis.  
 
 ## 1. Setup a programming environment
-**Building a python environment using conda**
+#### Building a python environment using conda ####
 
 The following are instructions on how to setup a conda python programming environment in any Ubuntu based Linux distro including the Windows Subsystem for Linux (WSL).  Anaconda is available [here](https://www.anaconda.com/products/individual).  
 
@@ -26,7 +26,7 @@ sudo apt-get intall ncview
 
 ```
 
-**Building an R programming environment**
+#### Building an R programming environment ####
 
 The latest version of R is available from [CRAN](https://cran.r-project.org/mirrors.html). The TSSRESTREN package was built with [Rstudio](https://rstudio.com/products/rstudio/download/).
 
@@ -52,7 +52,7 @@ To demonstrate how TSS-RESTREND can be applied to spatial data, this repo contai
 
 The first script that needs to run is [S00_SetupMetadata.py](./S00_SetupMetadata.py).  This script saves a json file that is passed between all the following scripts with meta-data about the run. For this example we will use a coarsen value of 5 to speed up analysis and the defaults for all other arguments.  
 
-```sh
+```bash
 # Run in console
 python S00_SetupMetadata.py -c 5
 ```
@@ -63,24 +63,24 @@ This script has six optional command line arguments:
 
  -  -c, --coarsen 	The size of the box used to downscale data. Default = zero. Must be an int. Passing a larger coarsen values will speed up analysis at the cost of resolution.  The default of 0 means the analysis will occur at 25km of the demonstration datasets and will take many hours.  Passing value of 10 should downscales the data to 250km pixels which allow all four demo scripts to be run in less than 30 minutes.  
 
- -  -y, --yearly	When calculating TSS-RESTREND, report values in change per year not Total Change. Defualt is Total Change
+ -  -y, --yearly	When calculating TSS-RESTREND, report values in change per year not Total Change. Default is Total Change
 
- -  --maxacp    	The maximum accumulation period in months. Must be an int. defulat = 12. See TSSRESTREND R package documentation. 
+ -  --maxacp    	The maximum accumulation period in months. Must be an int. default = 12. See TSSRESTREND R package documentation. 
 
- -  --maxosp       	The maximim ofset period in months. Must be an int. defulat = 4. See TSSRESTREND R package documentation. 
+ -  --maxosp       	The maximum offset period in months. Must be an int. default = 4. See TSSRESTREND R package documentation. 
 
- -  --photo 		The photosyenthetic pathyway to fit for calculating the CO2 effect size. Possible arguments: {"C3andC4","C3","C4"}. Defulat is "C3andC4" which uses the demo SYNMAP C4 vegetation fraction.  
+ -  --photo 		The photosynthetic pathway to fit for calculating the CO2 effect size. Possible arguments: {"C3andC4","C3","C4"}. Default is "C3andC4" which uses the demo SYNMAP C4 vegetation fraction.  
 
  -  -a, --archive	Archive existing infomation.json file rather than overwriting it. The existing infomation.json file is moved to ./results/archive/.  With some tweaks this could be used to allow for multiple runs without overwriting results.  
 
 
 
-#### Reshape the demo nc data into two-dimensional csv files ####
+#### Reshape the demo netcdf data into two-dimensional csv files ####
 
 
-R can be very slow when worting with higher dimensional rasters. Using python to convert the 3D netcdf files to a 2D .csv file with the lat and long as the rowname and each column being a time-step reduces overall computation time. Which files are processed is determined using the infomation.json file produced in the previous step.  [S01_processingnetcdf.py](S01_processingnetcdf.py) opens the demo vegetation, precipitation, temperature and C4 fraction netcdf files then creates 2 dimensional .csv files that can be read in by R.
+R can be very slow when working with higher dimensional rasters. Using python to convert the 3D netcdf files to a 2D .csv file with the lat and long as the row name and each column being a time-step reduces overall computation time. Which files are processed is determined using the infomation.json file produced in the previous step.  [S01_processingnetcdf.py](S01_processingnetcdf.py) opens the demo vegetation, precipitation, temperature and C4 fraction netcdf files then creates 2 dimensional .csv files that can be read in by R.
 
-```sh
+```bash
 # Run in console
 python S01_processingnetcdf.py
 ```
@@ -94,7 +94,7 @@ This script produces four csv files in the [data](./data/) folder: demo_datafram
 
 [S02_TSSRESTRENDattribution.R](./S02_TSSRESTRENDattribution.R) reads in the 2D csv files and then uses the 'foreach' library to iterate over the data performing TSS.RESTREND on each pixel and saving the results as a csv called './results/AttributionResults.csv'.  It can be run in Rstudio or in the terminal using:
 
-```sh
+```bash
 # Run in console
 Rscript S02_TSSRESTRENDattribution.R
 ```
@@ -109,7 +109,7 @@ This script is written to only use a single core.  However, looping through pixe
 
 [S03_MappingResults.py](./S03_MappingResults.py) Reads the './results/AttributionResults.csv' file, converts it to a netcdf file adding all the appropriate history and meta-data, and then saves it to './results/TSSRattribution_Results.nc'.  By default this script will make maps of all the change variables and save them in the './results/' folder. 
 
-```sh
+```bash
 python S03_MappingResults.py
 ```
 
