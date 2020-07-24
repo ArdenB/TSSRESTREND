@@ -11,6 +11,7 @@ The changes to the method included in **version 0.2.15** focus on the inclusion 
 
 **Version 0.3.0** is an expansion of the TSS-RESTREND package to perform additional vegetation change detection and attribution analysis.  It can be used to quantify vegetation change and then attribute it to some combination of CO2 fertilisation, climate change and climate variability.  For details on methods used to perform this attribution see:
 * Burrell, A. L., J. P. Evans, and M. De Kauwe. ‘Anthropogenic Climate change has driven over 5 million km<sup>2</sup> of drylands towards desertification’. 2020, in Press.  
+
 For an example of how to perfom the method used by Burrell et al., (2020) see [NCdemo](./NCdemo/).  
 
 ## Logic and structure of the package 
