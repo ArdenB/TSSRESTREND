@@ -21,7 +21,7 @@ if not os.path.dirname(sys.argv[0]) == "":
     os.chdir(os.path.dirname(sys.argv[0]))
 # ===== append that to the system path =====
 sys.path.append(os.getcwd())
-
+import numpy as np
 import xarray as xr 
 import dask 
 import bottleneck as bn
@@ -81,7 +81,7 @@ def main(args):
                     dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
                 except TypeError:
                     warn.warn("This version of xarray has a bug in the coarsen function. Defualting to a manual coarsen which is a lot slower.")
-                    dsout = _backup_coarsen(dsin, coarsen)
+                    dsout = _backup_coarsen(dsin, va,  coarsen)
             hist2 = "%s: Coarsend using Xarray coarsen with a window of size %d" % (pd.Timestamp.now(), coarsen)
             dsout.attrs = dsin.attrs
             dsout.attrs["history"]  = hist2 + dsout.attrs["history"]
@@ -170,8 +170,44 @@ def main(args):
     print("Run Setup Complete")
 
 # ==============================================================================
-def _backup_coarsen(dsin, coarsen):
-    breakpoint()
+def _backup_coarsen(dsin, va, coarsen):
+
+    # loop over the lat
+    results = []
+    for nlat in range(0, dsin.latitude.size, coarsen):
+        print(va, "latitude:", nlat, "of", dsin.latitude.size)
+        for nlong in range(0, dsin.longitude.size, coarsen):
+            # ========== Subset the box ==========
+            ds_sub   = dsin.isel(dict(latitude=slice(nlat, nlat+coarsen), longitude=slice(nlong, nlong+coarsen)))
+            # ========== pull out the values ==========
+            sub_mean = ds_sub.mean(dim=["longitude", "latitude"])
+            if ds_sub.longitude.size == coarsen:
+                lon = float(ds_sub.longitude.median().values)
+            else:
+                lon = (ds_sub.longitude[0].values + 
+                    (np.diff(ds_sub.longitude.values).mean() * np.floor(coarsen/2)) - 
+                    ((coarsen+1)%2 * (np.diff(ds_sub.longitude.values).mean()/2)))
+            if ds_sub.latitude.size == coarsen:
+                lat = float(ds_sub.latitude.median().values)
+            else:
+                lat = (ds_sub.latitude[0].values + 
+                    (np.diff(ds_sub.latitude.values).mean() * np.floor(coarsen/2))- 
+                    ((coarsen+1)%2 * (np.diff(ds_sub.latitude.values).mean()/2)))
+                breakpoint()
+
+            sub_mean = sub_mean.assign_coords(dict(
+                longitude=lon, 
+                latitude=lat)).expand_dims(["longitude", "latitude"])
+            results.append(sub_mean)
+
+    # ========== put the dataset back together
+    ds_ret = xr.merge(results).transpose('time', 'latitude', 'longitude')
+    ds_ret.attrs = dsin.attrs
+    for var in dsin.variables: 
+        ds_ret[var].attrs = dsin[var].attrs
+    return ds_ret
+
+
 def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding):
     """This function is not available to the user as it depends on data too large to put in a 
     git repo, It lef here so i know how to redo the data if needs be."""
