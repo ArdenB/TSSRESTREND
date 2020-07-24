@@ -24,8 +24,8 @@ fnTM <- "./data/demo_dataframe_tmean.csv"
 TMdf <- read.csv(fnTM, row.names=1, check.names=FALSE) # temperature
 fnC4 <- "./data/demo_dataframe_C4frac.csv"
 C4df <- read.csv(fnC4, row.names=1, check.names=FALSE) # C4 frac
-C4df[C4df < 0] = 0
-C4df[C4df > 1] = 1
+C4df[C4df < 0] = 0.
+C4df[C4df > 1] = 1.
 
 fnIN <- opt$infofile
 info <- fromJSON(fnIN)

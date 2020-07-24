@@ -71,7 +71,9 @@ def main(args):
 			xr.set_options(keep_attrs=True)
 			dsin = xr.open_dataset(fn) 
 			# ========== Coarsen the dataset ==========
-			dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
+			with warn.catch_warnings():
+			    warn.simplefilter("ignore")
+				dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
 			hist2 = "%s: Coarsend using Xarray coarsen with a window of size %d" % (pd.Timestamp.now(), coarsen)
 			dsout.attrs = dsin.attrs
 			dsout.attrs["history"]  = hist2 + dsout.attrs["history"]

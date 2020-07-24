@@ -48,7 +48,7 @@ install.packages(c("devtools", "roxygen2"))
 
 To demonstrate how TSS-RESTREND can be applied to spatial data, this repo this repo contains four script that, if run in order will setup the analysis, process the data, perform TSS-RESTREND on the data, reassemble the results into a netcdf file and save maps of the results.  The results will be equivilant to a single run from Burrell et al., (2020).  This example is split across four scripts that need to be run in order from S00 to S03.   
 
-#### Setting up the run metadata ####
+#### Setting up the metadata ####
 
 The first script that needs to run is [S00_SetupMetadata.py](./S00_SetupMetadata.py).  This script saves a json file that is passed between all the following scripts with metadata about the run. It has six possible command line arguments:
 
@@ -64,7 +64,7 @@ The first script that needs to run is [S00_SetupMetadata.py](./S00_SetupMetadata
 
  -  --photo 		The photosyenthetic pathyway to fit for calculating the CO2 effect size. Possilbe arguments: {"C3andC4","C3","C4"}. Defulat is "C3andC4" which uses the demo SYNMAP C4 vegetation fraction.  
 
- -  -a, --archive	Archive existing infomation.json file rather than overwriting it. The existing infomation.json file is moved to ./results/archive/.  With some tweaks this could be used to allow for multiple runs.  
+ -  -a, --archive	Archive existing infomation.json file rather than overwriting it. The existing infomation.json file is moved to ./results/archive/.  With some tweaks this could be used to allow for multiple runs withour overwriting results.  
 
 
 For this example we will use a coarsen value of 3 and the defualts for all other arguments.  
@@ -74,7 +74,16 @@ For this example we will use a coarsen value of 3 and the defualts for all other
 python S00_SetupMetadata.py -c 3
 ```
 
-There are two scripts used to process files. The primary one is [S01_processingnetcdf.py](S01_processingnetcdf.py) which opens the vegetation, precipitation and temperature netcdf files then creates 3 .csv files that can be read in my R.  The second is the [ProcessingPipline.py](ProcessingPipline.py) script which is only usefull for downscaling 
+#### Reshape the demo data into two dimensional csv files ####
 
-Script opens the ndvi, precip and temp netcdfs provided, reshapes them and converts them to a dataframe which is saved as a csv.
+
+The [S01_processingnetcdf.py](S01_processingnetcdf.py) opens the demo vegetation, precipitation, temperature and C4 fraction netcdf files then creates 2 dimensional .csv files that can be read in by R. R can be very slow when worting with higher dimensional rasters. Using python to convert the 3D netcdf files to a 2D .csv file with the lat and long as the rowname and each column being a timestep reduces overall computation time. Which files are processed is determined using the infomation.json file produced in the previous step.  
+
+- --use_archived		Use this argument to redo archived infomation.json files.  Must be an int which correpondes to the number of the desired ./data/archive/infomation_{int}.json file. 
+
+```sh
+# Run in console
+python S01_processingnetcdf.py
+```
+
 
