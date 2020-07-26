@@ -57,22 +57,22 @@ The first script that needs to run is [S00_SetupMetadata.py](./S00_SetupMetadata
 
 ```bash
 # Run in console
-python S00_SetupMetadata.py -c 5
+python S00_SetupMetadata.py --coarsen 5
 ```
 
 This script has six optional command line arguments:
 
  -  -h, --help      show help message and exit
 
- -  -c, --coarsen 	The size of the box used to downscale data. Default = zero. Must be an int. Passing a larger coarsen values will speed up analysis at the cost of resolution.  The default of 0 means the analysis will occur at 25km of the demonstration datasets and will take many hours.  Passing value of 10 should downscales the data to 250km pixels which allow all four demo scripts to be run in less than 30 minutes.  
+ -  -c, --coarsen 	Int. The size of the box used to downscale data. Default = 0. Passing a larger coarsen values will speed up analysis at the cost of resolution.  The default of 0 means the analysis will occur at 25km of the demonstration datasets and will take many hours.  Passing value of 10 should downscales the data to 250km pixels which allow all four demo scripts to be run in less than 30 minutes.  
 
  -  -y, --yearly	When calculating TSS-RESTREND, report values in change per year not Total Change. Default is Total Change
 
- -  --maxacp    	The maximum accumulation period in months. Must be an int. default = 12. See TSSRESTREND R package documentation. 
+ -  --maxacp    	Int. The maximum accumulation period in months. default = 12. See TSSRESTREND R package documentation. 
 
- -  --maxosp       	The maximum offset period in months. Must be an int. default = 4. See TSSRESTREND R package documentation. 
+ -  --maxosp       	int. The maximum offset period in months. default = 4. See TSSRESTREND R package documentation. 
 
- -  --photo 		The photosynthetic pathway to fit for calculating the CO2 effect size. Possible arguments: {"C3andC4","C3","C4"}. Default is "C3andC4" which uses the demo SYNMAP C4 vegetation fraction.  
+ -  --photo 		str, The photosynthetic pathway to fit for calculating the CO2 effect size. Possible arguments: {"C3andC4","C3","C4"}. Default is "C3andC4" which uses the demo SYNMAP C4 vegetation fraction.  
 
  -  -a, --archive	Archive existing infomation.json file rather than overwriting it. The existing infomation.json file is moved to ./results/archive/.  With some tweaks this could be used to allow for multiple runs without overwriting results.  
 
@@ -100,9 +100,13 @@ This script produces four csv files in the [data](./data/) folder: demo_datafram
 ```bash
 # Run in console
 Rscript S02_TSSRESTRENDattribution.R
+
+# ==========
+Rscript S02_TSSRESTRENDattribution.R  --ncores 
+
 ```
 
-This script is written to only use a single core.  However, looping through pixels is an 'embarrassingly parallel' problem and scales close to linearly with increases in corer.  The methods to setup a parallel cluster vary from system. An example of the possible modifications to the [S02_TSSRESTRENDattribution.R](./S02_TSSRESTRENDattribution.R) script to make it parallel are shown below.  
+This script is written to only use a single core by defualt.  However, looping through pixels is an 'embarrassingly parallel' problem and scales close to linearly with increases in cores.  
 
 ```R
 # TBD

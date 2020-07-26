@@ -106,7 +106,8 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
       colour <- c("orange", "purple", "olivedrab", "steelblue2", "lightslategrey", "hotpink1",
                   "lightgoldenrod3", "seagreen3", "sienna2")
       # Get a fit for the entire dataset
-      browser() #This fit will not work if there is Temperature data
+      # browser()
+      # This fit will not work if there is Temperature data
       fit <- lm(x$ts.data$anu.VI ~ x$ts.data$acu.RF)
       # Get the length of the data and the breakpoint indexes
       len <- length(x$ts.data$anu.VI)
@@ -349,7 +350,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
             xlab = "Precipitation Standard Variance",
             ylab = "Annual Max VI" , zlab = "Temperature Standard Variance",
             surface.col = c("orange", "purple"), parallel = FALSE,
-            sphere.size = 0.10, axis.ticks = TRUE,
+            sphere.size = 0.20, axis.ticks = TRUE,
             neg.res.col = "grey", pos.res.col = "grey", surface.alpha = 0.25, #threshold = 0.1,
             axis.col = c("royalblue2", "olivedrab3", "red2"),# bg.col = "black"
             model.summary = TRUE
@@ -403,7 +404,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
           # Put all the time seris in a single dataframe
           dfX <- data.frame(
             Precip = as.numeric(x$ts.data$acu.RF),
-            Temp = as.numeric(x$ts.data$acu.TM)/x$acum.df$tacp,
+            Temp = as.numeric(x$ts.data$acu.TM), #sink(tempfile(), type = c("output"))
             VI = as.numeric(x$ts.data$anu.VI)
           )
 
@@ -411,7 +412,7 @@ plot.TSSRESTREND <- function(x, plots="all", sig=0.05, ...){
           car::scatter3d(
             x = dfX$Precip,  y = dfX$VI, z = dfX$Temp, xlab = "Accumulated Precipitation",
             ylab = "Annual Max VI" , zlab = "Mean Monthly Accumulated Temperature",
-            point.col = "orange", sphere.size = 0.10, surface.col = "orange", axis.ticks = TRUE,
+            point.col = "orange", sphere.size = 0.20, surface.col = "orange", axis.ticks = TRUE,
             neg.res.col = "grey", pos.res.col = "grey", surface.alpha = 0.25, #threshold = 0.1,
             axis.col = c("royalblue2", "olivedrab3", "red2")#, bg.col = "black"
             )

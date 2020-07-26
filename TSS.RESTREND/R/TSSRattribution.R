@@ -82,6 +82,8 @@ TSSRattribution <- function(
   }else if (any(is.na(CTSR.TM)) | (sd(CTSR.TM)==0)){
     return(ret.fail(overview, models, "NANinCTSR.TM", SkipError))
   }
+  # ===== sink to catch bfast text =====
+  sink(tempfile(), type = c("output"))
   allerror <- try({
 
     # ========== Get the annual Max VI values ==========
@@ -265,11 +267,12 @@ TSSRattribution <- function(
     # ========== Return Errors ==========
     return(structure(list(summary = overview, models = models, errors = "")))
   })
+
+  sink()
   # ========== Handle any exceptions ==========
 
   if (class(ret.fail) == "try-error"){
     print("deal with all error here ")
-    browser()
     return(ret.fail(overview, models, "AttributionFailed", SkipError, errormessage=ret.fail))
   }
 

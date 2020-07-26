@@ -107,7 +107,7 @@ def main(args):
                 })
     # ========== Write the dataset to a netcdf file ==========
     print("Starting write of data at:", pd.Timestamp.now())
-    ds.to_netcdf('./results/TSSRattribution_Results.nc', 
+    ds.to_netcdf("./results/TSSRattribution_Results_%s_%dkm.nc" % (info["photo"], (25*(info["coarsen"]-1)+25)), 
         format         = 'NETCDF4', 
         encoding       = encoding,
         unlimited_dims = ["time"])
