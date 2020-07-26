@@ -29,7 +29,7 @@ if (endsWith(cwd, "NCdemo")){
 option_list = list(
    make_option(c("-i", "--infofile"), type="character", default='./results/infomation.json',
                help="the infomation file", metavar="character"),
-   make_option(c("-n", "--ncores"), type = "integer", default = 0,
+   make_option(c("-n", "--ncores"), type = "integer", default = -1,
             help="The number of threads to use.  if -1, all cores used"))
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
@@ -47,7 +47,7 @@ if (ncores == 0){
   if (ncores == -1){
     ncores <- parallel::detectCores()
   }
-  print("Number of cores:", ncores)
+  print(paste("Number of cores:", ncores))
 }
 # ========== read in the vegetation and climate data ==========
 fnVI <- "./data/demo_dataframe_ndvi.csv"
@@ -121,7 +121,7 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes, par
 
 # ========== Setup parallel processing ==========
 if (par){
-  print("Starting parellel processing at:", Sys.time() )
+  print(paste("Starting parellel processing at:", Sys.time()))
   cl <- makeCluster(ncores)
   registerDoSNOW(cl)
   # Setup the progress bar
@@ -136,7 +136,7 @@ if (par){
       .packages = c('TSS.RESTREND', "xts", "lubridate")) %dopar% {
         tssr.attr(line, VIdf[line, ], PPdf[line,], TMdf[line,], C4df[line, ], max.acp, max.osp, anres, par)
       })
-  print("parellel processing complete at:", Sys.time() )
+  print(paste("parellel processing complete at:", Sys.time()))
 
 } else{
   # ========== Loop over the rows sequentially ==========

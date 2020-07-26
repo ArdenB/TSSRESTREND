@@ -39,6 +39,9 @@ install.packages(c("bfast", "broom", "RcppRoll", "forecast", "car", "rgl", "ggpl
 
 # ========== Install TSS.RESTREND from cran ==========
 install.packages("TSS.RESTREND")
+
+# ========== To use the parallel option in the code ==========
+install.packages("doSNOW")
 ```
 The other option is to use this repo to build TSS-RESTREND. Rstudio project file TSS.RESTREND.Rproj is located [here](../TSS.RESTREND/)
 ```R
