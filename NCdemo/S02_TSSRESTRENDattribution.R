@@ -47,6 +47,7 @@ if (ncores == 0){
   if (ncores == -1){
     ncores <- parallel::detectCores()
   }
+  print("Number of cores:", ncores)
 }
 # ========== read in the vegetation and climate data ==========
 fnVI <- "./data/demo_dataframe_ndvi.csv"

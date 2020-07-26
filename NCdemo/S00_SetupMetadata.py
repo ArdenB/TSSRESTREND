@@ -80,7 +80,7 @@ def main(args):
 	                warn.simplefilter("ignore")
 	                dsout = dsin.coarsen(dim={"longitude":coarsen, "latitude":coarsen}, boundary="pad").mean()
             except TypeError:
-                warn.warn("This version of xarray has a bug in the coarsen function. Defualting to a manual coarsen which is a lot slower.")
+                print("This version of xarray has a bug in the coarsen function. Defualting to a manual coarsen which is a lot slower.")
                 dsout = _backup_coarsen(dsin, va,  coarsen)
             hist2 = "%s: Coarsend using Xarray coarsen with a window of size %d" % (pd.Timestamp.now(), coarsen)
             dsout.attrs = dsin.attrs
@@ -177,7 +177,7 @@ def _backup_coarsen(dsin, va, coarsen):
     # loop over the lat
     results = []
     for nlat in range(0, dsin.latitude.size, coarsen):
-        print(va, "latitude:", nlat, "of", dsin.latitude.size)
+        # print(va, "latitude:", nlat, "of", dsin.latitude.size)
         for nlong in range(0, dsin.longitude.size, coarsen):
             # ========== Subset the box ==========
             ds_sub   = dsin.isel(dict(latitude=slice(nlat, nlat+coarsen), longitude=slice(nlong, nlong+coarsen)))
