@@ -1,5 +1,11 @@
 # Applying the TSS.RESTREND package to Netcdf spatial data
-This folder gives and example of how TSS-RESTREND R package can be used to do analysis on netcdf format spatial data.  It uses a mix of python and R because that is the way I process data. The implementation here is not computationally efficient and massive performance gains can be using pythons dask+xarray+scikit-learn to compute statistics on the entire dataset to calculate the observed change, the CO2, the climate change and climate variability components.  
+
+
+This folder gives and example of how TSS-RESTREND R package can be used to do analysis on netcdf format spatial data.  It uses a mix of python and R because that is the way I process data. The implementation here is not computationally efficient and massive performance gains can be using pythons dask+xarray+scikit-learn to compute statistics on the entire dataset to calculate the observed change, the CO2, the climate change and climate variability components.  It is broken up into 3 sections:
+
+1. [Setup a programming environment](#1.-Setup-a-programming-environment)
+2. [Performing a single TSS-RESTREND run](#2.-Performing-a-single-TSS-RESTREND-run)
+3. [Performing multi-run ensemble statistics](#3.-Performing-multi-run-ensemble-statistics)
 
 There are four netcdf files included in this repo, GIMMS derived NDVI (1982-2015), TERRACLIMATE derived precipitation (1960-2015), TERRACLIMATE derived temperature (1960-2015) and SYNMAP C4 vegetation fraction. To make the datasets small enough that they can be stored on git, they have all been down-sampled to approximately 25km and their spatial coverage has been limited to Australia. Example datasets are located in [data](data). They are included for demonstration purposes and should not be used for scientific analysis.  This example uses some custom python functions located in the [CustomFunctions](CustomFunctions) folder and will not run if the folder is missing.  
 
@@ -134,3 +140,6 @@ By default, this script does not apply any significance masking before making th
 - --method 		    The method used to adjust for False Discovery Rate. must be "fdr_bh" or "fdr_by".  The default is the Benjamini/Hochberg method ("fdr_bh").  See statsmodels [multitest](https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html) documentation for more details
 
 - --use_archived    Use this argument to redo archived infomation.json files
+
+
+## 3. Performing multi-run ensemble statistics
