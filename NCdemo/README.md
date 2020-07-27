@@ -10,8 +10,9 @@ This folder gives and example of how TSS-RESTREND R package can be used to do an
 There are four netcdf files included in this repo, GIMMS derived NDVI (1982-2015), TERRACLIMATE derived precipitation (1960-2015), TERRACLIMATE derived temperature (1960-2015) and SYNMAP C4 vegetation fraction. To make the datasets small enough that they can be stored on git, they have all been down-sampled to approximately 25km and their spatial coverage has been limited to Australia. Example datasets are located in [data](data). They are included for demonstration purposes and should not be used for scientific analysis.  This example uses some custom python functions located in the [CustomFunctions](CustomFunctions) folder and will not run if the folder is missing.  
 
 <a name="tasks">
-## 1. Setting up a programming environment
 </a>
+
+## 1. Setting up a programming environment
 
 
 #### Building a python environment using conda ####
