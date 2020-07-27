@@ -20,7 +20,7 @@ if (endsWith(cwd, "NCdemo")){
    if (dir.exists(paste0(cwd, "NCdemo"))){
       setwd("NCdemo")
   }else{
-     stop("Script running in an unknown working directory.  Please run from or set the workind dir to the NCdemo folder ")
+     stop("Script running in an unknown working directory.  Please run from or set the working dir to the NCdemo folder ")
   }}
 
 
