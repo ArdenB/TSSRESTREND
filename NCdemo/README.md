@@ -113,22 +113,22 @@ This script produces four csv files in the [data](./data/) folder: demo_datafram
 #### Use R to perform TSS-RESTREND analysis ####
 
 
-[S02_TSSRESTRENDattribution.R](./S02_TSSRESTRENDattribution.R) reads in the 2D csv files and then uses the 'foreach' library to iterate over the data performing TSS.RESTREND on each pixel and saving the results as a csv called './results/AttributionResults.csv'.  It can be run in Rstudio or in the terminal using:
+[S02_TSSRESTRENDattribution.R](./S02_TSSRESTRENDattribution.R) reads in the 2D csv files and then uses the 'foreach' library to iterate over the data performing TSS.RESTREND on each pixel and saving the results as a csv called './results/AttributionResults.csv'. This script is written to only use a single core by default.  However, looping through pixels is an 'embarrassingly parallel' problem and scales close to linearly with increases in cores. The script can be made to run in parallel by calling it with the argument  --ncores. An ncores argument of -1 will use all available cores.    
 
+This script can be run in Rstudio or in the terminal using:
 ```bash
-# Run in console
+# Run in console single core
 Rscript S02_TSSRESTRENDattribution.R
 
-# ==========
-Rscript S02_TSSRESTRENDattribution.R  --ncores 
+```
+Or in parallel using:
+```bash
+Rscript S02_TSSRESTRENDattribution.R  --ncores -1
 
 ```
 
-This script is written to only use a single core by defualt.  However, looping through pixels is an 'embarrassingly parallel' problem and scales close to linearly with increases in cores.  
+Note. The parallel portion of the script uses the doSNOW package as a back-end and should work on most most computers.  However, to run in an MPI cluster environment, modification of the arguments passed to the makecluster function will be needed.  
 
-```R
-# TBD
-```
 
 #### Convert the results back to netcdf and make some maps ####
 
