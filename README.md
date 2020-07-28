@@ -14,45 +14,6 @@ The changes to the method included in **version 0.2.15** focus on the inclusion 
 
 For an example of how to perfom the method used by Burrell et al., (2020) see [NCdemo](./NCdemo/).  
 
-## Logic and structure of the package 
-This package was designed to work with a single pixel at a time, not 3D data structures like Rasters. This decision was made for a number of reasons the most significant of which is that processing spatial data, especially netcdf files, is much slower in R than using Python (using Xarray+Dask) or using the command line tool Climate Data Operators (CDO). It is computationally faster to turn spatial data into a 2D matrix/Dataframes then use the R package foreach and %do% to iterate through each row of the dataframe.  This also has the advantage of allowing the user to switch to a parallel workflow easily using backends like doParallel, doMC, doMPI or doSNOW.  
-
-An example showing one way to process spatial data, then apply TSS-RESTREND to it, convert back to a spatial format and produce maps can be found [here](NCdemo).  
-
-There are two main ways to use this package. The easiest way is the new [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) function.  It takes a compete time seres ov monthly vegetation (CTSR,VI), precipitation (CTSR.RF), temperature (CTSR.TM) as well as the maximum accumulation and offset periods to consider.  
-
-```R
-library(TSS.RESTREND)
-max.acp <- 12
-max.osp <- 4
-# Load in the data here 
-# CTSR.VI <- LOAD YOUR VEGETATION DATA HERE. Must me a ts object with a monthly frequency
-# CTSR.RF <- LOAD YOUR PRECIPITATION DATA HERE. Must me a ts object with a monthly frequency
-# CTSR.TM <- LOAD YOUR TEMPERATURE DATA HERE. Must me a ts object with a monthly frequency
-
-results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp)
-
-print(results)
-```
-
-The original way to use this package was through the TSSRESTREND function. 
-```R
-library(TSS.RESTREND)
-#Define the max accumuulation period
-max.acp <- 12
-#Define the max offset period
-max.osp <- 4
-#Create a table of every possible precipitation value given the max.acp and max.osp
-ACP.table <- climate.accumulator(CTSR.VI, CTSE.RF, max.acp, max.osp)
-ACT.table <- climate.accumulator(CTSR.VI, CTSE.TM, max.acp, max.osp, temperature=TRUE)
-
-# perform the TSSRESTREND, retnonsig=FALSE replicates defualt behaviour is version<0.3.0
-results <- TSSRESTREND(CTSR.VI, ACP.table, ACT.table, retnonsig=FALSE)
-print(results)
-plot(results, verbose=TRUE)
-``` 
-
-NOTE: TSSRESTREND was designed to demonstrate the methodology and is not optimised for perforce. If analysing a large area, major performance gains can be had by doing specific steps of the method on the entire dataset at once rather than on a per pixel basis.  
 
 ## FAQ
 1. How do I make TSS-RESTREND work on spatial data.  
@@ -109,3 +70,44 @@ Because of the difficult of installing these packages on some unix based systems
 
 ### Modifing soruce code 
 The source code for all the functions in the TSSRESTREND package can be found [here](TSS>RESTREND/R/) and an RSTUDIO project that allows users to modifiy then rebuild the TSSRESTREND package is located [here](TSS>RESTREND/TSS.RESTREND.Rproj).  Contribbutions and suggestions are welcome.  
+
+
+## Logic and structure of the package 
+This package was designed to work with a single pixel at a time, not 3D data structures like Rasters. This decision was made for a number of reasons the most significant of which is that processing spatial data, especially netcdf files, is much slower in R than using Python (using Xarray+Dask) or using the command line tool Climate Data Operators (CDO). It is computationally faster to turn spatial data into a 2D matrix/Dataframes then use the R package foreach and %do% to iterate through each row of the dataframe.  This also has the advantage of allowing the user to switch to a parallel workflow easily using backends like doParallel, doMC, doMPI or doSNOW.  
+
+An example showing one way to process spatial data, then apply TSS-RESTREND to it, convert back to a spatial format and produce maps can be found [here](NCdemo).  
+
+There are two main ways to use this package. The easiest way is the new [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) function.  It takes a compete time seres ov monthly vegetation (CTSR,VI), precipitation (CTSR.RF), temperature (CTSR.TM) as well as the maximum accumulation and offset periods to consider.  
+
+```R
+library(TSS.RESTREND)
+max.acp <- 12
+max.osp <- 4
+# Load in the data here 
+# CTSR.VI <- LOAD YOUR VEGETATION DATA HERE. Must me a ts object with a monthly frequency
+# CTSR.RF <- LOAD YOUR PRECIPITATION DATA HERE. Must me a ts object with a monthly frequency
+# CTSR.TM <- LOAD YOUR TEMPERATURE DATA HERE. Must me a ts object with a monthly frequency
+
+results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp)
+
+print(results)
+```
+
+The original way to use this package was through the TSSRESTREND function. 
+```R
+library(TSS.RESTREND)
+#Define the max accumuulation period
+max.acp <- 12
+#Define the max offset period
+max.osp <- 4
+#Create a table of every possible precipitation value given the max.acp and max.osp
+ACP.table <- climate.accumulator(CTSR.VI, CTSE.RF, max.acp, max.osp)
+ACT.table <- climate.accumulator(CTSR.VI, CTSE.TM, max.acp, max.osp, temperature=TRUE)
+
+# perform the TSSRESTREND, retnonsig=FALSE replicates defualt behaviour is version<0.3.0
+results <- TSSRESTREND(CTSR.VI, ACP.table, ACT.table, retnonsig=FALSE)
+print(results)
+plot(results, verbose=TRUE)
+``` 
+
+NOTE: TSSRESTREND was designed to demonstrate the methodology and is not optimised for perforce. If analysing a large area, major performance gains can be had by doing specific steps of the method on the entire dataset at once rather than on a per pixel basis.  
