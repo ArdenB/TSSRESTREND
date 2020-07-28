@@ -123,7 +123,7 @@ Rscript S02_TSSRESTRENDattribution.R
 ```
 Or in parallel using:
 ```bash
-Rscript S02_TSSRESTRENDattribution.R  -n -1
+Rscript S02_TSSRESTRENDattribution.R  --ncores -1
 
 ```
 
