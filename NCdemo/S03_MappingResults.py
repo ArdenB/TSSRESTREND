@@ -1,12 +1,3 @@
-"""
-Script goal, 
-
-Open the results from TSS-RESTREND attribution analysis and convering that 
-back to a spatial data format.  
-
-
-"""
-
 # ==============================================================================
 
 __title__   = "csv to netcdf and maps"

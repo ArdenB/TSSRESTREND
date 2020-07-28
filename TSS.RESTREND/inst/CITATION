@@ -1,4 +1,4 @@
-citHeader("To cite TSS.RESTREND in publications use")
+citHeader("To cite the TSS.RESTREND in publications use one or more of the following:")
 
 citEntry(
   entry = "Article",
@@ -20,7 +20,7 @@ citEntry(
 )
 
 citEntry(
-  entry  = "Article"
+  entry  = "Article",
   title  = "The Addition of Temperature to the TSS-RESTREND Methodology Significantly Improves the Detection of Dryland Degradation",
   author = personList(as.person("Arden L. Burrell"),
           as.person("Jason P. Evans"),
@@ -31,11 +31,10 @@ citEntry(
   textVersion = paste(
     "Burrell, A. L., J. P. Evans, and Y. Liu.", 
     "The Addition of Temperature to the TSS-RESTREND Methodology Significantly Improves the Detection of Dryland Degradation.", 
-    "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, " 
+    "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, ", 
     "2019", 
-    "1–7.", 
     "10.1109/JSTARS.2019.2906466"),
-}
+)
 
 citEntry(
   entry = "Article",
