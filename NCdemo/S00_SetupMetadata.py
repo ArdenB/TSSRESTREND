@@ -93,7 +93,8 @@ def main(args):
             if va in ["ndvi", "C4frac"]:
                 dsout = dsout.where(dsout<=1., 1.)
             # ========== Add a zero std mask ==========
-            dsout = dsout.where(dsout.std(dim=["time" ])>0)
+            if not va == "C4frac":
+                dsout = dsout.where(dsout.std(dim=["time" ])>0)
 
             # =========== write out =========== 
             dsout.to_netcdf(fnout, 
