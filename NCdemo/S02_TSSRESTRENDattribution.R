@@ -14,13 +14,13 @@ cwd = getwd()
 if (endsWith(cwd, "NCdemo")){
    # The folder is
 }else if (file.exists(paste0(cwd, "/S02_TSSRESTRENDattribution.R"))){
-   # pass as well
+   # pass as well. the folder has been renamed
 }else{
    # pass
    if (dir.exists(paste0(cwd, "NCdemo"))){
       setwd("NCdemo")
   }else{
-     stop("Script running in an unknown working directory.  Please run from or set the working dir to the NCdemo folder ")
+     stop("Script running in an unknown working directory. Please run from or set the working dir to the NCdemo folder ")
   }}
 
 
