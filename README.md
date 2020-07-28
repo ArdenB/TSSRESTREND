@@ -9,7 +9,7 @@ The full details of the testing and justification of the TSS-RESTREND method (**
 The changes to the method included in **version 0.2.15** focus on the inclusion of temperature as an additional climate variable. This allows for land degradation assessment in temperature limited drylands. The full details of this method were published in:
 * Burrell, A. L., J. P. Evans, and Y. Liu. ‘The Addition of Temperature to the TSS-RESTREND Methodology Significantly Improves the Detection of Dryland Degradation’. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 2019, 1–7. https://doi.org/10.1109/JSTARS.2019.2906466.
 
-**Version 0.3.0** is an expansion of the TSS-RESTREND package to perform additional vegetation change detection and attribution analysis.  It can be used to quantify vegetation change and then attribute it to some combination of CO2 fertilisation, climate change and climate variability.  For details on methods used to perform this attribution see:
+**Version 0.3.0** is an expansion of the TSS-RESTREND package to perform additional vegetation change detection and attribution analysis.  It can be used to quantify vegetation change and then attribute it to some combination of CO<sub>2</sub> fertilisation, climate change and climate variability.  For details on methods used to perform this attribution see:
 * Burrell, A. L., J. P. Evans, and M. De Kauwe. ‘Anthropogenic Climate change has driven over 5 million km<sup>2</sup> of drylands towards desertification’. 2020, in Press.  
 
 For an example of how to perfom the method used by Burrell et al., (2020) see [NCdemo](./NCdemo/).  
