@@ -29,7 +29,7 @@ if (endsWith(cwd, "NCdemo")){
 option_list = list(
    make_option(c("-i", "--infofile"), type="character", default='./results/infomation.json',
                help="the infomation file", metavar="character"),
-   make_option(c("-n", "--ncores"), type = "integer", default = -1,
+   make_option(c("-n", "--ncores"), type = "integer", default = 0,
             help="The number of threads to use.  if -1, all cores used"))
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
