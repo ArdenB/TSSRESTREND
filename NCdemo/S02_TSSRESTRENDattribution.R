@@ -136,7 +136,7 @@ if (par){
       .packages = c('TSS.RESTREND', "xts", "lubridate")) %dopar% {
         tssr.attr(line, VIdf[line, ], PPdf[line,], TMdf[line,], C4df[line, ], max.acp, max.osp, anres, par)
       })
-  print(paste("parellel processing complete at:", Sys.time()))
+  print(paste("\n Parellel processing complete at:", Sys.time()))
 
 } else{
   # ========== Loop over the rows sequentially ==========

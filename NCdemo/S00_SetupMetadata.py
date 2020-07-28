@@ -95,8 +95,8 @@ def main(args):
             # ========== Add a zero std mask ==========
             if not va == "C4frac":
                 dsout = dsout.where(dsout.std(dim=["time" ])>0)
-
             # =========== write out =========== 
+            dsout = dsout.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
             dsout.to_netcdf(fnout, 
                 format         = 'NETCDF4', 
                 encoding       = {va:encoding},
@@ -229,6 +229,7 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding
         dsV.attrs["FileName"] = fnoutV
 
         # write out
+        dsV = dsV.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
         dsV.to_netcdf(fnoutV, 
             format         = 'NETCDF4', 
             encoding       = {'ndvi':encoding},
@@ -247,6 +248,7 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding
         dsP["ppt"] = dsP["ppt"].astype("float32")
 
         # write out
+        dsP = dsP.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
         dsP.to_netcdf(fnoutP, 
             format         = 'NETCDF4', 
             encoding       = {'ppt':encoding},
@@ -262,6 +264,7 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding
         dsT["tmean"] = dsT["tmean"].astype("float32")
 
         # write out
+        dsT = dsT.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
         dsT.to_netcdf(fnoutT, 
             format         = 'NETCDF4', 
             encoding       = {'tmean':encoding},
@@ -279,6 +282,7 @@ def _internalsaves(fnV, fnoutV, fnP, fnoutP, fnT, fnoutT, fnC4, fnoutC, encoding
         
 
         # write out
+        dsC = dsC.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
         dsC.to_netcdf(fnoutC, 
             format         = 'NETCDF4', 
             encoding       = {'C4frac':encoding},

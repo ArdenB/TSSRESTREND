@@ -78,7 +78,8 @@ def main(args):
     # add a time dim, this case the end of the original timeseris. 
     # Netcdf files need a time dimenstion
     ds = ds.assign_coords(time=pd.Timestamp("2015-12-31")).expand_dims("time")
-    ds = ds.transpose('time', 'latitude', 'longitude')
+    ds = ds.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
+    
 
     
     # ++++++++++ Fix the Global Attributes ++++++++++

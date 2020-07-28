@@ -154,3 +154,10 @@ By default, this script does not apply any significance masking before making th
 </a>
 
 ## 3. Performing multi-run ensemble statistics
+
+#### Determining statistical significance for multi-run ensembles ####
+
+
+#### Combining matched C3/C4 runs ####
+
+The TSS.RESTREND packages has been updated to make this feature unnecessary, but to see how it was done in Burrell et al., (2020) see [here](PariedRuns.md).  
