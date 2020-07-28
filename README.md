@@ -59,10 +59,18 @@ NOTE: TSSRESTREND was designed to demonstrate the methodology and is not optimis
 An example pipeline showing how this method can be applied to spatial data can be found [here](NCdemo).  
 
 ## **Change log**
+### **TSS-RESTREND v0.3.1 (TBD)**
+**Minor tweaks and bug fixes:**
+* fixed an error in the plotting script. This means 3d plots will not give exactly the same results as v0.2
+* Fixed issue in the TSSRattribution function that caused it to fail on macOS
+* Added additonal examples and documentation. See [NCdemo](NCdemo).  
+* Updating the References in the R package
+* Modifing the package so it wors in R 4.0. This breaks compatibility with R 3.2 because of new versions of the dependancies.  R 3.6 is still supported. 
+
+
 ### **TSS-RESTREND v0.3.0 (Release date: 2020-07-16)**
 **Major changes:**
-
-* Added a new wrapper function [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) that will perform the full attribution described in Burrell et al., (2020).  
+* Added a new wrapper function [TSSRattribution](TSS.RESTREND/man/TSSRattribution.Rd) that will perform the full attribution described in Burrell et al., (2020).  THis also includes the option to pass C4 plan fractions.  
 * Added a function for removing the effects of eCO2 from a VI time series.  
 * Added a function for detrending climate data using a moving window smoothing,  
 
@@ -84,7 +92,7 @@ An example pipeline showing how this method can be applied to spatial data can b
 * Add the ability to vary BFAST window (h) 
 * ACPcalculator updated to deal with places where there are negative CTS VPR relationship. Small tweaks to TSS.RESTREND master script and the Annual.Precipitation functions
 * BUG FIX: in the rainfall.accumulator now has a check that makes sure the rainfall data has some variance (SD >0). No variance (SD == 0) breaks lm() calculations and causes failures
-* BUG FIX: Fixed a bug in the indexing of AnnualRF.Cal (now AnnualClim.Cal) and the rainfall.accumulator (now climate.accumulator) that was causing downstream problems with the segVPR function. This bug may have slightly impacted some results in segVPR 
+* BUG FIX: Fixed a bug in the indexing of AnnualRF.Cal (now AnnualClim.Cal) and the rainfall.accumulator (now climate.accumulator) that was causing downstream problems with the segVPR function. This bug may have slightly impacted some results in segVPR.  
 
 
 

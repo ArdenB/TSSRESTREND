@@ -148,7 +148,7 @@ By default, this script does not apply any significance masking before making th
 
 - --method 		    The method used to adjust for False Discovery Rate. must be "fdr_bh" or "fdr_by".  The default is the Benjamini/Hochberg method ("fdr_bh").  See statsmodels [multitest](https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html) documentation for more details
 
-- --use_archived    Use this argument to redo archived infomation.json files
+- --use_archived    Use this argument to redo archived infomation.json files.  int that corresponds to the archived json file number.
 
 <a name="l3">
 </a>

@@ -14,7 +14,42 @@ citEntry(
 	doi          = "10.1016/j.rse.2017.05.018",
   textVersion = paste(
     "Burrell, Arden L. and Evans, Jason P. and Liu, Yi (2017).",
-    "Detecting dryland degradation using Time Series Segmentation and Residual Trendanalysis (TSS-RESTREND)",
+    "Detecting dryland degradation using Time Series Segmentation and Residual Trend analysis (TSS-RESTREND)",
     "Remote Sensing of Environment, 197(1), 43-57.",
     "10.1016/j.rse.2017.05.018"),
 )
+
+citEntry(
+  entry  = "Article"
+  title  = "The Addition of Temperature to the TSS-RESTREND Methodology Significantly Improves the Detection of Dryland Degradation",
+  author = personList(as.person("Arden L. Burrell"),
+          as.person("Jason P. Evans"),
+          as.person("Yi Liu")),
+  doi     = "10.1109/JSTARS.2019.2906466",
+  journal = "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing",
+  year    = "2019",
+  textVersion = paste(
+    "Burrell, A. L., J. P. Evans, and Y. Liu.", 
+    "The Addition of Temperature to the TSS-RESTREND Methodology Significantly Improves the Detection of Dryland Degradation.", 
+    "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, " 
+    "2019", 
+    "1–7.", 
+    "10.1109/JSTARS.2019.2906466"),
+}
+
+citEntry(
+  entry = "Article",
+  title = "Anthropogenic climate change has driven over 5 million km<Superscript>2</Superscript> of drylands towards desertification",
+  author = personList(as.person("Arden L. Burrell"),
+            as.person("Jason P. Evans"),
+            as.person("Martin G. De Kauwe")),
+  journal      = "Nature Communications",
+  year         = "2020",
+  doi          = "10.1038/s41467-020-17710-7",
+  textVersion = paste(
+    "Burrell, Arden L. and Evans, Jason P. and De Kauwe, Martin G. (2020).",
+    "Anthropogenic climate change has driven over 5 million km<Superscript>2</Superscript> of drylands towards desertification",
+    "Nature Communications",
+    "10.1038/s41467-020-17710-7"),
+)
+
