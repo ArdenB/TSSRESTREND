@@ -160,4 +160,4 @@ By default, this script does not apply any significance masking before making th
 
 #### Combining matched C3/C4 runs ####
 
-The TSS.RESTREND packages has been updated to make this feature unnecessary, but to see how it was done in Burrell et al., (2020) see [here](CombineRuns.ipynb).  
+The TSS.RESTREND packages has been updated to make this feature unnecessary, but to see how it was done in Burrell et al., (2020) see the ipynb [here](CombineRuns.ipynb).  

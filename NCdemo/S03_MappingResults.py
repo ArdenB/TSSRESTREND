@@ -79,7 +79,7 @@ def main(args):
     # Netcdf files need a time dimenstion
     ds = ds.assign_coords(time=pd.Timestamp("2015-12-31")).expand_dims("time")
     ds = ds.transpose('time', 'latitude', 'longitude').sortby("latitude", ascending=False)
-    
+
 
     
     # ++++++++++ Fix the Global Attributes ++++++++++
@@ -295,6 +295,7 @@ def FDRSignificanceCorrection(ds, var, FDRmethod, alpha = 0.10, ):
 
     print(t_method)
     return re.unstack(), t_method
+
 # ==============================================================================
 # FIX THE METADATA OF THE XR DATASET
 # ==============================================================================

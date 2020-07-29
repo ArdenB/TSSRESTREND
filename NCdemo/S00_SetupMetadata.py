@@ -1,7 +1,7 @@
 """
 Script goal, 
 
-Script contains the preprocessing steps and run creattion
+Script contains the preprocessing steps and run creation.
 
 
 """
