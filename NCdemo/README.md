@@ -67,9 +67,9 @@ To rebuild the documentation of the package, it is also necessary to to install 
 
 ## 2. Performing a single TSS-RESTREND run 
 
-To demonstrate how TSS-RESTREND can be applied to spatial data, this repo contains four script that, if run in order will setup the analysis, process the data, perform TSS-RESTREND on the data, reassemble the results into a netcdf file and save maps of the results.  The results will be equivalent to a single run from Burrell et al., (2020).  This example is split across four scripts that need to be run in order from S00 to S03.   
+To demonstrate how TSS-RESTREND can be applied to spatial data, this repo contains four scripts that, if run in order, will set-up the analysis, process the data, perform TSS-RESTREND on the data, reassemble the results into a netcdf file and save maps of the results.  The results will be equivalent to a single run from Burrell et al., (2020).  This example is split across four scripts that need to be run in order from S00 to S03.   
 
-#### Setting up the metadata ####
+#### Setting up the meta data ####
 
 The first script that needs to run is [S00_SetupMetadata.py](./S00_SetupMetadata.py).  This script saves a json file that is passed between all the following scripts with meta-data about the run. For this example we will use a coarsen value of 5 to speed up analysis and the defaults for all other arguments.  
 
@@ -132,7 +132,7 @@ Note. The parallel portion of the script uses the doSNOW package as a back-end a
 
 #### Convert the results back to netcdf and make some maps ####
 
-[S03_MappingResults.py](./S03_MappingResults.py) Reads the './results/AttributionResults.csv' file, converts it to a netcdf file adding all the appropriate history and meta-data, and then saves it to './results/TSSRattribution_Results.nc'.  By default this script will make maps of all the change variables and save them in the './results/' folder. 
+[S03_MappingResults.py](./S03_MappingResults.py) Reads the './results/AttributionResults.csv' file, converts it to a netcdf file adding all the appropriate history and meta-data, and then saves it to './results/TSSRattribution_Results.nc'.  By default this script will make maps of all the change variables and save them in the './results/' folder. The output of the script is also shown below.
 
 ```bash
 python S03_MappingResults.py
@@ -207,6 +207,7 @@ By default, this script does not apply any significance masking before making th
 
 #### Determining statistical significance for multi-run ensembles ####
 
+Burrell et al., (2018) showed that using multiple TSS-RESTREND runs using different dataset allows for the better quantification of errors.  Burrell et al., (2020) expanded on this by methods to address the issues of multiple testing and spatial autocorrelation. For more details on these issues see [Wilks 2016](https://doi.org/10.1175/BAMS-D-15-00267.1). A detailed ipython notebook describing the method and applying it to an included sample ensemble result can be found [here](EnsembleSignificance.ipynb).  
 
 #### Combining matched C3/C4 runs ####
 
