@@ -143,49 +143,49 @@ python S03_MappingResults.py
     
 
 
-![svg](/Notebookimages/output_0_1.svg)
+![svg](Notebookimages/output_0_1.svg)
 
 
     CO2
     
 
 
-![svg](/Notebookimages/output_0_3.svg)
+![svg](Notebookimages/output_0_3.svg)
 
 
     LandUse
     
 
 
-![svg](/Notebookimages/output_0_5.svg)
+![svg](Notebookimages/output_0_5.svg)
 
 
     ClimateChange
     
 
 
-![svg](/Notebookimages/output_0_7.svg)
+![svg](Notebookimages/output_0_7.svg)
 
 
     ClimateVariability
     
 
 
-![svg](/Notebookimages/output_0_9.svg)
+![svg](Notebookimages/output_0_9.svg)
 
 
     OtherFactors
     
 
 
-![svg](/Notebookimages/output_0_11.svg)
+![svg](Notebookimages/output_0_11.svg)
 
 
     AnthropogenicClimateChange
     
 
 
-![svg](/Notebookimages/output_0_13.svg)
+![svg](Notebookimages/output_0_13.svg)
 
 
 By default, this script does not apply any significance masking before making the plots, though it can be made to do so using the optional arguments:
