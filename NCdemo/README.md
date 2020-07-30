@@ -42,7 +42,7 @@ sudo apt install libcurl4-openssl-dev
 
 #### Building an R programming environment ####
 
-The latest version of R is available from [CRAN](https://cran.r-project.org/mirrors.html). The TSSRESTREN package was built with [Rstudio](https://rstudio.com/products/rstudio/download/).
+The latest version of R is available from [CRAN](https://cran.r-project.org/mirrors.html). The TSS.RESTREND package was built with [Rstudio](https://rstudio.com/products/rstudio/download/).
 
 ```R
 # ========== Install dependincies ==========
