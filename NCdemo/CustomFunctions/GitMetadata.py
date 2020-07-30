@@ -35,11 +35,10 @@ def gitmetadata():
 	time_stamp = datetime.datetime.now().strftime("%a %b %d %H:%M:%S %Y")
 	exe = sys.executable # get the python version
 	args = " ".join(sys.argv) #join all the elements
-	repo_dir = os.getcwd()
 	try:
-		# check the host
-		host = socket.gethostbyaddr(socket.gethostname())[0]
-		git_hash = git.Repo(repo_dir).heads[0].commit # get the current head
+		repo_dir = git.Repo(search_parent_directories=True)
+		git_hash = repo_dir.head.object.hexsha
+		# git_hash = git.Repo(repo_dir).heads[0].commit # get the current head
 	except git.exc.InvalidGitRepositoryError:
 		print('To record the git hash, must run script from top of directory tree in git repo')
 		git_hash = 'unknown'

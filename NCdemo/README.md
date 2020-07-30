@@ -138,6 +138,56 @@ Note. The parallel portion of the script uses the doSNOW package as a back-end a
 python S03_MappingResults.py
 ```
 
+    Starting write of data at: 2020-07-30 10:39:25.566447
+    ObservedChange
+    
+
+
+![svg](/Notebookimages/output_0_1.svg)
+
+
+    CO2
+    
+
+
+![svg](/Notebookimages/output_0_3.svg)
+
+
+    LandUse
+    
+
+
+![svg](/Notebookimages/output_0_5.svg)
+
+
+    ClimateChange
+    
+
+
+![svg](/Notebookimages/output_0_7.svg)
+
+
+    ClimateVariability
+    
+
+
+![svg](/Notebookimages/output_0_9.svg)
+
+
+    OtherFactors
+    
+
+
+![svg](/Notebookimages/output_0_11.svg)
+
+
+    AnthropogenicClimateChange
+    
+
+
+![svg](/Notebookimages/output_0_13.svg)
+
+
 By default, this script does not apply any significance masking before making the plots, though it can be made to do so using the optional arguments:
 
 - -h, --help        show this help message and exit
