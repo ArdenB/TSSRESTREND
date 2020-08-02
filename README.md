@@ -1,5 +1,7 @@
 # **Time Series Segmented Residual Trends (TSS-RESTREND)**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3970212.svg)](https://doi.org/10.5281/zenodo.3970212)
+
 Time Series Segmented Residual Trends (TSS-RESTREND) is a method for the automated detection of land degradation from remotely sensed vegetation and climate datasets. TSS-RESTREND incorporates aspects of two existing degradation detection methods: RESTREND which is used to control for climate variability, and BFAST which is used to look for structural changes in the ecosystem.  
 
 The full details of the testing and justification of the TSS-RESTREND method (**version 0.1.02**) are published in:      
