@@ -1,7 +1,7 @@
 # Applying the TSS.RESTREND package to Netcdf spatial data
 
 
-This folder gives and example of how TSS-RESTREND R package can be used to do analysis on netcdf format spatial data.  It uses a mix of python and R because that is the way I process data. The implementation here is not computationally efficient and massive performance gains can be achieved using pythons dask+xarray+scikit-learn to compute statistics on the entire dataset to calculate the observed change, the CO2, the climate change and climate variability components.
+This folder gives and example of how TSS-RESTREND R package can be used to do analysis on netcdf format spatial data.  It uses a mix of python and R because that is the way I process data. The implementation here is not computationally efficient and massive performance gains can be achieved using pythons dask+xarray+scikit-learn to compute statistics on the entire dataset to calculate the observed change, the CO2, the climate change and climate variability components. THis folder contains the example code necessary to reproduce the results in Burrell et al. ([2020](https://doi.org/10.1038/s41467-020-17710-7))
 
 This guide is broken up into 3 sections:
 
@@ -98,7 +98,8 @@ This script has six optional command line arguments:
 
  -  --photo (str);<space><space>photosynthetic pathway used for calculating the CO2 effect size. Possible arguments: {"C3andC4","C3","C4"}. Default is "C3andC4" which uses the SYNMAP C4 vegetation fraction.  
 
- -  -a, --archive;<space><space>archive the existing `infomation.json` file in `./results/archive/.` instead of overwriting it. With some tweaks, this could be used to allow for multiple runs without overwriting results.  
+ -  -a, --archive;<space><space>archive the existing `infomation.json` file in `./results/archive/.` instead of overwriting it. With some tweaks, this could be used to allow for multiple runs without overwriting results.  <a name="lz">
+</a>
 
 
 
@@ -210,7 +211,7 @@ This script does not apply any significance masking before making the plots, tho
 
 - --method;<space><space>method used to adjust for False Discovery Rate, must be "fdr_bh" or "fdr_by". The default is the Benjamini/Hochberg method ("fdr_bh"). See statsmodels [multitest](https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html) documentation for more details.
 
-- --use_archived (int);<space><space>rearchive the `infomation.json` files. The int corresponds to the number of the desired `./data/archive/infomation_{int}.json` file.
+- --use_archived (int);<space><space>rearchive the `infomation.json` files. The int corresponds to the number of the desired `./data/archive/infomation_{int}.json` file. This functionality allows the use of files archived using [S00](#lx) 
 
 <a name="l3">
 </a>
@@ -219,7 +220,7 @@ This script does not apply any significance masking before making the plots, tho
 
 #### Determining statistical significance for multi-run ensembles ####
 
-Burrell et al., (2018) showed that using multiple TSS-RESTREND runs using different dataset allows for the better quantification of errors.  Burrell et al., (2020) expanded on this by methods to address the issues of multiple testing and spatial autocorrelation.
+Burrell et al., [(2018)](https://doi.org/10.1016/j.isprsjprs.2018.08.017) showed that using multiple TSS-RESTREND runs using different dataset allows for the better quantification of errors.  Burrell et al., (2020) expanded on this by methods to address the issues of multiple testing and spatial autocorrelation.
 
 For more details on these issues, see [Wilks 2016](https://doi.org/10.1175/BAMS-D-15-00267.1). A detailed ipython notebook describing the method and applying it to an included sample ensemble result can be found [here](EnsembleSignificance.ipynb).  
 
