@@ -21,7 +21,7 @@ For an example of how to perfom the method used by Burrell et al., (2020)[https:
 An example pipeline showing how this method can be applied to spatial data can be found [here](NCdemo).  
 
 ## **Change log**
-### **TSS-RESTREND v0.3.1 (TBD)**
+### **TSS-RESTREND v0.3.1 (Release date: 2020-08-02)**
 **Minor tweaks and bug fixes:**
 * fixed an error in the plotting script. This means 3d plots will not give exactly the same results as v0.2
 * Fixed issue in the TSSRattribution function that caused it to fail on macOS
