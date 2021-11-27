@@ -6,7 +6,7 @@
 #'
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
-#' @importfrom bfast bfast
+#' @import bfast
 #'
 #' @inheritParams TSSRESTREND
 #' @param CTSR.TM

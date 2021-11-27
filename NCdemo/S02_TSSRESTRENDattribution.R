@@ -8,7 +8,7 @@ library(lubridate)
 library(TSS.RESTREND)
 library(jsonlite)
 library(optparse)
-library(bfast)
+# library(bfast)
 
 # ========== Check if the relative paths are going to work ==========
 cwd = getwd()
