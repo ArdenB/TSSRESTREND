@@ -49,7 +49,7 @@ List of objects:
          the \code{\link[stats]{lm}} of CTSR.VI and CTSR.RF
 
 \bold{BFAST.type}
-         the type of BFAST done (VPR residuals or on the VI timeseris itself)
+         the type of BFAST done (VPR residuals or on the VI timeseries itself)
 }
 \description{
 takes the Complete VI and optimally accumulated Rainfall (and tmperature if included), calculates a \code{\link[stats]{lm}} between them

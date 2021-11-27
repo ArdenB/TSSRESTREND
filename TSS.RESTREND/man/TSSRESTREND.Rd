@@ -154,7 +154,7 @@ vi.path <- system.file("extdata", "rabbitVI.csv", package = "TSS.RESTREND", must
 in.VI <- read.csv(vi.path)
 CTSR.VI <- ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
 
-#Define the max accumuulation period
+#Define the max accumulation period
 max.acp <- 12
 #Define the max offset period
 max.osp <- 4

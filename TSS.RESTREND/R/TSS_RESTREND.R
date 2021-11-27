@@ -138,7 +138,7 @@
 #' in.VI <- read.csv(vi.path)
 #' CTSR.VI <- ts(in.VI, start=c(1982, 1), end=c(2013,12), frequency = 12)
 #'
-#' #Define the max accumuulation period
+#' #Define the max accumulation period
 #' max.acp <- 12
 #' #Define the max offset period
 #' max.osp <- 4
@@ -158,11 +158,11 @@ TSSRESTREND <- function(
   # ==============================================================================================
   # ========== Sanity check the input data ==========
   # Description:
-  #   Each check liiks at a different paramter. If the data fails
+  #   Each check links at a different parameter. If the data fails
   #   the check will stop, else, it breaks after all the checks
 
-  while (TRUE) { #Test the variables for consistenty
-    # check the class, type and tempora range of provided data
+  while (TRUE) { #Test the variables for consistency
+    # check the class, type and temporary range of provided data
     if (class(CTSR.VI) != "ts")
       stop("CTSR.VI Not a time series object. Please check the data")
     if ((class(ACP.table) == "logical") && (!CTSR.RF || acu.RF))
@@ -339,7 +339,7 @@ TSSRESTREND <- function(
     }
     # +++++ Perform segmented VPR/VCR calculation  +++++
     breakpoint = as.integer(res.chow$bp.summary[2])
-    print(brkp)
+    # print(brkp)
     result <- seg.VPR(anu.VI, acu.RF, VI.index, brkp, rf.b4, rf.af, acu.TM, tm.b4, tm.af, sig=sig, retnonsig=retnonsig)
   }
   # ========== New (in version 0.3.0) Sanity check on Total change values ==========

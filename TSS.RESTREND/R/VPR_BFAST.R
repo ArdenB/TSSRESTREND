@@ -6,7 +6,7 @@
 #'
 #' @author Arden Burrell, arden.burrell@unsw.edu.au
 #'
-#' @importFrom bfast bfast
+#' @importfrom bfast bfast
 #'
 #' @inheritParams TSSRESTREND
 #' @param CTSR.TM
@@ -24,7 +24,7 @@
 #' @return \bold{CTS.lm}
 #'          the \code{\link[stats]{lm}} of CTSR.VI and CTSR.RF
 #' @return \bold{BFAST.type}
-#'          the type of BFAST done (VPR residuals or on the VI timeseris itself)
+#'          the type of BFAST done (VPR residuals or on the VI timeseries itself)
 #' @export
 #'
 #' @examples
@@ -37,7 +37,6 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=F
   # ========== Complete time series breakpoint detection using BFAST ==========
   # ===========================================================================
   #functions takes the complete time series VI and rainfall (RF)
-
   # ===== Basic data sanity checks =====
   #Check the objects are Time series
   if (class(CTSR.VI) != "ts")
@@ -65,12 +64,13 @@ VPR.BFAST <- function(CTSR.VI, CTSR.RF, CTSR.TM=NULL, season="none", BFAST.raw=F
   resid.ts <- ts(CTS.fit$residuals, start = ti[1], end = tail(ti, 1), frequency = f)
 
   # ===== perform the BFAST =====
-  if (BFAST.raw) {
+  if (BFAST.raw){
     bf.fit <- bfast(CTSR.VI, h = h, season = "harmonic", max.iter = 3, level = 0.05)
     bft <- "raw.VI"
   } else {
     bf.fit <- bfast(resid.ts, h = h, season = season, max.iter = 3, level = 0.05)
     bft <- "CTSR.VPR"
+    #browser()
   }
 
   # ===== Create and object to return =====

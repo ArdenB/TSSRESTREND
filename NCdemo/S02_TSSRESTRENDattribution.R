@@ -8,6 +8,7 @@ library(lubridate)
 library(TSS.RESTREND)
 library(jsonlite)
 library(optparse)
+library(bfast)
 
 # ========== Check if the relative paths are going to work ==========
 cwd = getwd()
@@ -110,12 +111,18 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes, par
     CTSR.TM <- ts(as.numeric(TM), start=c(TMys, TMms), end=c(TMyf,TMmf), frequency = 12)
 
     # ========== get the results ==========
-    results = TSSRattribution(CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, C4frac=round(C4frac, digits = 4), AnnualRes=AnnualRes)
+    results = TSSRattribution(
+      CTSR.VI, CTSR.RF, CTSR.TM, max.acp,
+      max.osp, C4frac=round(C4frac, digits = 4),
+      AnnualRes=AnnualRes, SkipError=TRUE)
+    if (is.null(results)){
+      browser()
+    }
   }
   # ========== return the results ==========
   ret <- results$summary
   rownames(ret) <- line          # add the row name back
-  ret["errors"] = results$errors # add the reason fro failure
+  ret["errors"] = results$errors # add the reason for failure
   return(ret)
 }
 

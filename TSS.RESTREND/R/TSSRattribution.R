@@ -63,7 +63,7 @@ TSSRattribution <- function(
 
   # ========== Function to deal with failure points  ==========
   ret.fail <- function(overview, models, reason, SkipError, errormessage=FALSE){
-    # The areguments are the current state of the overview
+    # The arguments are the current state of the overview
     if (SkipError){
       return(structure(list(summary = overview, models = models, errors = reason)))
     }else{
@@ -83,7 +83,7 @@ TSSRattribution <- function(
     return(ret.fail(overview, models, "NANinCTSR.TM", SkipError))
   }
   # ===== sink to catch bfast text =====
-  sink(tempfile(), type = c("output"))
+  # sink(tempfile(), type = c("output"))
   allerror <- try({
 
     # ========== Get the annual Max VI values ==========
@@ -94,7 +94,7 @@ TSSRattribution <- function(
     # ========== Calculate Observed Change ==========
     ti       <- time(rawmax.df$Max)
     obsVI    <- rawmax.df$Max
-    OBScor   <- cor.test(ti, obsVI, method="spearman")
+    OBScor   <- cor.test(ti, obsVI, method="spearman", exact = FALSE)
     OBStheil <- mblm(obsVI~ti, repeated=FALSE)
     models$OBS = list(SpearmanRho=OBScor, TheilSen=OBStheil)
     overview$ObservedChange = as.numeric(OBStheil[[1]][2]) *ScaleFactor
@@ -103,7 +103,7 @@ TSSRattribution <- function(
     # ========== Calculate CO2 Change ==========
     if (C4frac < 1){
       CO2change <- rawmax.df$Max - adjmax.df$Max
-      CO2cor    <- cor.test(ti, CO2change, method="spearman")
+      CO2cor    <- cor.test(ti, CO2change, method="spearman", exact = FALSE)
       CO2theil  <- mblm(CO2change~ti, repeated=FALSE)
       models$CO2 = list(SpearmanRho=CO2cor, TheilSen=CO2theil)
       overview$CO2        = as.numeric(CO2theil[[1]][2]) *ScaleFactor
@@ -265,15 +265,17 @@ TSSRattribution <- function(
       overview$OtherFactorsValid = TRUE
     }
     # ========== Return Errors ==========
+    #browser()
     return(structure(list(summary = overview, models = models, errors = "")))
   })
-
-  sink()
+  # sink()
   # ========== Handle any exceptions ==========
 
-  if (class(ret.fail) == "try-error"){
+  if (class(allerror) == "try-error"){
     print("deal with all error here ")
-    return(ret.fail(overview, models, "AttributionFailed", SkipError, errormessage=ret.fail))
+    return(ret.fail(overview, models, "AttributionFailed", SkipError, errormessage=allerror))
+  }else{
+    stop("An Unknown exception has occured. Stopping")
   }
 
 }
