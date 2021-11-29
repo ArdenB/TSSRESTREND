@@ -21,5 +21,5 @@ Suggests:
     car
 Depends:
     R (>= 3.6.0),
-        bfast (>= 1.6.1)
+    bfast (>= 1.6.1)
 RoxygenNote: 7.1.2
