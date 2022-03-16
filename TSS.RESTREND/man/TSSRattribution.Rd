@@ -18,6 +18,7 @@ TSSRattribution(
   allowneg.retest = FALSE,
   h = 0.15,
   returnmodels = FALSE,
+  returnVCRcoef = FALSE,
   AnnualRes = FALSE,
   SkipError = TRUE,
   retnonsig = TRUE,
@@ -68,6 +69,8 @@ given as fraction relative to the sample size (i.e. the minimal number of observ
 divided by the total length of the timeseries. Default h = 0.15.}
 
 \item{returnmodels}{Return all the created models as well as the original data}
+
+\item{returnVCRcoef}{Return all the coefficences for the VCR}
 
 \item{AnnualRes}{Report results in change per year. Defualt is False. Instead reports total change from the
 start to the end of the time series.}

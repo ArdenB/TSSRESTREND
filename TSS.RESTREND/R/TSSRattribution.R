@@ -19,6 +19,8 @@
 #'        The fraction of vegetation that follows the C4 photosynthetic pathway, between 0 and 1
 #' @param returnmodels
 #'        Return all the created models as well as the original data
+#' @param returnVCRcoef
+#'        Return all the coefficences for the VCR
 #' @param AnnualRes
 #'        Report results in change per year. Defualt is False. Instead reports total change from the
 #'        start to the end of the time series.
@@ -40,8 +42,9 @@
 
 TSSRattribution <- function(
 	CTSR.VI, CTSR.RF, CTSR.TM, max.acp, max.osp, C4frac = 0,  sig = 0.05, season = "none", exclude = 0,
-	allow.negative = FALSE, allowneg.retest = FALSE, h = 0.15, returnmodels = FALSE, AnnualRes=FALSE,
-  SkipError=TRUE, retnonsig=TRUE, splitclim=TRUE, cliwindow=20, CO2=FALSE, refyear=1980){
+	allow.negative = FALSE, allowneg.retest = FALSE, h = 0.15, returnmodels = FALSE, 
+  returnVCRcoef = FALSE, AnnualRes=FALSE, SkipError=TRUE, retnonsig=TRUE, 
+  splitclim=TRUE, cliwindow=20, CO2=FALSE, refyear=1980){
 
   # ========== Work out the Change unit  ==========
   if (AnnualRes){
@@ -52,13 +55,22 @@ TSSRattribution <- function(
     ScaleFactor = length(CTSR.VI)/12
   }
   # ========== define the container to hold the results ==========
-  overview <- data.frame(
-    ObservedChange = NA, CO2 = NA, LandUse = NA, ClimateTotal = NA, ClimateChange = NA,
-    ClimateVariability = NA, OtherFactors = NA, OtherFactorsValid = FALSE,
-    Obs.Pvalue = NA, CO2.Pvalue = NA, LandUse.Pvalue = NA, ClimateTotal.Pvalue = NA,
-    ClimateChange.Pvalue = NA, ClimateVariability.Pvalue = NA)
+  if (returnVCRcoef){
+    overview <- data.frame(
+      ObservedChange = NA, CO2 = NA, LandUse = NA, ClimateTotal = NA, ClimateChange = NA,
+      ClimateVariability = NA, OtherFactors = NA, OtherFactorsValid = FALSE,
+      Obs.Pvalue = NA, CO2.Pvalue = NA, LandUse.Pvalue = NA, ClimateTotal.Pvalue = NA,
+      ClimateChange.Pvalue = NA, ClimateVariability.Pvalue = NA, 
+      pre.slope=NA, temp.slope=NA, intercept=NA, Break.Height=NA, Slope.Change=NA, Slope.ChangeTmp=NA)
+  }else{
+    overview <- data.frame(
+      ObservedChange = NA, CO2 = NA, LandUse = NA, ClimateTotal = NA, ClimateChange = NA,
+      ClimateVariability = NA, OtherFactors = NA, OtherFactorsValid = FALSE,
+      Obs.Pvalue = NA, CO2.Pvalue = NA, LandUse.Pvalue = NA, ClimateTotal.Pvalue = NA,
+      ClimateChange.Pvalue = NA, ClimateVariability.Pvalue = NA)
+  }
   models <- list(
-    OBS = FALSE, CO2 = FALSE, LU = FALSE, CT = FALSE, CC = FALSE, CV = FALSE
+    OBS = FALSE, CO2 = FALSE, LU = FALSE, CT = FALSE, CC = FALSE, CV = FALSE, summary=FALSE
   )
 
   # ========== Function to deal with failure points  ==========
@@ -123,6 +135,24 @@ TSSRattribution <- function(
     # +++++ Calculate the landuse component with error handling+++++
     results <- TSSRESTREND(CTSR.VIadj, ACP.table, ACT.table = ACT.table, retnonsig=retnonsig)
     overview$LandUse = results$summary$Total.Change*ScaleFactor/(length(CTSR.VI)/12)
+    models$summary   = results$ols.summary$OLS.table
+    
+    if (returnVCRcoef){
+      if (results$summary$Method != "segmented.VPR"){
+        rname <- "VPR.fit"
+        # overview$LandUse.Pvalue = results$summary$residual.p
+      }
+      else{
+        rname <- "segVPR.fit"
+      }
+      overview$pre.slope       = results$ols.summary$OLS.table[rname, "slope"]
+      overview$temp.slope      = results$ols.summary$OLS.table[rname, "temp.coef"]
+      overview$intercept       = results$ols.summary$OLS.table[rname, "intercept"]
+      overview$Break.Height    = results$ols.summary$OLS.table[rname, "Break.Height"]
+      overview$Slope.Change    = results$ols.summary$OLS.table[rname, "Slope.Change"]
+      overview$Slope.ChangeTmp = results$ols.summary$OLS.table[rname, "Slope.ChangeTmp"]
+    }
+    
     if (results$summary$Method != "segmented.VPR"){
       overview$LandUse.Pvalue = results$summary$residual.p
     }else{
@@ -265,7 +295,6 @@ TSSRattribution <- function(
       overview$OtherFactorsValid = TRUE
     }
     # ========== Return Errors ==========
-    #browser()
     return(structure(list(summary = overview, models = models, errors = "")))
   })
   #sink()
