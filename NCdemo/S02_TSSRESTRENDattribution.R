@@ -78,11 +78,14 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes, par
   # It then returns an opject of the same structure as actual results but filled with NaN
   # Usefull stacking using the foreac::do command.
   if (any(is.na(VI)) | (sd(VI)==0)){
-     results = TSSRattribution(c(NA, NA), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
+     results = TSSRattribution(c(NA, NA), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, 
+      returnVCRcoef=FALSE,  SkipError=TRUE)
   }else if (any(is.na(PP))){
-     results = TSSRattribution(c(1,1), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
+     results = TSSRattribution(c(1,1), c(NA, NA), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, 
+      returnVCRcoef=FALSE,  SkipError=TRUE)
   }else if (any(is.na(TM))){
-     results = TSSRattribution(c(1,1), c(1,1), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, SkipError=TRUE)
+     results = TSSRattribution(c(1,1), c(1,1), c(NA, NA), max.acp, max.osp, AnnualRes=AnnualRes, 
+      returnVCRcoef=FALSE,  SkipError=TRUE)
   }else{
     if (!par){print(line)}
     # ========== Deal with Dates ==========
