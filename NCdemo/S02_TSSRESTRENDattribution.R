@@ -117,7 +117,7 @@ tssr.attr <- function(line, VI, PP, TM, C4frac, max.acp, max.osp, AnnualRes, par
     results = TSSRattribution(
       CTSR.VI, CTSR.RF, CTSR.TM, max.acp,
       max.osp, C4frac=round(C4frac, digits = 4),
-      AnnualRes=AnnualRes, returnVCRcoef=FALSE, SkipError=TRUE)
+      AnnualRes=AnnualRes, returnVCRcoef=TRUE, SkipError=TRUE)
 
     if (is.null(results)){
       browser()

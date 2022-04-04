@@ -61,7 +61,8 @@ TSSRattribution <- function(
       ClimateVariability = NA, OtherFactors = NA, OtherFactorsValid = FALSE,
       Obs.Pvalue = NA, CO2.Pvalue = NA, LandUse.Pvalue = NA, ClimateTotal.Pvalue = NA,
       ClimateChange.Pvalue = NA, ClimateVariability.Pvalue = NA, 
-      pre.slope=NA, temp.slope=NA, intercept=NA, Break.Height=NA, Slope.Change=NA, Slope.ChangeTmp=NA)
+      pre.slope=NA, temp.slope=NA, intercept=NA, Break.Height=NA, Slope.Change=NA, Slope.ChangeTmp=NA, 
+      osp=NA, acp=NA, tosp=NA, tacp=NA)
   }else{
     overview <- data.frame(
       ObservedChange = NA, CO2 = NA, LandUse = NA, ClimateTotal = NA, ClimateChange = NA,
@@ -140,10 +141,19 @@ TSSRattribution <- function(
     if (returnVCRcoef){
       if (results$summary$Method != "segmented.VPR"){
         rname <- "VPR.fit"
+        overview$osp  = results$acum.df$osp
+        overview$acp  = results$acum.df$acp 
+        overview$tosp = results$acum.df$tosp
+        overview$tacp = results$acum.df$tacp
+
         # overview$LandUse.Pvalue = results$summary$residual.p
       }
       else{
         rname <- "segVPR.fit"
+        overview$osp  = results$acum.df$osp.af
+        overview$acp  = results$acum.df$acp.af 
+        overview$tosp = results$acum.df$tosp.af
+        overview$tacp = results$acum.df$tacp.af
       }
       overview$pre.slope       = results$ols.summary$OLS.table[rname, "slope"]
       overview$temp.slope      = results$ols.summary$OLS.table[rname, "temp.coef"]
